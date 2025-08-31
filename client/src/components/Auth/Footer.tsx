@@ -11,7 +11,7 @@ function Footer({ startupConfig }: { startupConfig: TStartupConfig | null | unde
 
   const privacyPolicyRender = privacyPolicy?.externalUrl && (
     <a
-      className="text-sm text-green-500"
+      className="text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
       href={privacyPolicy.externalUrl}
       target={privacyPolicy.openNewTab ? '_blank' : undefined}
       rel="noreferrer"
@@ -22,7 +22,7 @@ function Footer({ startupConfig }: { startupConfig: TStartupConfig | null | unde
 
   const termsOfServiceRender = termsOfService?.externalUrl && (
     <a
-      className="text-sm text-green-500"
+      className="text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
       href={termsOfService.externalUrl}
       target={termsOfService.openNewTab ? '_blank' : undefined}
       rel="noreferrer"

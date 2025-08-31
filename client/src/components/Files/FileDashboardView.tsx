@@ -1,7 +1,7 @@
 import React from 'react';
 import VectorStoreSidePanel from './VectorStore/VectorStoreSidePanel';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../ui';
+import { Button } from '@librechat/client';
 
 const FileDashboardView = () => {
   const params = useParams();
@@ -12,8 +12,6 @@ const FileDashboardView = () => {
         {params.vectorStoreId && (
           <Button
             className="block lg:hidden"
-            variant={'outline'}
-            size={'sm'}
             onClick={() => {
               navigate('/d');
             }}

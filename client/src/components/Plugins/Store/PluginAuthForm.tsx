@@ -52,7 +52,7 @@ function PluginAuthForm({ plugin, onSubmit, isEntityTool }: TPluginAuthFormProps
                       type="text"
                       autoComplete="off"
                       id={authField}
-                      aria-invalid={!!errors[authField]}
+                      aria-invalid={Boolean(errors[authField])}
                       aria-describedby={`${authField}-error`}
                       aria-label={config.label}
                       aria-required="true"
@@ -70,7 +70,7 @@ function PluginAuthForm({ plugin, onSubmit, isEntityTool }: TPluginAuthFormProps
                 </HoverCard>
                 {errors[authField] && (
                   <span role="alert" className="mt-1 text-sm text-red-400">
-                    {errors[authField].message as string}
+                    {(errors[authField]?.message as string) ?? ''}
                   </span>
                 )}
               </div>

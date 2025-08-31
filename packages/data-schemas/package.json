@@ -1,7 +1,7 @@
 {
   "name": "@librechat/data-schemas",
   "version": "0.0.18",
-  "description": "Mongoose schemas and models for LibreChat",
+  "description": "Mongoose schemas and models for SIGMACODE AI",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.es.js",
@@ -28,14 +28,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/SIGMACODE-AI/sigmacode-ai.git"
   },
-  "author": "",
+  "author": "SIGMACODE AI",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://github.com/SIGMACODE-AI/sigmacode-ai/issues"
   },
-  "homepage": "https://librechat.ai",
+  "homepage": "https://sigmacode.ai/",
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.2",

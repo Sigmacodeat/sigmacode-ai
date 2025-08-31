@@ -18,7 +18,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   const getConversation: () => TPreset | null = () => preset;
 
   const setOptions: TSetOptions = (options) => {
-    const update = { ...options };
+    const update: Partial<TPreset> = { ...options };
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -30,8 +30,8 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   };
 
   const setOption: TSetOption = (param) => (newValue) => {
-    const update = {};
-    update[param] = newValue;
+    const update: Partial<TPreset> = {};
+    (update as Record<string, unknown>)[param] = newValue as unknown;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -43,12 +43,14 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   };
 
   const setExample: TSetExample = (i, type, newValue = null) => {
-    const update = {};
+    const update: Partial<TPreset> = {};
     const current = preset?.examples?.slice() || [];
-    const currentExample = { ...current[i] } || {};
-    currentExample[type] = { content: newValue };
-    current[i] = currentExample;
-    update['examples'] = current;
+    const currentExample = current[i]
+      ? { ...current[i] }
+      : { input: { content: '' }, output: { content: '' } };
+    (currentExample as Record<string, unknown>)[type] = { content: newValue } as unknown;
+    current[i] = currentExample as NonNullable<TPreset['examples']>[number];
+    (update as Record<string, unknown>)['examples'] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -60,10 +62,10 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   };
 
   const addExample: () => void = () => {
-    const update = {};
+    const update: Partial<TPreset> = {};
     const current = preset?.examples?.slice() || [];
     current.push({ input: { content: '' }, output: { content: '' } });
-    update['examples'] = current;
+    (update as Record<string, unknown>)['examples'] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -75,10 +77,12 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   };
 
   const removeExample: () => void = () => {
-    const update = {};
+    const update: Partial<TPreset> = {};
     const current = preset?.examples?.slice() || [];
     if (current.length <= 1) {
-      update['examples'] = [{ input: { content: '' }, output: { content: '' } }];
+      (update as Record<string, unknown>)['examples'] = [
+        { input: { content: '' }, output: { content: '' } },
+      ];
       setPreset((prevState) =>
         cleanupPreset({
           preset: {
@@ -90,7 +94,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
       return;
     }
     current.pop();
-    update['examples'] = current;
+    (update as Record<string, unknown>)['examples'] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -104,7 +108,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   const setAgentOption: TSetOption = (param) => (newValue) => {
     const editablePreset = JSON.parse(JSON.stringify(_preset));
     const { agentOptions } = editablePreset;
-    agentOptions[param] = newValue;
+    (agentOptions as Record<string, unknown>)[param] = newValue as unknown;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -135,7 +139,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
       return;
     }
 
-    const update = {};
+    const update: Partial<TPreset> = {};
     const current =
       preset?.tools
         ?.map((tool: string | TPlugin) => {
@@ -148,9 +152,9 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
     const isSelected = checkPluginSelection(newValue);
     const tool = availableTools[newValue];
     if (isSelected || remove) {
-      update['tools'] = current.filter((el) => el.pluginKey !== newValue);
+      (update as Record<string, unknown>)['tools'] = current.filter((el) => el.pluginKey !== newValue);
     } else {
-      update['tools'] = [...current, tool];
+      (update as Record<string, unknown>)['tools'] = [...current, tool];
     }
 
     setPreset((prevState) =>

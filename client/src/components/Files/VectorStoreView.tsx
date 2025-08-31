@@ -1,7 +1,7 @@
 import React from 'react';
 import VectorStoreSidePanel from './VectorStore/VectorStoreSidePanel';
 import FilesSectionSelector from './FilesSectionSelector';
-import { Button } from '../ui';
+import { Button } from '@librechat/client';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 
 export default function VectorStoreView() {
@@ -13,8 +13,6 @@ export default function VectorStoreView() {
         <FilesSectionSelector />
         <Button
           className="block lg:hidden"
-          variant={'outline'}
-          size={'sm'}
           onClick={() => {
             navigate('/d/vector-stores');
           }}

@@ -1,26 +1,26 @@
 <p align="center">
-  <a href="https://librechat.ai">
+  <a href="https://sigmacode.ai">
     <img src="client/public/assets/logo.svg" height="256">
   </a>
   <h1 align="center">
-    <a href="https://librechat.ai">LibreChat</a>
+    <a href="https://sigmacode.ai">SIGMACODE AI</a>
   </h1>
 </p>
 
 <p align="center">
-  <a href="https://discord.librechat.ai"> 
+  <a href="https://discord.sigmacode.ai"> 
     <img
       src="https://img.shields.io/discord/1086345563026489514?label=&logo=discord&style=for-the-badge&logoWidth=20&logoColor=white&labelColor=000000&color=blueviolet">
   </a>
-  <a href="https://www.youtube.com/@LibreChat"> 
+  <a href="https://www.youtube.com/@SIGMACODEAI"> 
     <img
       src="https://img.shields.io/badge/YOUTUBE-red.svg?style=for-the-badge&logo=youtube&logoColor=white&labelColor=000000&logoWidth=20">
   </a>
-  <a href="https://docs.librechat.ai"> 
+  <a href="https://docs.sigmacode.ai"> 
     <img
       src="https://img.shields.io/badge/DOCS-blue.svg?style=for-the-badge&logo=read-the-docs&logoColor=white&labelColor=000000&logoWidth=20">
   </a>
-  <a aria-label="Sponsors" href="https://github.com/sponsors/danny-avila">
+  <a aria-label="Sponsors" href="https://github.com/sponsors/SIGMACODE-AI">
     <img
       src="https://img.shields.io/badge/SPONSORS-brightgreen.svg?style=for-the-badge&logo=github-sponsors&logoColor=white&labelColor=000000&logoWidth=20">
   </a>
@@ -39,7 +39,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.librechat.ai/docs/translation">
+  <a href="https://www.sigmacode.ai/docs/translation">
     <img 
       src="https://img.shields.io/badge/dynamic/json.svg?style=for-the-badge&color=2096F3&label=locize&query=%24.translatedPercentage&url=https://api.locize.app/badgedata/4cb2598b-ed4d-469c-9b04-2ed531a8cb45&suffix=%+translated" 
       alt="Translation Progress">
@@ -129,9 +129,9 @@
 
 [For a thorough review of our features, see our docs here](https://docs.librechat.ai/) 📚
 
-## 🪶 All-In-One AI Conversations with LibreChat
+## 🪶 All-In-One AI Conversations with SIGMACODE AI
 
-LibreChat brings together the future of assistant AIs with the revolutionary technology of OpenAI's ChatGPT. Celebrating the original styling, LibreChat gives you the ability to integrate multiple AI models. It also integrates and enhances original client features such as conversation and message search, prompt templates and plugins.
+SIGMACODE AI brings together the future of assistant AIs with the revolutionary technology of OpenAI's ChatGPT. Celebrating the original styling, SIGMACODE AI gives you the ability to integrate multiple AI models. It also integrates and enhances original client features such as conversation and message search, prompt templates and plugins.
 
 With LibreChat, you no longer need to opt for ChatGPT Plus and can instead use free or pay-per-call APIs. We welcome contributions, cloning, and forking to enhance the capabilities of this advanced chatbot platform.
 
@@ -144,23 +144,23 @@ Click on the thumbnail to open the video☝️
 ## 🌐 Resources
 
 **GitHub Repo:**
-  - **RAG API:** [github.com/danny-avila/rag_api](https://github.com/danny-avila/rag_api)
-  - **Website:** [github.com/LibreChat-AI/librechat.ai](https://github.com/LibreChat-AI/librechat.ai)
+  - **Backend:** [github.com/SIGMACODE-AI/sigmacode-ai](https://github.com/SIGMACODE-AI/sigmacode-ai)
+  - **Website:** [github.com/SIGMACODE-AI/website](https://github.com/SIGMACODE-AI/website)
 
 **Other:**
-  - **Website:** [librechat.ai](https://librechat.ai)
-  - **Documentation:** [librechat.ai/docs](https://librechat.ai/docs)
-  - **Blog:** [librechat.ai/blog](https://librechat.ai/blog)
+  - **Website:** [sigmacode.ai](https://sigmacode.ai)
+  - **Documentation:** [sigmacode.ai/docs](https://sigmacode.ai/docs)
+  - **Blog:** [sigmacode.ai/blog](https://sigmacode.ai/blog)
 
 ---
 
 ## 📝 Changelog
 
 Keep up with the latest updates by visiting the releases page and notes:
-- [Releases](https://github.com/danny-avila/LibreChat/releases)
-- [Changelog](https://www.librechat.ai/changelog) 
+- [Releases](https://github.com/SIGMACODE-AI/sigmacode-ai/releases)
+- [Changelog](https://www.sigmacode.ai/changelog) 
 
-**⚠️ Please consult the [changelog](https://www.librechat.ai/changelog) for breaking changes before updating.**
+**⚠️ Please consult the [changelog](https://www.sigmacode.ai/changelog) for breaking changes before updating.**
 
 ---
 

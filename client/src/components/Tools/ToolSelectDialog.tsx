@@ -144,8 +144,12 @@ function ToolSelectDialog({
     }
   };
 
-  const filteredTools = Object.values(groupedTools || {}).filter(
-    (tool: AgentToolType & { tools?: AgentToolType[] }) => {
+  // Ensure a properly typed fallback to avoid Object.values widening to unknown[]
+  const grouped: Record<string, AgentToolType & { tools?: AgentToolType[] }> =
+    groupedTools ?? ({} as Record<string, AgentToolType & { tools?: AgentToolType[] }>);
+
+  const filteredTools: (AgentToolType & { tools?: AgentToolType[] })[] = Object.values(grouped).filter(
+    (tool) => {
       // Check if the parent tool matches
       if (tool.metadata?.name?.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
@@ -162,7 +166,7 @@ function ToolSelectDialog({
 
   useEffect(() => {
     if (filteredTools) {
-      setMaxPage(Math.ceil(Object.keys(filteredTools || {}).length / itemsPerPage));
+      setMaxPage(Math.ceil(filteredTools.length / itemsPerPage));
       if (searchChanged) {
         setCurrentPage(1);
         setSearchChanged(false);

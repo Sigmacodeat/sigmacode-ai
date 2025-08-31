@@ -1,20 +1,22 @@
 import React from 'react';
 
 const SocialButton = ({ id, enabled, serverDomain, oauthPath, Icon, label }) => {
-  if (!enabled) {
+  if (!enabled || !serverDomain) {
     return null;
   }
 
   return (
-    <div className="mt-2 flex gap-x-2">
+    <div className="mt-2">
       <a
         aria-label={`${label}`}
-        className="flex w-full items-center space-x-3 rounded-2xl border border-border-light bg-surface-primary px-5 py-3 text-text-primary transition-colors duration-200 hover:bg-surface-tertiary"
+        className="btn-social"
         href={`${serverDomain}/oauth/${oauthPath}`}
         data-testid={id}
       >
-        <Icon />
-        <p>{label}</p>
+        <span className="mr-3 inline-flex h-5 w-5 items-center justify-center" aria-hidden="true">
+          <Icon />
+        </span>
+        <span className="truncate">{label}</span>
       </a>
     </div>
   );

@@ -1,36 +1,40 @@
-import React, { Component, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
-interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+type BaseProps = {
+  fallback?: React.ReactNode;
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
   showDetails?: boolean;
+};
+
+interface SourcesErrorBoundaryProps extends BaseProps {
+  children: React.ReactNode;
 }
 
 interface State {
   hasError: boolean;
 }
 
-class SourcesErrorBoundary extends Component<Props, State> {
-  state = { hasError: false };
+class InnerSourcesErrorBoundary extends React.Component<
+  SourcesErrorBoundaryProps,
+  State,
+  any
+> {
+  state: Readonly<State> = { hasError: false };
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(_error: Error): State {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     console.error('Sources error:', error);
     this.props.onError?.(error, errorInfo);
   }
 
-  render() {
+  render(): ReactNode {
     if (this.state.hasError) {
-      // Use custom fallback if provided
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
-      // Default simple error UI (using localized strings from Sources.tsx fallback)
       /* eslint-disable i18next/no-literal-string */
       return (
         <div
@@ -51,8 +55,13 @@ class SourcesErrorBoundary extends Component<Props, State> {
       /* eslint-enable i18next/no-literal-string */
     }
 
-    return this.props.children;
+    return this.props.children as ReactNode;
   }
 }
 
-export default SourcesErrorBoundary;
+export default function SourcesErrorBoundary(props: SourcesErrorBoundaryProps) {
+  return React.createElement(
+    InnerSourcesErrorBoundary as unknown as React.ComponentType<SourcesErrorBoundaryProps>,
+    props,
+  );
+}

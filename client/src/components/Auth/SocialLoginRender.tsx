@@ -118,23 +118,69 @@ function SocialLoginRender({
   };
 
   return (
-    startupConfig.socialLoginEnabled && (
-      <>
-        {startupConfig.emailLoginEnabled && (
+    startupConfig.socialLoginEnabled && (() => {
+      type ProviderKey = keyof typeof providerComponents;
+      const configured = startupConfig.socialLogins || [];
+      let items = configured
+        .map((provider) => providerComponents[provider as ProviderKey] || null)
+        .filter(Boolean) as JSX.Element[];
+
+      // Fallback: wenn keine Social-Logins konfiguriert sind, rendere alle aktivierten Provider
+      if (items.length === 0) {
+        const allKeys = Object.keys(providerComponents) as ProviderKey[];
+        items = allKeys
+          .map((key) => providerComponents[key])
+          .filter(Boolean) as JSX.Element[];
+      }
+
+      if (items.length === 0) {
+        // Entwicklungs-Hinweis: Social Login ist aktiviert, aber es werden keine Buttons gerendert.
+        // Häufige Ursachen: fehlendes `serverDomain` oder keine aktivierten Provider-Flags.
+        // Hinweis nur dezent anzeigen, um UX nicht zu stören.
+        return (
           <>
-            <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
-              <div className="absolute bg-white px-3 text-xs text-black dark:bg-gray-900 dark:text-white">
-                Or
-              </div>
+            {startupConfig.emailLoginEnabled && (
+              <>
+                <div className="mt-6" aria-hidden="true">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="mt-6" />
+              </>
+            )}
+            <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+              {/* i18n-Schlüssel kann später ergänzt werden */}
+              {(!startupConfig.serverDomain) && (
+                <div>
+                  {localize('com_ui_warning')}: serverDomain fehlt. Social-Logins benötigen eine gültige Server-URL.
+                </div>
+              )}
+              {startupConfig.serverDomain && (
+                <div>
+                  {localize('com_ui_info')}: Keine aktivierten Social-Provider gefunden. Bitte Provider-Flags prüfen
+                  (z. B. googleLoginEnabled, githubLoginEnabled, …) oder Liste in startupConfig.socialLogins setzen.
+                </div>
+              )}
             </div>
-            <div className="mt-8" />
           </>
-        )}
-        <div className="mt-2">
-          {startupConfig.socialLogins?.map((provider) => providerComponents[provider] || null)}
-        </div>
-      </>
-    )
+        );
+      }
+
+      return (
+        <>
+          {startupConfig.emailLoginEnabled && (
+            <>
+              <div className="mt-6" aria-hidden="true">
+                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+              </div>
+              <div className="mt-6" />
+            </>
+          )}
+          <div className="mt-2 grid gap-2">
+            {items}
+          </div>
+        </>
+      );
+    })()
   );
 }
 

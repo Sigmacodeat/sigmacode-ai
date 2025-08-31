@@ -192,7 +192,7 @@ export default function useChatFunctions({
     } else {
       endpointOption.key = new Date(Date.now() + 60 * 60 * 1000).toISOString();
     }
-    const responseSender = getSender({ model: conversation?.model, ...endpointOption });
+    const responseSender = getSender({ ...endpointOption });
 
     const currentMsg: TMessage = {
       text,

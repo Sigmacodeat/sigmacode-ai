@@ -9,6 +9,9 @@ import VersionContent from './VersionContent';
 import { useLocalize } from '~/hooks';
 import { Panel } from '~/common';
 
+// Re-export for test imports
+export type { VersionContext, AgentState, VersionRecord } from './types';
+
 export default function VersionPanel() {
   const localize = useLocalize();
   const { showToast } = useToastContext();

@@ -44,6 +44,7 @@ export default function SearchMessage({ message }: Pick<TMessageProps, 'message'
       endpoint: message?.endpoint ?? '',
       model: message?.model ?? '',
       iconURL: message?.iconURL ?? '',
+      modelLabel: '',
       isCreatedByUser: message?.isCreatedByUser ?? false,
     }),
     [message?.endpoint, message?.model, message?.iconURL, message?.isCreatedByUser],

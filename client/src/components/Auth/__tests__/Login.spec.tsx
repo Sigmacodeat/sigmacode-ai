@@ -4,12 +4,22 @@ import { getByTestId, render, waitFor } from 'test/layout-test-utils';
 import type { TStartupConfig } from 'librechat-data-provider';
 import * as endpointQueries from '~/data-provider/Endpoints/queries';
 import * as miscDataProvider from '~/data-provider/Misc/queries';
-import * as authMutations from '~/data-provider/Auth/mutations';
-import * as authQueries from '~/data-provider/Auth/queries';
+// IMPORTANT: AuthContext imports hooks from the root re-export '~/data-provider'
+// so we must spy on that module rather than sub-paths
+import * as dataProvider from '~/data-provider';
 import AuthLayout from '~/components/Auth/AuthLayout';
 import Login from '~/components/Auth/Login';
 
-jest.mock('librechat-data-provider/react-query');
+jest.mock('~/data-provider', () => ({
+  ...jest.requireActual('~/data-provider'),
+  useLoginUserMutation: jest.fn(),
+  useGetUserQuery: jest.fn(),
+  useRefreshTokenMutation: jest.fn(),
+}));
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 const mockStartupConfig = {
   isFetching: false,
@@ -41,7 +51,8 @@ const setup = ({
   useGetUserQueryReturnValue = {
     isLoading: false,
     isError: false,
-    data: {},
+    isSuccess: false,
+    data: undefined,
   },
   useLoginUserReturnValue = {
     isLoading: false,
@@ -65,23 +76,32 @@ const setup = ({
     isError: false,
     data: {},
   },
+  triggerLoginSuccess = false,
 } = {}) => {
-  const mockUseLoginUser = jest
-    .spyOn(authMutations, 'useLoginUserMutation')
-    //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
-    .mockReturnValue(useLoginUserReturnValue);
-  const mockUseGetUserQuery = jest
-    .spyOn(authQueries, 'useGetUserQuery')
-    //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
-    .mockReturnValue(useGetUserQueryReturnValue);
+  // Configure mocks on the already-mocked module
+  const mockUseLoginUser = (dataProvider as any).useLoginUserMutation as jest.Mock;
+  mockUseLoginUser.mockReset();
+  if (triggerLoginSuccess) {
+    mockUseLoginUser.mockImplementation((opts: any) => ({
+      isLoading: false,
+      isError: false,
+      isSuccess: true,
+      data: { token: 'mock-token', user: {} },
+      mutate: jest.fn(() => opts?.onSuccess?.({ token: 'mock-token', user: {} })),
+    }));
+  } else {
+    mockUseLoginUser.mockReturnValue(useLoginUserReturnValue as any);
+  }
+  const mockUseGetUserQuery = (dataProvider as any).useGetUserQuery as jest.Mock;
+  mockUseGetUserQuery.mockReset();
+  mockUseGetUserQuery.mockReturnValue(useGetUserQueryReturnValue);
   const mockUseGetStartupConfig = jest
     .spyOn(endpointQueries, 'useGetStartupConfig')
     //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
     .mockReturnValue(useGetStartupConfigReturnValue);
-  const mockUseRefreshTokenMutation = jest
-    .spyOn(authMutations, 'useRefreshTokenMutation')
-    //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
-    .mockReturnValue(useRefreshTokenMutationReturnValue);
+  const mockUseRefreshTokenMutation = (dataProvider as any).useRefreshTokenMutation as jest.Mock;
+  mockUseRefreshTokenMutation.mockReset();
+  mockUseRefreshTokenMutation.mockReturnValue(useRefreshTokenMutationReturnValue);
   const mockUseGetBannerQuery = jest
     .spyOn(miscDataProvider, 'useGetBannerQuery')
     //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
@@ -172,18 +192,14 @@ test('calls loginUser.mutate on login', async () => {
   await userEvent.type(passwordInput, 'password');
   await userEvent.click(submitButton);
 
-  waitFor(() => expect(mutate).toHaveBeenCalled());
+  await waitFor(() => expect(mutate).toHaveBeenCalled());
 });
 
 test('Navigates to / on successful login', async () => {
-  const { getByLabelText, history } = setup({
-    // @ts-ignore - we don't need all parameters of the QueryObserverResult
-    useLoginUserReturnValue: {
-      isLoading: false,
-      mutate: jest.fn(),
-      isError: false,
-      isSuccess: true,
-    },
+  const navigate = jest.fn();
+  jest.spyOn(reactRouter, 'useNavigate').mockReturnValue(navigate);
+  const { getByLabelText } = setup({
+    triggerLoginSuccess: true,
     useGetStartupConfigReturnValue: {
       ...mockStartupConfig,
       data: {
@@ -201,6 +217,7 @@ test('Navigates to / on successful login', async () => {
   await userEvent.type(emailInput, 'test@test.com');
   await userEvent.type(passwordInput, 'password');
   await userEvent.click(submitButton);
-
-  waitFor(() => expect(history.location.pathname).toBe('/'));
+  // first ensure navigate was called (debounced state update)
+  await waitFor(() => expect(navigate).toHaveBeenCalled());
+  expect(navigate).toHaveBeenCalledWith('/c/new', { replace: true });
 });

@@ -26,7 +26,10 @@ const auth = require('./auth');
 const edit = require('./edit');
 const keys = require('./keys');
 const user = require('./user');
+const me = require('./me');
+const referrals = require('./referrals');
 const mcp = require('./mcp');
+const devemail = require('./devemail');
 
 module.exports = {
   mcp,
@@ -58,4 +61,7 @@ module.exports = {
   categories,
   staticRoute,
   accessPermissions,
+  devemail,
+  me,
+  referrals,
 };

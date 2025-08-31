@@ -1,8 +1,7 @@
-import { useRecoilState } from 'recoil';
 import { Settings2 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { Root, Anchor } from '@radix-ui/react-popover';
-import { PluginStoreDialog, TooltipAnchor } from '@librechat/client';
+import { TooltipAnchor } from '@librechat/client';
 import { useUserKeyQuery } from 'librechat-data-provider/react-query';
 import { EModelEndpoint, isParamEndpoint, tConvoUpdateSchema } from 'librechat-data-provider';
 import type { TPreset, TInterfaceConfig } from 'librechat-data-provider';
@@ -13,7 +12,6 @@ import OptionsPopover from './OptionsPopover';
 import PopoverButtons from './PopoverButtons';
 import { useChatContext } from '~/Providers';
 import { getEndpointField } from '~/utils';
-import store from '~/store';
 
 export default function HeaderOptions({
   interfaceConfig,
@@ -23,9 +21,7 @@ export default function HeaderOptions({
   const { data: endpointsConfig } = useGetEndpointsQuery();
 
   const [saveAsDialogShow, setSaveAsDialogShow] = useState<boolean>(false);
-  const [showPluginStoreDialog, setShowPluginStoreDialog] = useRecoilState(
-    store.showPluginStoreDialog,
-  );
+  // PluginStoreDialog wurde entfernt; zugehöriger Zustand nicht mehr benötigt
   const localize = useLocalize();
 
   const { showPopover, conversation, setShowPopover } = useChatContext();
@@ -122,12 +118,7 @@ export default function HeaderOptions({
                 }
               />
             )}
-            {interfaceConfig?.parameters === true && (
-              <PluginStoreDialog
-                isOpen={showPluginStoreDialog}
-                setIsOpen={setShowPluginStoreDialog}
-              />
-            )}
+            {/* PluginStoreDialog entfernt: fehlender Export in @librechat/client */}
           </span>
         </div>
       </Anchor>

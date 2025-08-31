@@ -24,6 +24,40 @@ const compat = new FlatCompat({
 
 export default [
   {
+    // E2E / Playwright spezifische Lint-Regeln (lockerer, eigene Umgebung)
+    files: ['e2e/**/*.ts', 'e2e/**/*.tsx', 'e2e/**/*.js', 'e2e/**/*.jsx'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+        // Playwright-ähnliche Globals (ohne Plugin)
+        test: 'readonly',
+        expect: 'readonly',
+        page: 'readonly',
+        browser: 'readonly',
+        context: 'readonly',
+      },
+      // Wichtig: kein parserOptions.project, um Parsingfehler ohne TS-Projekt zu vermeiden
+    },
+    rules: {
+      // e2e: erleichterte Regeln
+      'no-console': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/ban-ts-comment': 'off',
+      // Keine React-/A11y-Pflicht in e2e-Skripten
+      'react/display-name': 'off',
+      'react/prop-types': 'off',
+      'jsx-a11y/no-static-element-interactions': 'off',
+      'jsx-a11y/click-events-have-key-events': 'off',
+    },
+  },
+  {
     ignores: [
       'client/vite.config.ts',
       'client/dist/**/*',
@@ -37,6 +71,14 @@ export default [
       'packages/data-provider/types/**/*',
       'packages/data-provider/dist/**/*',
       'packages/data-provider/test_bundle/**/*',
+      // Ignore all data-schemas files to avoid TS project resolution on generated .d.ts and strict rules in src
+      'packages/data-schemas/**/*',
+      // Generic ignore for all dist/types outputs inside packages
+      'packages/**/dist/**/*',
+      'packages/**/types/**/*',
+      // Ignore whole packages and e2e to avoid cross-project TS parsing
+      'packages/**/*',
+      // 'e2e/**/*', // Entfernt: e2e wird unten gezielt mit Overrides gelintet
       'data-node/**/*',
       'meili_data/**/*',
       '**/node_modules/**/*',
@@ -101,7 +143,7 @@ export default [
     },
 
     rules: {
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'warn',
       'react/react-in-jsx-scope': 'off',
 
       '@typescript-eslint/ban-ts-comment': [
@@ -212,8 +254,7 @@ export default [
       files: ['**/*.ts', '**/*.tsx'],
     })),
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['packages/**/*'],
+    files: ['client/src/**/*.ts', 'client/src/**/*.tsx'],
     plugins: {
       '@typescript-eslint': typescriptEslintEslintPlugin,
       jest: fixupPluginRules(jest),

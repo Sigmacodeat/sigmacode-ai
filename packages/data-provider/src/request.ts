@@ -4,6 +4,10 @@ import * as endpoints from './api-endpoints';
 import { setTokenHeader } from './headers-helpers';
 import type * as t from './types';
 
+// Ensure cookies (e.g., httpOnly refresh tokens) are sent with requests via Vite proxy (3092 -> 3081)
+// This is required for the /api/auth/refresh endpoint to succeed in dev where origin differs.
+axios.defaults.withCredentials = true;
+
 async function _get<T>(url: string, options?: AxiosRequestConfig): Promise<T> {
   const response = await axios.get(url, { ...options });
   return response.data;

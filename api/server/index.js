@@ -52,6 +52,15 @@ const startServer = async () => {
 
   app.get('/health', (_req, res) => res.status(200).send('OK'));
 
+  // JSON Health Endpoint for programmatic checks
+  app.get('/api/health', (_req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      time: new Date().toISOString(),
+      version: process.env.npm_package_version || 'unknown',
+    });
+  });
+
   /* Middleware */
   app.use(noIndex);
   app.use(express.json({ limit: '3mb' }));
@@ -117,6 +126,12 @@ const startServer = async () => {
   app.use('/api/banner', routes.banner);
   app.use('/api/memories', routes.memories);
   app.use('/api/permissions', routes.accessPermissions);
+  // RBAC-gated dev email gateway to provider-proxy
+  app.use('/api/dev/email', routes.devemail);
+  // Lightweight session probe
+  app.use('/api/me', routes.me);
+  // Referrals endpoints (MVP)
+  app.use('/api/referrals', routes.referrals);
 
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);

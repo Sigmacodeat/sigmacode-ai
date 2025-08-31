@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import React, { useContext, useState } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { ThemeContext, Spinner, Button } from '@librechat/client';
-import { useNavigate, useOutletContext, useLocation } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation, Link } from 'react-router-dom';
 import { useRegisterUserMutation } from 'librechat-data-provider/react-query';
 import type { TRegisterUser, TError } from 'librechat-data-provider';
 import type { TLoginLayoutContext } from '~/common';
@@ -76,13 +76,13 @@ const Registration: React.FC = () => {
             validation,
           )}
           aria-invalid={!!errors[id]}
-          className="webkit-dark-styles transition-color peer w-full rounded-2xl border border-border-light bg-surface-primary px-3.5 pb-2.5 pt-3 text-text-primary duration-200 focus:border-green-500 focus:outline-none"
+          className="webkit-dark-styles transition-color peer w-full rounded-2xl border border-border-light bg-surface-primary px-3.5 pb-2.5 pt-3 text-text-primary duration-200 focus:border-teal-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
           placeholder=" "
           data-testid={id}
         />
         <label
           htmlFor={id}
-          className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-green-500 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
+          className="absolute start-3 top-1.5 z-10 origin-[0] -translate-y-4 scale-75 transform bg-surface-primary px-2 text-sm text-text-secondary-alt duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-1.5 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-teal-600 dark:peer-focus:text-teal-500 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
         >
           {localize(label)}
         </label>
@@ -104,7 +104,7 @@ const Registration: React.FC = () => {
       )}
       {registerUser.isSuccess && countdown > 0 && (
         <div
-          className="rounded-md border border-green-500 bg-green-500/10 px-3 py-2 text-sm text-gray-600 dark:text-gray-200"
+          className="rounded-md border border-teal-500 bg-teal-500/10 px-3 py-2 text-sm text-gray-600 dark:text-gray-200"
           role="alert"
         >
           {localize(
@@ -203,22 +203,27 @@ const Registration: React.FC = () => {
                 type="submit"
                 aria-label="Submit registration"
                 variant="submit"
-                className="h-12 w-full rounded-2xl"
+                className="h-12 w-full rounded-2xl text-white transition-colors bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? <Spinner /> : localize('com_auth_continue')}
               </Button>
             </div>
           </form>
 
+          <div
+            className="my-6 h-px w-full rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
+            aria-hidden="true"
+          />
+
           <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
             {localize('com_auth_already_have_account')}{' '}
-            <a
-              href="/login"
-              aria-label="Login"
-              className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+            <Link
+              to="/login"
+              aria-label={localize('com_auth_login')}
+              className="inline-flex p-1 text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
             >
               {localize('com_auth_login')}
-            </a>
+            </Link>
           </p>
         </>
       )}

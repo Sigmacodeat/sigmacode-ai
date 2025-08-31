@@ -38,9 +38,9 @@ const categoryIconMap: Record<string, React.ElementType> = {
 const categoryColorMap: Record<string, string> = {
   code: 'text-red-500',
   misc: 'text-blue-300',
-  shop: 'text-purple-400',
+  shop: 'text-brand-primary',
   idea: 'text-yellow-500/90 dark:text-yellow-300 ',
-  write: 'text-purple-400',
+  write: 'text-brand-primary',
   travel: 'text-yellow-500/90 dark:text-yellow-300 ',
   finance: 'text-orange-400',
   roleplay: 'text-orange-400',
@@ -48,7 +48,7 @@ const categoryColorMap: Record<string, string> = {
   // NEW: Agent categories
   general: 'text-blue-500',
   hr: 'text-green-500',
-  rd: 'text-purple-500',
+  rd: 'text-brand-primary',
   it: 'text-red-500',
   sales: 'text-orange-500',
   aftersales: 'text-yellow-500',

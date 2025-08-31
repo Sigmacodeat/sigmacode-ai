@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { TAttachment } from 'librechat-data-provider';
+import type { TAttachment, ValidSource } from 'librechat-data-provider';
 import { StackedFavicons } from '~/components/Web/Sources';
 import { useSearchContext } from '~/Providers';
 import ProgressText from './ProgressText';
@@ -30,20 +30,31 @@ export default function WebSearch({
 
   const complete = !isLast && progress === 1;
   const finalizing = isSubmitting && isLast && progress === 1;
-  const processedSources = useMemo(() => {
+  const processedSources = useMemo<ValidSource[]>(() => {
     if (complete && !finalizing) {
       return [];
     }
     if (!searchResults) return [];
     const values = Object.values(searchResults);
-    const result = values[values.length - 1];
-    if (!result) return [];
+    const result = values[values.length - 1] as unknown;
+    if (!result || typeof result !== 'object') return [];
+
+    const isValidSource = (x: unknown): x is ValidSource => {
+      return !!x && typeof (x as any).link === 'string';
+    };
+
+    const organicRaw = Array.isArray((result as any).organic)
+      ? ((result as any).organic as Array<any>)
+      : [];
+    const topStoriesRaw = Array.isArray((result as any).topStories)
+      ? ((result as any).topStories as Array<any>)
+      : [];
+
+    const combined = [...organicRaw, ...topStoriesRaw].filter(isValidSource);
     if (finalizing) {
-      return [...(result.organic || []), ...(result.topStories || [])];
+      return combined;
     }
-    return [...(result.organic || []), ...(result.topStories || [])].filter(
-      (source) => source.processed === true,
-    );
+    return combined.filter((source: any) => source?.processed === true);
   }, [searchResults, complete, finalizing]);
   const turns = useMemo(() => {
     if (!searchResults) return 0;

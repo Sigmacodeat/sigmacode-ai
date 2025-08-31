@@ -10,6 +10,7 @@ import {
   EModelEndpoint,
   PermissionBits,
   isAssistantsEndpoint,
+  ResourceType,
 } from 'librechat-data-provider';
 import type { AgentForm, StringOption } from '~/common';
 import {
@@ -53,7 +54,7 @@ export default function AgentPanel() {
   });
 
   const { hasPermission, isLoading: permissionsLoading } = useResourcePermissions(
-    'agent',
+    ResourceType.AGENT,
     basicAgentQuery.data?._id || '',
   );
 

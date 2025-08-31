@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Spinner, ThemeSelector } from '@librechat/client';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useVerifyEmailMutation, useResendVerificationEmail } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 
@@ -90,7 +90,7 @@ function RequestPasswordReset() {
         <p className="text-center text-lg text-gray-600 dark:text-gray-400">
           {localize('com_auth_email_verification_resend_prompt')}
           <button
-            className="ml-2 text-blue-600 hover:underline"
+            className="ml-2 inline-flex rounded px-1 text-teal-600 underline-offset-4 hover:text-teal-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:text-teal-400 dark:hover:text-teal-300"
             onClick={handleResendEmail}
             disabled={resendEmailMutation.isLoading}
           >
@@ -98,6 +98,17 @@ function RequestPasswordReset() {
           </button>
         </p>
       )}
+      <div
+        className="mt-6 h-px w-full max-w-md rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
+        aria-hidden="true"
+      />
+      <Link
+        to="/login"
+        aria-label={localize('com_auth_back_to_login')}
+        className="mt-4 block text-center text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
+      >
+        {localize('com_auth_back_to_login')}
+      </Link>
     </div>
   );
 
@@ -107,8 +118,19 @@ function RequestPasswordReset() {
         {localize('com_auth_email_verification_in_progress')}
       </h1>
       <div className="mt-4 flex justify-center">
-        <Spinner className="h-8 w-8 text-green-500" />
+        <Spinner className="h-8 w-8 text-teal-500" />
       </div>
+      <div
+        className="mt-6 h-px w-full max-w-md rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
+        aria-hidden="true"
+      />
+      <Link
+        to="/login"
+        aria-label={localize('com_auth_back_to_login')}
+        className="mt-4 block text-center text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
+      >
+        {localize('com_auth_back_to_login')}
+      </Link>
     </div>
   );
 

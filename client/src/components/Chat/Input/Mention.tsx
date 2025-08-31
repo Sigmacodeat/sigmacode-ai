@@ -205,19 +205,25 @@ export default function Mention({
         />
         {open && (
           <div className="max-h-40">
-            <AutoSizer disableHeight>
-              {({ width }) => (
-                <List
-                  width={width}
-                  overscanRowCount={5}
-                  rowHeight={ROW_HEIGHT}
-                  rowCount={matches.length}
-                  rowRenderer={rowRenderer}
-                  scrollToIndex={activeIndex}
-                  height={Math.min(matches.length * ROW_HEIGHT, 160)}
-                />
-              )}
-            </AutoSizer>
+            {(() => {
+              const VirtualizedAutoSizer = AutoSizer as unknown as React.ComponentType<any>;
+              const VirtualizedList = List as unknown as React.ComponentType<any>;
+              return (
+                <VirtualizedAutoSizer disableHeight>
+                  {({ width }) => (
+                    <VirtualizedList
+                      width={width}
+                      overscanRowCount={5}
+                      rowHeight={ROW_HEIGHT}
+                      rowCount={matches.length}
+                      rowRenderer={rowRenderer}
+                      scrollToIndex={activeIndex}
+                      height={Math.min(matches.length * ROW_HEIGHT, 160)}
+                    />
+                  )}
+                </VirtualizedAutoSizer>
+              );
+            })()}
           </div>
         )}
       </div>

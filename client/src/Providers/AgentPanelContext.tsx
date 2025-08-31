@@ -90,7 +90,7 @@ export function AgentPanelProvider({ children }: { children: React.ReactNode }) 
     setAction,
     activePanel,
     groupedTools,
-    agentsConfig,
+    agentsConfig: agentsConfig ?? undefined,
     setActivePanel,
     endpointsConfig,
     setCurrentAgentId,

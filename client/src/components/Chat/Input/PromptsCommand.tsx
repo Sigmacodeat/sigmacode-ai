@@ -136,6 +136,10 @@ function PromptsCommand({
     return null;
   }
 
+  // react-virtualized JSX typing workaround for React 18 types
+  const VirtualizedAutoSizer = AutoSizer as unknown as React.ComponentType<any>;
+  const VirtualizedList = List as unknown as React.ComponentType<any>;
+
   const rowRenderer = ({
     index,
     key,
@@ -228,9 +232,9 @@ function PromptsCommand({
               if (!isLoading && open) {
                 return (
                   <div className="max-h-40">
-                    <AutoSizer disableHeight>
+                    <VirtualizedAutoSizer disableHeight>
                       {({ width }) => (
-                        <List
+                        <VirtualizedList
                           width={width}
                           overscanRowCount={5}
                           rowHeight={ROW_HEIGHT}
@@ -240,7 +244,7 @@ function PromptsCommand({
                           height={Math.min(matches.length * ROW_HEIGHT, 160)}
                         />
                       )}
-                    </AutoSizer>
+                    </VirtualizedAutoSizer>
                   </div>
                 );
               }

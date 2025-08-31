@@ -159,6 +159,9 @@ export default function ArchivedChatsTable({
                 endpoint={row.original.endpoint}
                 size={28}
                 isCreatedByUser={false}
+                model={row.original.model as any}
+                chatGptLabel={(row.original as any)?.chatGptLabel}
+                modelLabel={(row.original as any)?.modelLabel}
                 iconClassName="size-4"
               />
               <span className="underline">{title}</span>
@@ -275,7 +278,7 @@ export default function ArchivedChatsTable({
         isFetchingNextPage={isFetchingNextPage}
         isLoading={isLoading}
         showCheckboxes={false}
-        enableSearch={isSearchEnabled}
+        enableSearch={Boolean(isSearchEnabled)}
       />
 
       <OGDialog open={isDeleteOpen} onOpenChange={onOpenChange}>

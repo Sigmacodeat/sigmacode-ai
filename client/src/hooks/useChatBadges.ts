@@ -3,7 +3,7 @@ import { useRecoilCallback } from 'recoil';
 import { useRecoilValue } from 'recoil';
 import { MessageCircleDashed, Box } from 'lucide-react';
 import type { BadgeItem } from '~/common';
-import { useLocalize, TranslationKeys } from '~/hooks';
+import { useLocalize } from '~/hooks';
 import store from '~/store';
 
 interface ChatBadgeConfig {
@@ -34,7 +34,7 @@ export default function useChatBadges(): BadgeItem[] {
     return (
       badgeConfig.map((cfg) => ({
         id: cfg.id,
-        label: localize(cfg.label as TranslationKeys),
+        label: localize(cfg.label),
         icon: cfg.icon,
         atom: cfg.atom,
         isAvailable: activeBadgeIds.has(cfg.id),

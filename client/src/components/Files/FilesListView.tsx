@@ -3,7 +3,7 @@ import FileSidePanel from './FileList/FileSidePanel';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import FilesSectionSelector from './FilesSectionSelector';
 import { useLocalize } from '~/hooks';
-import { Button } from '../ui';
+import { Button } from '@librechat/client';
 
 export default function FilesListView() {
   const params = useParams();
@@ -16,8 +16,6 @@ export default function FilesListView() {
         {params.fileId != null && params.fileId && (
           <Button
             className="block lg:hidden"
-            variant={'outline'}
-            size={'sm'}
             onClick={() => {
               navigate('/d/files');
             }}

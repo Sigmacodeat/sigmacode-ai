@@ -56,7 +56,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     return categories.map((category) => ({
       id: category.value,
       label: category.label,
-      icon: 'icon' in category ? category.icon : undefined,
+      icon: 'icon' in category ? (category.icon as ReactNode) : undefined,
       onClick: () => {
         const value = category.value || '';
         if (formContext && setValue) {

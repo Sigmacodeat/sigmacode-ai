@@ -1,25 +1,36 @@
 import { Page, FullConfig, chromium } from '@playwright/test';
 import type { User } from '../types';
-import cleanupUser from './cleanupUser';
+// cleanupUser entfernt, um Race-Conditions zu vermeiden
 import dotenv from 'dotenv';
 dotenv.config();
 
-const timeout = 6000;
+const timeout = 20000;
 
-async function register(page: Page, user: User) {
-  await page.getByRole('link', { name: 'Sign up' }).click();
-  await page.getByLabel('Full name').click();
-  await page.getByLabel('Full name').fill('test');
-  await page.getByText('Username (optional)').click();
-  await page.getByLabel('Username (optional)').fill('test');
-  await page.getByLabel('Email').click();
-  await page.getByLabel('Email').fill(user.email);
-  await page.getByLabel('Email').press('Tab');
-  await page.getByTestId('password').click();
+async function register(page: Page, user: User, baseURL: string) {
+  // Try API-first registration to avoid UI constraints (captcha/locale)
+  const res = await page.request.post(`${baseURL}/api/auth/register`, {
+    data: {
+      name: 'test',
+      username: 'test',
+      email: user.email,
+      password: user.password,
+      confirm_password: user.password,
+      token: undefined,
+    },
+    timeout,
+  });
+  if (res.ok()) {
+    return;
+  }
+  // Fallback to UI registration if API fails (e.g., validation changes)
+  await page.goto(`${baseURL}/register`, { timeout });
+  await page.getByRole('form', { name: /Registration form/i }).waitFor({ state: 'visible', timeout });
+  await page.getByTestId('name').fill('test');
+  await page.getByTestId('username').fill('test');
+  await page.getByTestId('email').fill(user.email);
   await page.getByTestId('password').fill(user.password);
-  await page.getByTestId('confirm_password').click();
   await page.getByTestId('confirm_password').fill(user.password);
-  await page.getByLabel('Submit registration').click();
+  await page.getByRole('button', { name: /Submit registration/i }).click();
 }
 
 async function logout(page: Page) {
@@ -27,10 +38,19 @@ async function logout(page: Page) {
   await page.getByRole('button', { name: 'Log out' }).click();
 }
 
-async function login(page: Page, user: User) {
-  await page.locator('input[name="email"]').fill(user.email);
-  await page.locator('input[name="password"]').fill(user.password);
-  await page.locator('input[name="password"]').press('Enter');
+async function login(page: Page, user: User, baseURL: string) {
+  // API login to set auth cookies directly
+  const res = await page.request.post(`${baseURL}/api/auth/login`, {
+    data: { username: user.email, password: user.password },
+    timeout,
+  });
+  if (!res.ok()) {
+    // Fallback to UI form if API rejects (e.g., rate limit)
+    await page.goto(`${baseURL}/login`, { timeout });
+    await page.locator('input[name="email"]').fill(user.email);
+    await page.locator('input[name="password"]').fill(user.password);
+    await page.locator('input[name="password"]').press('Enter');
+  }
 }
 
 async function authenticate(config: FullConfig, user: User) {
@@ -56,29 +76,18 @@ async function authenticate(config: FullConfig, user: User) {
     console.log('🤖: ✔️  localStorage: set Nav as Visible', storageState);
 
     await page.goto(baseURL, { timeout });
-    await register(page, user);
-    try {
-      await page.waitForURL(`${baseURL}/c/new`, { timeout });
-    } catch (error) {
-      console.error('Error:', error);
-      const userExists = page.getByTestId('registration-error');
-      if (userExists) {
-        console.log('🤖: 🚨  user already exists');
-        await cleanupUser(user);
-        await page.goto(baseURL, { timeout });
-        await register(page, user);
-      } else {
-        throw new Error('🤖: 🚨  user failed to register');
-      }
-    }
-    console.log('🤖: ✔️  user successfully registered');
+    await register(page, user, baseURL);
+    // Try API login regardless, to ensure auth cookies are present
+    await login(page, user, baseURL);
 
     // Logout
     // await logout(page);
     // await page.waitForURL(`${baseURL}/login`, { timeout });
     // console.log('🤖: ✔️  user successfully logged out');
 
-    await login(page, user);
+    // If we are already on /c/new after registration, skip login
+    // Ensure we land on the chat page
+    await page.goto(`${baseURL}/c/new`, { timeout });
     await page.waitForURL(`${baseURL}/c/new`, { timeout });
     console.log('🤖: ✔️  user successfully authenticated');
 

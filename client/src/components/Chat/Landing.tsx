@@ -41,6 +41,26 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Render a template with simple placeholders. Supported: {{greeting}}, {{user.name}}, {{app.title}}
+  const renderTemplate = useCallback(
+    (
+      tpl: string,
+      ctx: { greeting: string; userName?: string; appTitle?: string },
+    ) => {
+      const replaced = tpl
+        .replace(/{{\s*greeting\s*}}/g, ctx.greeting)
+        .replace(/{{\s*user\.name\s*}}/g, ctx.userName ?? '')
+        .replace(/{{\s*app\.title\s*}}/g, ctx.appTitle ?? 'SIGMACODE AI v0.1.0');
+      // Cleanup: remove trailing commas/spaces from missing placeholders
+      return replaced
+        .replace(/\s+,/g, ',')
+        .replace(/,\s*$/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    },
+    [],
+  );
+
   const endpointType = useMemo(() => {
     let ep = conversation?.endpoint ?? '';
     if (
@@ -71,15 +91,6 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const description = (entity?.description || conversation?.greeting) ?? '';
 
   const getGreeting = useCallback(() => {
-    if (typeof startupConfig?.interface?.customWelcome === 'string') {
-      const customWelcome = startupConfig.interface.customWelcome;
-      // Replace {{user.name}} with actual user name if available
-      if (user?.name && customWelcome.includes('{{user.name}}')) {
-        return customWelcome.replace(/{{user.name}}/g, user.name);
-      }
-      return customWelcome;
-    }
-
     const now = new Date();
     const hours = now.getHours();
 
@@ -105,7 +116,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     else {
       return localize('com_ui_good_evening');
     }
-  }, [localize, startupConfig?.interface?.customWelcome, user?.name]);
+  }, [localize]);
 
   const handleLineCountChange = useCallback((count: number) => {
     setTextHasMultipleLines(count > 1);
@@ -138,10 +149,15 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
+  const baseGreeting = getGreeting();
   const greetingText =
     typeof startupConfig?.interface?.customWelcome === 'string'
-      ? getGreeting()
-      : getGreeting() + (user?.name ? ', ' + user.name : '');
+      ? renderTemplate(startupConfig.interface.customWelcome, {
+          greeting: baseGreeting,
+          userName: user?.name,
+          appTitle: startupConfig?.appTitle ?? 'SIGMACODE AI v0.1.0',
+        })
+      : baseGreeting + (user?.name ? ', ' + user.name : '');
 
   return (
     <div
@@ -176,7 +192,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
               <SplitText
                 key={`split-text-${name}`}
                 text={name}
-                className={`${getTextSizeClass(name)} font-medium text-text-primary`}
+                className={`font-montserrat ${getTextSizeClass(name)} font-medium text-text-primary`}
                 delay={50}
                 textAlign="center"
                 animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
@@ -191,7 +207,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
             <SplitText
               key={`split-text-${greetingText}${user?.name ? '-user' : ''}`}
               text={greetingText}
-              className={`${getTextSizeClass(greetingText)} font-medium text-text-primary`}
+              className={`font-montserrat ${getTextSizeClass(greetingText)} font-medium text-text-primary`}
               delay={50}
               textAlign="center"
               animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}

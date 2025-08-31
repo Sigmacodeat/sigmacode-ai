@@ -20,7 +20,7 @@ export * from './ScreenshotContext';
 export * from './ApiErrorBoundaryContext';
 export * from './Endpoint';
 
-export type { TranslationKeys } from './useLocalize';
+export type { TranslationKey, TranslationKeys } from './useLocalize';
 
 export { default as useTimeout } from './useTimeout';
 export { default as useNewConvo } from './useNewConvo';

@@ -1,0 +1,47 @@
+{
+  "providers": [
+    {
+      "slug": "openai",
+      "name": "OpenAI",
+      "website": "https://openai.com",
+      "docsUrl": "https://platform.openai.com/docs",
+      "subtitle": "Generalist models, strong tools & reasoning",
+      "description": "OpenAI provides a family of GPT models suitable for chat, coding, and tool-augmented agents.",
+      "models": [
+        { "name": "o4-mini", "contextWindow": 200000, "supportsTools": true, "strengths": ["reasoning", "tools"] },
+        { "name": "gpt-4o-mini", "contextWindow": 200000, "supportsTools": true, "strengths": ["speed", "cost"] }
+      ],
+      "tasks": [
+        { "type": "chat", "recommendedModels": ["o4-mini", "gpt-4o-mini"], "notes": "Balanced quality/cost" },
+        { "type": "agent", "recommendedModels": ["o4-mini"], "notes": "Tool-use & planning" },
+        { "type": "coding", "recommendedModels": ["o4-mini"], "notes": "Good for code & review" }
+      ],
+      "agentPatterns": [
+        { "name": "ReAct", "bestWith": ["o4-mini"], "pitfalls": ["over-calling tools"] },
+        { "name": "Planner-Executor", "bestWith": ["o4-mini"] }
+      ],
+      "faq": [
+        { "q": "Which model for tool-use?", "a": "o4-mini is a solid default for tool-enabled agents." }
+      ]
+    },
+    {
+      "slug": "anthropic",
+      "name": "Anthropic",
+      "website": "https://anthropic.com",
+      "docsUrl": "https://docs.anthropic.com",
+      "subtitle": "Claude family, strong long-context & safety",
+      "description": "Anthropic Claude models excel at long-context comprehension and safe outputs.",
+      "models": [
+        { "name": "claude-3.7-sonnet", "contextWindow": 200000, "supportsTools": true, "strengths": ["long context", "safety"] },
+        { "name": "claude-3.7-haiku", "contextWindow": 200000, "supportsTools": true, "strengths": ["speed", "cost"] }
+      ],
+      "tasks": [
+        { "type": "rag", "recommendedModels": ["claude-3.7-sonnet"], "notes": "Robust with long docs" },
+        { "type": "chat", "recommendedModels": ["claude-3.7-haiku", "claude-3.7-sonnet"] }
+      ],
+      "agentPatterns": [
+        { "name": "ReAct", "bestWith": ["claude-3.7-sonnet"] }
+      ]
+    }
+  ]
+}

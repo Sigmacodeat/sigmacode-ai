@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "installCommand": "npm ci && cd client && npm ci",
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/dist",
+  "routes": [
+    { "src": "/assets/(.*)", "headers": { "cache-control": "public, max-age=31536000, immutable" } },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}

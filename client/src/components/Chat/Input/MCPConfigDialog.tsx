@@ -34,7 +34,7 @@ export default function MCPConfigDialog({
     control,
     handleSubmit,
     reset,
-    formState: { errors, _ },
+    formState: { errors },
   } = useForm<Record<string, string>>({
     defaultValues: initialValues,
   });

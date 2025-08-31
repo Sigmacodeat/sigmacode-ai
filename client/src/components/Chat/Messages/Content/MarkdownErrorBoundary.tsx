@@ -21,10 +21,11 @@ interface MarkdownErrorBoundaryProps {
 
 class MarkdownErrorBoundary extends React.Component<
   MarkdownErrorBoundaryProps,
-  ErrorBoundaryState
+  ErrorBoundaryState,
+  any
 > {
-  constructor(props: MarkdownErrorBoundaryProps) {
-    super(props);
+  constructor(props: MarkdownErrorBoundaryProps, context?: any) {
+    super(props, context);
     this.state = { hasError: false };
   }
 

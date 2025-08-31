@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { debounce } from 'lodash';
 import { useRecoilState } from 'recoil';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { setTokenHeader, SystemRoles } from 'librechat-data-provider';
 import type * as t from 'librechat-data-provider';
 import {
@@ -47,6 +47,28 @@ const AuthContextProvider = ({
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Bestimme, ob aktuelle Route öffentlich ist (keine Auto-Weiterleitung auf /login)
+  // Nutze startsWith für ganze Marketing-Bereiche, damit auch Unterseiten öffentlich bleiben.
+  const isPublicPath = (p: string) =>
+    p === '/' ||
+    p.startsWith('/ai-agents') ||
+    p === '/business-ai' ||
+    p.startsWith('/how-it-works') ||
+    p.startsWith('/pricing') ||
+    p.startsWith('/pitchdeck') ||
+    p.startsWith('/providers') ||
+    p.startsWith('/referrals') ||
+    p.startsWith('/integrations') ||
+    p.startsWith('/support') ||
+    p === '/login' ||
+    p === '/register' ||
+    p === '/forgot-password' ||
+    p === '/reset-password' ||
+    p === '/verify' ||
+    p.startsWith('/oauth') ||
+    p.startsWith('/share');
 
   const setUserContext = useMemo(
     () =>
@@ -132,6 +154,10 @@ const AuthContextProvider = ({
   };
 
   const silentRefresh = useCallback(() => {
+    // Avoid noisy refresh calls on public pages when not authenticated
+    if (isPublicPath(location.pathname)) {
+      return;
+    }
     if (authConfig?.test === true) {
       console.log('Test mode. Skipping silent refresh.');
       return;
@@ -157,14 +183,16 @@ const AuthContextProvider = ({
         navigate('/login');
       },
     });
-  }, []);
+  }, [authConfig?.test, location.pathname, navigate, refreshToken, setUserContext]);
 
   useEffect(() => {
     if (userQuery.data) {
       setUser(userQuery.data);
     } else if (userQuery.isError) {
       doSetError((userQuery.error as Error).message);
-      navigate('/login', { replace: true });
+      if (!isPublicPath(location.pathname)) {
+        navigate('/login', { replace: true });
+      }
     }
     if (error != null && error && isAuthenticated) {
       doSetError(undefined);
@@ -181,6 +209,7 @@ const AuthContextProvider = ({
     error,
     setUser,
     navigate,
+    location,
     silentRefresh,
     setUserContext,
   ]);

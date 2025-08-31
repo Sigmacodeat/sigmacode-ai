@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { ErrorTypes } from 'librechat-data-provider';
 import { OpenIDIcon, useToastContext } from '@librechat/client';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { useOutletContext, useSearchParams, Link } from 'react-router-dom';
 import type { TLoginLayoutContext } from '~/common';
 import { ErrorMessage } from '~/components/Auth/ErrorMessage';
 import SocialButton from '~/components/Auth/SocialButton';
+import SocialLoginRender from '~/components/Auth/SocialLoginRender';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { getLoginError } from '~/utils';
 import { useLocalize } from '~/hooks';
 import LoginForm from './LoginForm';
+import { buttonStyles, buttonSizeXs } from '../ui/Button';
 
 function Login() {
   const localize = useLocalize();
@@ -99,18 +101,25 @@ function Login() {
           setError={setError}
         />
       )}
-      {startupConfig?.registrationEnabled === true && (
-        <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
-          {' '}
-          {localize('com_auth_no_account')}{' '}
-          <a
-            href="/register"
-            className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-          >
-            {localize('com_auth_sign_up')}
-          </a>
+      {/* Social Login Buttons (Google, GitHub, etc.) */}
+      <SocialLoginRender startupConfig={startupConfig} />
+      {/* Divider */}
+      <div
+        className="my-6 h-px w-full rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
+        aria-hidden="true"
+      />
+      <section className="my-6" aria-label={localize('com_auth_sign_up')}>
+        <p className="mb-3 text-center text-sm font-light text-gray-700 dark:text-white">
+          {localize('com_auth_no_account')}
         </p>
-      )}
+        <Link
+          to="/register"
+          aria-label={localize('com_auth_sign_up')}
+          className={`${buttonStyles.primary} ${buttonSizeXs.primary} block w-full text-center`}
+        >
+          {localize('com_auth_sign_up')}
+        </Link>
+      </section>
     </>
   );
 }

@@ -145,17 +145,17 @@ const Conversations: FC<ConversationsProps> = ({
       const item = flattenedItems[index];
       if (item.type === 'loading') {
         return (
-          <CellMeasurer cache={cache} columnIndex={0} key={key} parent={parent} rowIndex={index}>
+          <VirtualizedCellMeasurer cache={cache} columnIndex={0} key={key} parent={parent} rowIndex={index}>
             {({ registerChild }) => (
               <div ref={registerChild} style={style}>
                 <LoadingSpinner />
               </div>
             )}
-          </CellMeasurer>
+          </VirtualizedCellMeasurer>
         );
       }
       return (
-        <CellMeasurer cache={cache} columnIndex={0} key={key} parent={parent} rowIndex={index}>
+        <VirtualizedCellMeasurer cache={cache} columnIndex={0} key={key} parent={parent} rowIndex={index}>
           {({ registerChild }) => (
             <div ref={registerChild} style={style}>
               {item.type === 'header' ? (
@@ -170,7 +170,7 @@ const Conversations: FC<ConversationsProps> = ({
               ) : null}
             </div>
           )}
-        </CellMeasurer>
+        </VirtualizedCellMeasurer>
       );
     },
     [cache, flattenedItems, firstTodayConvoId, moveToTop, toggleNav],
@@ -195,6 +195,11 @@ const Conversations: FC<ConversationsProps> = ({
     [flattenedItems.length, throttledLoadMore],
   );
 
+  // react-virtualized List typing workaround for JSX usage in modern React types
+  const VirtualizedList = List as unknown as React.ComponentType<any>;
+  const VirtualizedAutoSizer = AutoSizer as unknown as React.ComponentType<any>;
+  const VirtualizedCellMeasurer = CellMeasurer as unknown as React.ComponentType<any>;
+
   return (
     <div className="relative flex h-full flex-col pb-2 text-sm text-text-primary">
       {isSearchLoading ? (
@@ -204,10 +209,10 @@ const Conversations: FC<ConversationsProps> = ({
         </div>
       ) : (
         <div className="flex-1">
-          <AutoSizer>
+          <VirtualizedAutoSizer>
             {({ width, height }) => (
-              <List
-                ref={containerRef as React.RefObject<List>}
+              <VirtualizedList
+                ref={containerRef as unknown as React.RefObject<any>}
                 width={width}
                 height={height}
                 deferredMeasurementCache={cache}
@@ -223,7 +228,7 @@ const Conversations: FC<ConversationsProps> = ({
                 tabIndex={-1}
               />
             )}
-          </AutoSizer>
+          </VirtualizedAutoSizer>
         </div>
       )}
     </div>

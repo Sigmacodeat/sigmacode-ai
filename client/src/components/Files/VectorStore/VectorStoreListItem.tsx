@@ -26,9 +26,9 @@ export default function VectorStoreListItem({
       </div>
       <div className="w-2/6 text-gray-500">
         <p>
-          {vectorStore.file_counts.total} Files ({vectorStore.bytes / 1000}KB)
+          {(vectorStore.file_counts?.total ?? 0)} Files ({((vectorStore.bytes ?? 0) / 1000)}KB)
         </p>
-        <p className="text-sm">{vectorStore.created_at.toString()}</p>
+        <p className="text-sm">{vectorStore.created_at ? String(vectorStore.created_at) : ''}</p>
       </div>
       <div className="flex w-1/6 flex-col justify-around sm:flex-row">
         <Button className="m-0 w-full content-center bg-transparent p-0 text-gray-500 hover:bg-slate-200 sm:w-min">

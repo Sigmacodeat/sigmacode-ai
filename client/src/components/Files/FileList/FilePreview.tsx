@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TFile } from 'librechat-data-provider/dist/types';
+import { TFile } from 'librechat-data-provider';
 import { CheckMark, TrashIcon, Button } from '@librechat/client';
 import VectorStoreButton from '../VectorStore/VectorStoreButton';
 import { CircleIcon, Clock3Icon, InfoIcon } from 'lucide-react';
@@ -95,7 +95,7 @@ export default function FilePreview() {
             <Clock3Icon className="m-0 size-4 p-0 text-gray-500" />
             &nbsp; Purpose
           </span>
-          <span className="w-1/2 text-gray-500 sm:w-3/4 md:w-3/5">{file.message}</span>
+          <span className="w-1/2 text-gray-500 sm:w-3/4 md:w-3/5">{file.object}</span>
         </div>
         <div className="mt-3 flex flex-row">
           <span className="flex w-1/2 flex-row items-center sm:w-1/4 md:w-2/5">

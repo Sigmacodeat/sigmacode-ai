@@ -36,8 +36,16 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
   scrollElement,
 }) => {
   const localize = useLocalize();
-  const listRef = useRef<VirtualList>(null);
+  // react-virtualized JSX typing workaround
+  const RV_AutoSizer = AutoSizer as unknown as React.ComponentType<any>;
+  const RV_List = VirtualList as unknown as React.ComponentType<any>;
+  const RV_WindowScroller = WindowScroller as unknown as React.ComponentType<any>;
+
+  const listRef = useRef<any>(null);
   const { categories } = useAgentCategories();
+
+  // Memoized AgentCard to avoid unnecessary re-renders when props are stable
+  const MemoAgentCard = useMemo(() => React.memo(AgentCard), []);
 
   // Build query parameters
   const queryParams = useMemo(() => {
@@ -135,6 +143,12 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
     [currentAgents],
   );
 
+  // Stable onSelect factory to avoid recreating inline arrow functions at call sites
+  const handleSelect = useCallback(
+    (agent: t.Agent) => () => onSelectAgent(agent),
+    [onSelectAgent],
+  );
+
   const getCategoryDisplayName = (categoryValue: string) => {
     const categoryData = categories.find((cat) => cat.value === categoryValue);
     if (categoryData) {
@@ -174,8 +188,12 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
             {rowAgents.map((agent: t.Agent, cardIndex: number) => {
               const globalIndex = index * cardsPerRow + cardIndex;
               return (
-                <div key={`${agent.id}-${globalIndex}`} role="gridcell">
-                  <AgentCard agent={agent} onClick={() => onSelectAgent(agent)} />
+                <div
+                  key={`${agent.id}-${globalIndex}`}
+                  role="gridcell"
+                  style={{ contain: 'content' }}
+                >
+                  <MemoAgentCard agent={agent} onClick={handleSelect(agent)} />
                 </div>
               );
             })}
@@ -274,16 +292,16 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
         })}
       >
         {scrollElement ? (
-          <WindowScroller scrollElement={scrollElement}>
+          <RV_WindowScroller scrollElement={scrollElement}>
             {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
-              <AutoSizer disableHeight>
+              <RV_AutoSizer disableHeight>
                 {({ width }) => {
                   const cardsPerRow = getCardsPerRow(width);
                   const rowCount = getRowCount(currentAgents.length, cardsPerRow);
 
                   return (
                     <div ref={registerChild}>
-                      <VirtualList
+                      <RV_List
                         ref={listRef}
                         autoHeight
                         height={height}
@@ -303,19 +321,19 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
                     </div>
                   );
                 }}
-              </AutoSizer>
+              </RV_AutoSizer>
             )}
-          </WindowScroller>
+          </RV_WindowScroller>
         ) : (
           // Fallback for when no external scroll element is provided
           <div style={{ height: 600 }}>
-            <AutoSizer>
+            <RV_AutoSizer>
               {({ width, height }) => {
                 const cardsPerRow = getCardsPerRow(width);
                 const rowCount = getRowCount(currentAgents.length, cardsPerRow);
 
                 return (
-                  <VirtualList
+                  <RV_List
                     ref={listRef}
                     height={height}
                     overscanRowCount={OVERSCAN_ROW_COUNT}
@@ -330,7 +348,7 @@ const VirtualizedAgentGrid: React.FC<VirtualizedAgentGridProps> = ({
                   />
                 );
               }}
-            </AutoSizer>
+            </RV_AutoSizer>
           </div>
         )}
       </div>

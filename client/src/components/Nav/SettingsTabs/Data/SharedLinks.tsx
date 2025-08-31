@@ -312,7 +312,7 @@ export default function SharedLinks() {
             onFilterChange={debouncedFilterChange}
             filterValue={queryParams.search}
             isLoading={isLoading}
-            enableSearch={isSearchEnabled}
+            enableSearch={Boolean(isSearchEnabled)}
           />
         </OGDialogContent>
       </OGDialog>

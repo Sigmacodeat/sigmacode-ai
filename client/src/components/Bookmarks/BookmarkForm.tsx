@@ -116,7 +116,9 @@ const BookmarkForm = ({
             aria-invalid={!!errors.tag}
             placeholder="Bookmark"
           />
-          {errors.tag && <span className="text-sm text-red-500">{errors.tag.message}</span>}
+          {errors.tag && (
+            <span className="text-sm text-red-500">{String(errors.tag.message)}</span>
+          )}
         </div>
 
         <div className="mt-4 grid w-full items-center gap-2">

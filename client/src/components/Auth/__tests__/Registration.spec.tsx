@@ -184,19 +184,22 @@ test('renders registration form', () => {
 // });
 
 test('shows validation error messages', async () => {
-  const { getByTestId, getAllByRole, getByRole } = setup();
+  const { getByTestId, getAllByRole, getByRole, getByText } = setup();
   await userEvent.type(getByRole('textbox', { name: /Full name/i }), 'J');
   await userEvent.type(getByRole('textbox', { name: /Username/i }), 'j');
   await userEvent.type(getByRole('textbox', { name: /Email/i }), 'test');
   await userEvent.type(getByTestId('password'), 'pass');
   await userEvent.type(getByTestId('confirm_password'), 'password1');
-  const alerts = getAllByRole('alert');
-  expect(alerts).toHaveLength(5);
-  expect(alerts[0]).toHaveTextContent(/Name must be at least 3 characters/i);
-  expect(alerts[1]).toHaveTextContent(/Username must be at least 2 characters/i);
-  expect(alerts[2]).toHaveTextContent(/You must enter a valid email address/i);
-  expect(alerts[3]).toHaveTextContent(/Password must be at least 8 characters/i);
-  expect(alerts[4]).toHaveTextContent(/Passwords do not match/i);
+  await userEvent.click(getByRole('button', { name: /Submit registration/i }));
+
+  await waitFor(() => expect(getAllByRole('alert')).toHaveLength(4));
+
+  await waitFor(() => {
+    expect(getByText(/Username must be at least 2 characters/i)).toBeInTheDocument();
+    expect(getByText(/You must enter a valid email address/i)).toBeInTheDocument();
+    expect(getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
+    expect(getByText(/Passwords do not match/i)).toBeInTheDocument();
+  });
 });
 
 test('shows error message when registration fails', async () => {

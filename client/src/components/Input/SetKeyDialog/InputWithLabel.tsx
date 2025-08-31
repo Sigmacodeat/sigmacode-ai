@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { Input, Label } from '@librechat/client';
-import type { ChangeEvent, FC, Ref } from 'react';
+import type { ChangeEvent } from 'react';
 import { cn, defaultTextPropsLabel, removeFocusOutlines, defaultTextProps } from '~/utils/';
 import { useLocalize } from '~/hooks';
 
@@ -12,10 +12,9 @@ interface InputWithLabelProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   labelClassName?: string;
   inputClassName?: string;
-  ref?: Ref<HTMLInputElement>;
 }
 
-const InputWithLabel: FC<InputWithLabelProps> = forwardRef((props, ref) => {
+const InputWithLabel = forwardRef<HTMLInputElement, InputWithLabelProps>((props, ref) => {
   const { id, value, label, subLabel, onChange, labelClassName = '', inputClassName = '' } = props;
   const localize = useLocalize();
   return (
@@ -35,7 +34,7 @@ const InputWithLabel: FC<InputWithLabelProps> = forwardRef((props, ref) => {
         onChange={onChange}
         ref={ref}
         placeholder={`${localize('com_endpoint_config_value')} ${label}`}
-        className={cn('flex h-10 max-h-10 w-full resize-none px-3 py-2')}
+        className={cn('flex h-10 max-h-10 w-full resize-none px-3 py-2', inputClassName)}
       />
     </>
   );

@@ -14,9 +14,10 @@ import { langSubset } from '~/utils';
 const MarkdownLite = memo(
   ({ content = '', codeExecution = true }: { content?: string; codeExecution?: boolean }) => {
     const rehypePlugins: PluggableList = [
-      [rehypeKatex],
+      /** @ts-ignore – plugin signature differences across versions */
+      [rehypeKatex as unknown as any],
       [
-        rehypeHighlight,
+        rehypeHighlight as unknown as any,
         {
           detect: true,
           ignoreMissing: true,

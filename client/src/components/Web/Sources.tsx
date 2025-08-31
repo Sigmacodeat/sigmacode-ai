@@ -159,6 +159,35 @@ function ImageItem({ image }: { image: ImageResult }) {
   );
 }
 
+// Structural reference type used for safe handling of heterogeneous references
+type FileReference = {
+  type: 'file';
+  fileId: string;
+  title?: string;
+  pages?: number[];
+  relevance?: number;
+  pageRelevance?: Record<number, number>;
+  metadata?: any;
+  link?: string;
+};
+
+type WebOrImageReference = (ValidSource & { type?: 'web' | 'image' }) | ImageResult;
+
+type Reference = FileReference | WebOrImageReference;
+
+// Type guards
+function isValidSource(x: unknown): x is ValidSource {
+  return !!x && typeof (x as any).link === 'string';
+}
+
+function isImageResult(x: unknown): x is ImageResult {
+  return !!x && typeof (x as any).imageUrl === 'string';
+}
+
+function isFileReference(x: unknown): x is FileReference {
+  return !!x && (x as any).type === 'file' && typeof (x as any).fileId === 'string';
+}
+
 // Type for agent file sources (simplified for file citations)
 type AgentFileSource = {
   file_id: string;
@@ -585,65 +614,92 @@ function SourcesComponent({ messageId, conversationId }: SourcesProps = {}) {
     // Process search results
     for (const result of Object.values(searchResults)) {
       if (!result) continue;
+      const r: any = result as any;
 
-      // Process organic sources
-      result.organic?.forEach((source) => {
-        if (source.link) organicSourcesMap.set(source.link, source);
-      });
-
-      // Process references
-      result.references?.forEach((source) => {
-        if (source.type === 'image') {
-          imagesMap.set(source.link, { ...source, imageUrl: source.link });
-        } else if ((source as any).type === 'file') {
-          const fileId = (source as any).fileId || 'unknown';
-          const fileName = source.title || 'Unknown File';
-          const uniqueKey = `${fileId}_${fileName}`;
-
-          if (agentFilesMap.has(uniqueKey)) {
-            // Merge pages for the same file
-            const existing = agentFilesMap.get(uniqueKey)!;
-            const existingPages = existing.pages || [];
-            const newPages = (source as any).pages || [];
-            const uniquePages = [...new Set([...existingPages, ...newPages])].sort((a, b) => a - b);
-
-            existing.pages = uniquePages;
-            existing.relevance = Math.max(existing.relevance || 0, (source as any).relevance || 0);
-            existing.pageRelevance = {
-              ...existing.pageRelevance,
-              ...(source as any).pageRelevance,
-            };
-          } else {
-            const agentFile: AgentFileSource = {
-              type: Tools.file_search,
-              file_id: fileId,
-              filename: fileName,
-              bytes: undefined,
-              metadata: (source as any).metadata,
-              pages: (source as any).pages,
-              relevance: (source as any).relevance,
-              pageRelevance: (source as any).pageRelevance,
-              messageId: messageId || '',
-              toolCallId: 'file_search_results',
-            };
-            agentFilesMap.set(uniqueKey, agentFile);
+      // Process organic sources (guarded)
+      if (Array.isArray(r.organic)) {
+        for (const source of r.organic) {
+          if (isValidSource(source)) {
+            organicSourcesMap.set(source.link, source);
           }
-        } else if (source.link) {
-          organicSourcesMap.set(source.link, source);
         }
-      });
+      }
+
+      // Process references (guarded and typed)
+      if (Array.isArray(r.references)) {
+        for (const ref of r.references as Reference[]) {
+          if (isFileReference(ref)) {
+            const fileId = ref.fileId || 'unknown';
+            const fileName = ref.title || 'Unknown File';
+            const uniqueKey = `${fileId}_${fileName}`;
+
+            if (agentFilesMap.has(uniqueKey)) {
+              // Merge pages for the same file
+              const existing = agentFilesMap.get(uniqueKey)!;
+              const existingPages = existing.pages || [];
+              const newPages = ref.pages || [];
+              const uniquePages = [...new Set([...existingPages, ...newPages])].sort((a, b) => a - b);
+
+              existing.pages = uniquePages;
+              existing.relevance = Math.max(existing.relevance || 0, ref.relevance || 0);
+              existing.pageRelevance = {
+                ...existing.pageRelevance,
+                ...(ref.pageRelevance || {}),
+              };
+            } else {
+              const agentFile: AgentFileSource = {
+                type: Tools.file_search,
+                file_id: fileId,
+                filename: fileName,
+                bytes: undefined,
+                metadata: ref.metadata,
+                pages: ref.pages,
+                relevance: ref.relevance,
+                pageRelevance: ref.pageRelevance,
+                messageId: messageId || '',
+                toolCallId: 'file_search_results',
+              };
+              agentFilesMap.set(uniqueKey, agentFile);
+            }
+          } else if (isImageResult(ref)) {
+            // Image references (guard against possibly optional imageUrl)
+            const url = ref.imageUrl;
+            if (typeof url === 'string') {
+              imagesMap.set(url, ref);
+            }
+          } else if (isValidSource(ref)) {
+            // Web references or generic sources
+            organicSourcesMap.set(ref.link, ref);
+          } else if ((ref as any)?.type === 'image' && typeof (ref as any)?.link === 'string') {
+            // Some providers may return image refs with `type: 'image'` and `link`
+            const link = (ref as any).link as string;
+            imagesMap.set(link, { ...(ref as any), imageUrl: link });
+          }
+        }
+      }
 
       // Process top stories
-      result.topStories?.forEach((source) => {
-        if (source.link) topStoriesMap.set(source.link, source);
-      });
+      if (Array.isArray(r.topStories)) {
+        for (const source of r.topStories) {
+          if (isValidSource(source)) {
+            topStoriesMap.set(source.link, source);
+          }
+        }
+      }
 
       // Process images
-      result.images?.forEach((image) => {
-        if (image.imageUrl) imagesMap.set(image.imageUrl, image);
-      });
+      if (Array.isArray(r.images)) {
+        for (const image of r.images) {
+          if (isImageResult(image)) {
+            const url = image.imageUrl;
+            if (typeof url === 'string') {
+              imagesMap.set(url, image);
+            }
+          }
+        }
+      }
 
-      if (result.answerBox) hasAnswerBox = true;
+      if (r.answerBox) hasAnswerBox = true;
     }
 
     return {

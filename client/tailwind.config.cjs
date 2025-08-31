@@ -7,6 +7,17 @@ module.exports = {
     // Include component library files
     '../packages/client/src/**/*.{js,jsx,ts,tsx}',
   ],
+  // Ensure motion utilities are never purged
+  safelist: [
+    'animate-rise-in',
+    'animate-fade-in',
+    'animate-scale-in',
+    'animate-spring-in',
+    'animate-elevation-pop',
+    'animate-text-shine',
+    'animate-badge-shimmer',
+    'animate-float-parallax',
+  ],
   // darkMode: 'class',
   darkMode: ['class'],
   theme: {
@@ -31,6 +42,46 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: 0 },
         },
+        // Core motion keyframes (names match CSS in src/styles/motion.keyframes.css)
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        riseIn: {
+          '0%': { opacity: 'var(--motion-fade)', transform: 'translateY(var(--motion-rise-y))', filter: 'blur(2px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: 'var(--motion-fade)', transform: 'scale(var(--motion-scale-sm))' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        // Advanced motion
+        springIn: {
+          '0%': { opacity: 'var(--motion-fade)', transform: 'scale(0.96)' },
+          '60%': { opacity: '1', transform: 'scale(1.02)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        elevationPop: {
+          '0%': { opacity: 'var(--motion-fade)', transform: 'translateY(6px) scale(0.99)', boxShadow: 'var(--elev-shadow-initial)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)', boxShadow: 'var(--elev-shadow-final)' },
+        },
+        textShine: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+        badgeShimmer: {
+          '0%': { backgroundPosition: '-150% 0' },
+          '100%': { backgroundPosition: '150% 0' },
+        },
+        floatParallax: {
+          '0%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(4px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
         'slide-in-right': {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
@@ -49,7 +100,16 @@ module.exports = {
         },
       },
       animation: {
-        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        // Base animations
+        'fade-in': 'fadeIn var(--motion-dur-sm) var(--motion-ease-out) both',
+        'rise-in': 'riseIn var(--motion-dur-sm) var(--motion-ease-out) both',
+        'scale-in': 'scaleIn var(--motion-dur-sm) var(--motion-ease-out) both',
+        'spring-in': 'springIn var(--motion-dur-sm) var(--motion-ease-emph) both',
+        'elevation-pop': 'elevationPop var(--motion-dur-md) var(--motion-ease-smooth) both',
+        'text-shine': 'textShine 1.8s linear infinite',
+        'badge-shimmer': 'badgeShimmer 1.6s linear infinite',
+        'float-parallax': 'floatParallax 6s ease-in-out infinite',
+        shimmer: 'shimmer 2.2s linear infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'slide-in-right': 'slide-in-right 300ms cubic-bezier(0.25, 0.1, 0.25, 1)',
@@ -58,6 +118,11 @@ module.exports = {
         'slide-out-right': 'slide-out-right 300ms cubic-bezier(0.25, 0.1, 0.25, 1)',
       },
       colors: {
+        // Brand tokens (Design Tokens)
+        brand: {
+          primary: '#14b8a6', // teal-500
+          accent: '#06b6d4', // cyan-500
+        },
         gray: {
           20: '#ececf1',
           50: '#f7f7f8',
@@ -149,11 +214,40 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        /**
+         * Arctic Light palette (state-of-the-art, subtle blue on white)
+         * Avoids purple/turquoise, focuses on refined azure tints.
+         */
+        arctic: {
+          primary: '#6AA8FF',
+          weak: '#A9C9FF',
+          tint: '#DDEBFF',
+          accent: '#2E6EF7',
+        },
+        surface: {
+          DEFAULT: '#FFFFFF',
+          soft: '#F7F9FC',
+        },
+        neutralx: {
+          900: '#0B1220',
+          700: '#111827',
+          500: '#384151',
+          300: '#CBD5E1',
+          200: '#E5EAF2',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        glow: '0 10px 40px rgba(106,168,255,0.18)',
+        keyline: '0 0 0 1px rgba(203,213,225,0.6)',
+      },
+      backgroundImage: {
+        'hero-arctic':
+          'radial-gradient(1200px 600px at 70% -10%, rgba(106,168,255,0.20) 0%, rgba(106,168,255,0.00) 60%),\n          radial-gradient(800px 400px at 10% 20%, rgba(221,235,255,0.35) 0%, rgba(221,235,255,0.00) 60%),\n          linear-gradient(180deg, #FFFFFF 0%, #F7F9FC 100%)',
       },
     },
   },

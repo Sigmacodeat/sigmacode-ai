@@ -42,9 +42,10 @@ const PromptEditor: React.FC<Props> = ({ name, isEditing, setIsEditing }) => {
   }, [isEditing, prompt]);
 
   const rehypePlugins: PluggableList = [
-    [rehypeKatex],
+    /** @ts-ignore – plugin signature differences across versions */
+    [rehypeKatex as unknown as any],
     [
-      rehypeHighlight,
+      rehypeHighlight as unknown as any,
       {
         detect: true,
         ignoreMissing: true,

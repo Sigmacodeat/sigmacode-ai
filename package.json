@@ -1,5 +1,5 @@
 {
-  "name": "LibreChat",
+  "name": "sigmacode-ai",
   "version": "v0.8.0-rc2",
   "description": "",
   "workspaces": [
@@ -84,14 +84,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/SIGMACODE-AI/sigmacode-ai.git"
   },
-  "author": "",
+  "author": "SIGMACODE AI",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://github.com/SIGMACODE-AI/sigmacode-ai/issues"
   },
-  "homepage": "https://librechat.ai/",
+  "homepage": "https://sigmacode.ai/",
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@eslint/compat": "^1.2.6",

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useToastContext } from '@librechat/client';
+import { useSearchParams, Link } from 'react-router-dom';
+import { useToastContext, Button } from '@librechat/client';
 import { useForm, Controller } from 'react-hook-form';
 import { REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, Label } from '@librechat/client';
@@ -139,22 +139,27 @@ const TwoFactorScreen: React.FC = React.memo(() => {
           </div>
         )}
         <div className="flex items-center justify-between">
-          <button
+          <Button
             type="submit"
             aria-label={localize('com_auth_continue')}
             data-testid="login-button"
             disabled={isLoading}
-            className="w-full rounded-2xl bg-green-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-80 dark:bg-green-600 dark:hover:bg-green-700"
+            variant="submit"
+            className="h-12 w-full rounded-2xl"
           >
             {isLoading ? localize('com_auth_email_verifying_ellipsis') : localize('com_ui_verify')}
-          </button>
+          </Button>
         </div>
+        <div
+          className="my-4 h-px w-full rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
+          aria-hidden="true"
+        />
         <div className="mt-4 flex justify-center">
           {!useBackup ? (
             <button
               type="button"
               onClick={toggleBackupOn}
-              className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+              className="inline-flex rounded p-1 text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:text-teal-400 dark:hover:text-teal-300"
             >
               {localize('com_ui_use_backup_code')}
             </button>
@@ -162,11 +167,20 @@ const TwoFactorScreen: React.FC = React.memo(() => {
             <button
               type="button"
               onClick={toggleBackupOff}
-              className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+              className="inline-flex rounded p-1 text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:text-teal-400 dark:hover:text-teal-300"
             >
               {localize('com_ui_use_2fa_code')}
             </button>
           )}
+        </div>
+        <div className="mt-3">
+          <Link
+            to="/login"
+            aria-label={localize('com_auth_back_to_login')}
+            className="block text-center text-sm font-medium text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded"
+          >
+            {localize('com_auth_back_to_login')}
+          </Link>
         </div>
       </form>
     </div>

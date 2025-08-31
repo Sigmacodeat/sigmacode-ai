@@ -13,8 +13,12 @@ const config: PlaywrightTestConfig = {
   webServer: {
     ...mainConfig.webServer,
     command: `node ${absolutePath}`,
+    // Increase timeout to allow slower local starts
+    timeout: 60_000,
     env: {
       ...process.env,
+      // Force API server to listen on 3080 to match baseURL and webServer.port
+      PORT: '3080',
       SEARCH: 'false',
       NODE_ENV: 'CI',
       EMAIL_HOST: '',

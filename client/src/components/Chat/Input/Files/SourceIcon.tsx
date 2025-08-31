@@ -72,6 +72,9 @@ export default function SourceIcon({
           size={14}
           isCreatedByUser={false}
           iconClassName="h-3 w-3"
+          model=""
+          modelLabel={endpoint === EModelEndpoint.openAI ? 'ChatGPT' : 'Azure OpenAI'}
+          chatGptLabel=""
         />
       </span>
     </div>

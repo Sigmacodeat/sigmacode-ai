@@ -60,76 +60,81 @@ const useGenerateConvo = ({
       preset?: Partial<TPreset>;
       modelsData?: TModelsConfig;
     } = {}) => {
-      let conversation = {
+      // start with a draft based on template; later build a completed TConversation
+      let draft: Partial<TConversation> & {
+        conversationId: string | null;
+        title: string | null;
+        endpoint: TConversation['endpoint'] | null;
+        endpointType?: unknown;
+        assistant_id?: string;
+        model?: string | null | undefined;
+        createdAt: string;
+        updatedAt: string;
+      } = {
+        ...template,
+        endpoint: template.endpoint ?? null,
+        createdAt: template.createdAt ?? '',
+        updatedAt: template.updatedAt ?? '',
+        model: (template as TConversation).model ?? undefined,
+        // enforce required strings after spreading template (avoid null from template)
         conversationId: 'new',
         title: 'New Chat',
-        endpoint: null,
-        ...template,
-        createdAt: '',
-        updatedAt: '',
       };
 
       if (rootConvo?.conversationId) {
-        conversation.conversationId = rootConvo.conversationId;
+        draft.conversationId = rootConvo.conversationId;
       }
 
       const modelsConfig = modelsData ?? modelsQuery.data;
 
       const defaultEndpoint = getDefaultEndpoint({
-        convoSetup: preset ?? conversation,
+        convoSetup: preset ?? draft,
         endpointsConfig,
       });
 
       const endpointType = getEndpointField(endpointsConfig, defaultEndpoint, 'type');
-      if (!conversation.endpointType && endpointType) {
-        conversation.endpointType = endpointType;
-      } else if (conversation.endpointType && !endpointType) {
-        conversation.endpointType = undefined;
+      if (endpointType) {
+        draft.endpointType = endpointType;
+      } else if (draft.endpointType && !endpointType) {
+        draft.endpointType = undefined;
       }
 
       const isAssistantEndpoint = isAssistantsEndpoint(defaultEndpoint);
       const assistants: AssistantListItem[] = assistantsListMap[defaultEndpoint ?? ''] ?? [];
 
-      if (
-        conversation.assistant_id &&
-        !assistantsListMap[defaultEndpoint ?? '']?.[conversation.assistant_id]
-      ) {
-        conversation.assistant_id = undefined;
+      if (draft.assistant_id && !assistantsListMap[defaultEndpoint ?? '']?.[draft.assistant_id]) {
+        draft.assistant_id = undefined;
       }
 
-      if (!conversation.assistant_id && isAssistantEndpoint) {
-        conversation.assistant_id =
+      if (!draft.assistant_id && isAssistantEndpoint) {
+        draft.assistant_id =
           localStorage.getItem(`${LocalStorageKeys.ASST_ID_PREFIX}${index}${defaultEndpoint}`) ??
           assistants[0]?.id;
       }
 
-      if (
-        conversation.assistant_id != null &&
-        isAssistantEndpoint &&
-        conversation.conversationId === 'new'
-      ) {
-        const assistant = assistants.find((asst) => asst.id === conversation.assistant_id);
-        conversation.model = assistant?.model;
+      if (draft.assistant_id != null && isAssistantEndpoint && draft.conversationId === 'new') {
+        const assistant = assistants.find((asst) => asst.id === draft.assistant_id);
+        draft.model = assistant?.model;
       }
 
-      if (conversation.assistant_id != null && !isAssistantEndpoint) {
-        conversation.assistant_id = undefined;
+      if (draft.assistant_id != null && !isAssistantEndpoint) {
+        draft.assistant_id = undefined;
       }
 
       const models = modelsConfig?.[defaultEndpoint ?? ''] ?? [];
-      conversation = buildDefaultConvo({
-        conversation,
+      const completed = buildDefaultConvo({
+        conversation: draft as TConversation,
         lastConversationSetup: preset as TConversation,
         endpoint: defaultEndpoint ?? ('' as EModelEndpoint),
         models,
-      });
+      }) as TConversation;
 
       if (preset?.title != null && preset.title !== '') {
-        conversation.title = preset.title;
+        completed.title = preset.title;
       }
 
       if (setConversation) {
-        setConversation(conversation);
+        setConversation(completed);
       }
 
       clearTimeout(timeoutIdRef.current);
@@ -139,7 +144,7 @@ const useGenerateConvo = ({
           textarea.focus();
         }
       }, 150);
-      return conversation;
+      return completed;
     },
     [assistantsListMap, endpointsConfig, index, modelsQuery.data, rootConvo, setConversation],
   );

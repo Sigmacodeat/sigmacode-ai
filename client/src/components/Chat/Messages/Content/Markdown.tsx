@@ -7,7 +7,7 @@ import { useRecoilValue } from 'recoil';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkDirective from 'remark-directive';
-import type { Pluggable } from 'unified';
+import type { PluggableList } from 'unified';
 import { Citation, CompositeCitation, HighlightedText } from '~/components/Web/Citation';
 import { Artifact, artifactPlugin } from '~/components/Artifacts/Artifact';
 import { ArtifactProvider, CodeBlockProvider } from '~/Providers';
@@ -48,7 +48,8 @@ const Markdown = memo(({ content = '', isLatestMessage }: TContentProps) => {
     [],
   );
 
-  const remarkPlugins: Pluggable[] = [
+  const remarkPlugins: PluggableList = [
+    /** @ts-ignore – plugin type mismatch across unified versions */
     supersub,
     remarkGfm,
     remarkDirective,

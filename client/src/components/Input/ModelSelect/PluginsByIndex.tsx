@@ -5,8 +5,6 @@ import { useAvailablePluginsQuery } from 'librechat-data-provider/react-query';
 import {
   Button,
   SelectDropDown,
-  SelectDropDownPop,
-  MultiSelectDropDown,
   useMediaQuery,
 } from '@librechat/client';
 import type { TPlugin } from 'librechat-data-provider';
@@ -14,6 +12,8 @@ import type { TModelSelectProps } from '~/common';
 import { useSetIndexOptions, useAuthContext, useLocalize } from '~/hooks';
 import { cn, cardStyle, selectPlugins, processPlugins } from '~/utils';
 import MultiSelectPop from './MultiSelectPop';
+import SelectDropDownPop from './SelectDropDownPop';
+import MultiSelectDropDown from './MultiSelectDropDown';
 import store from '~/store';
 
 export default function PluginsByIndex({

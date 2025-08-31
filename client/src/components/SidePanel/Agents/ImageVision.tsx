@@ -17,8 +17,8 @@ export default function ImageVision() {
         render={({ field }) => (
           <Checkbox
             {...field}
-            checked={field.value}
-            onCheckedChange={field.onChange}
+            checked={Boolean(field.value)}
+            onCheckedChange={(checked) => field.onChange(Boolean(checked))}
             className="relative float-left mr-2 inline-flex h-4 w-4 cursor-pointer"
             value={field.value?.toString()}
           />

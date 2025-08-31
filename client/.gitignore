@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+vite-output.log
+
+# Tests & Coverage
+coverage/
+.junit*
+*.junit.xml
+junit.xml
+
+# Editor/OS
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Misc
+*.local
+*.cache
+*.tmp
+*.log
+.vercel

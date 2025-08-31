@@ -1,7 +1,7 @@
 import { memo, useState, useRef, useMemo, useCallback, KeyboardEvent } from 'react';
 import { EarthIcon, Pen } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PermissionBits, type TPromptGroup } from 'librechat-data-provider';
+import { PermissionBits, ResourceType, type TPromptGroup } from 'librechat-data-provider';
 import {
   Input,
   Label,
@@ -29,7 +29,7 @@ function DashGroupItemComponent({ group, instanceProjectId }: DashGroupItemProps
   const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [nameInputValue, setNameInputValue] = useState(group.name);
 
-  const { hasPermission } = useResourcePermissions('promptGroup', group._id || '');
+  const { hasPermission } = useResourcePermissions(ResourceType.PROMPTGROUP, group._id || '');
   const canEdit = hasPermission(PermissionBits.EDIT);
   const canDelete = hasPermission(PermissionBits.DELETE);
 

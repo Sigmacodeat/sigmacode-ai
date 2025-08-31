@@ -54,7 +54,7 @@ export default function useExportConversation({
     return dataTree?.length === 0 ? null : dataTree ?? null;
   }, [paramId, conversation?.conversationId, queryClient]);
 
-  const getMessageText = (message: TMessage | undefined, format = 'text') => {
+  const getMessageText = (message: Partial<TMessage> | undefined, format = 'text') => {
     if (!message) {
       return '';
     }
@@ -67,11 +67,11 @@ export default function useExportConversation({
     };
 
     if (!message.content) {
-      return formatText(message.sender || '', message.text);
+      return formatText((message as TMessage).sender || '', (message as TMessage).text || '');
     }
 
     return message.content
-      .map((content) => getMessageContent(message.sender || '', content))
+      .map((content) => getMessageContent((message as TMessage).sender || '', content))
       .map((text) => {
         return formatText(text[0], text[1]);
       })
@@ -89,8 +89,10 @@ export default function useExportConversation({
     }
 
     if (content.type === ContentTypes.ERROR) {
-      // ERROR
-      return [sender, content[ContentTypes.TEXT].value];
+      // ERROR: text can be string or object with value
+      const errPart = content[ContentTypes.TEXT] as any;
+      const text = typeof errPart === 'string' ? errPart : errPart?.value ?? '';
+      return [sender, text];
     }
 
     if (content.type === ContentTypes.TEXT) {
@@ -168,10 +170,12 @@ export default function useExportConversation({
 
     if (Array.isArray(messages)) {
       for (const message of messages) {
-        data.push(message);
+        if (message) {
+          data.push(message as TMessage);
+        }
       }
-    } else {
-      data.push(messages);
+    } else if (messages) {
+      data.push(messages as TMessage);
     }
 
     exportFromJSON({
@@ -244,21 +248,22 @@ export default function useExportConversation({
     data += '\n## History\n';
     if (Array.isArray(messages)) {
       for (const message of messages) {
+        if (!message) continue;
         data += `${getMessageText(message, 'md')}\n`;
-        if (message.error) {
+        if ((message as TMessage).error) {
           data += '*(This is an error message)*\n';
         }
-        if (message.unfinished === true) {
+        if ((message as TMessage).unfinished === true) {
           data += '*(This is an unfinished message)*\n';
         }
         data += '\n\n';
       }
-    } else {
+    } else if (messages) {
       data += `${getMessageText(messages, 'md')}\n`;
-      if (messages.error) {
+      if ((messages as TMessage).error) {
         data += '*(This is an error message)*\n';
       }
-      if (messages.unfinished === true) {
+      if ((messages as TMessage).unfinished === true) {
         data += '*(This is an unfinished message)*\n';
       }
     }
@@ -300,21 +305,22 @@ export default function useExportConversation({
     data += '\nHistory\n########################\n';
     if (Array.isArray(messages)) {
       for (const message of messages) {
+        if (!message) continue;
         data += `${getMessageText(message)}\n`;
-        if (message.error) {
+        if ((message as TMessage).error) {
           data += '(This is an error message)\n';
         }
-        if (message.unfinished === true) {
+        if ((message as TMessage).unfinished === true) {
           data += '(This is an unfinished message)\n';
         }
         data += '\n\n';
       }
-    } else {
+    } else if (messages) {
       data += `${getMessageText(messages)}\n`;
-      if (messages.error) {
+      if ((messages as TMessage).error) {
         data += '(This is an error message)\n';
       }
-      if (messages.unfinished === true) {
+      if ((messages as TMessage).unfinished === true) {
         data += '(This is an unfinished message)\n';
       }
     }
@@ -326,7 +332,6 @@ export default function useExportConversation({
       exportType: exportFromJSON.types.txt,
     });
   };
-
   const exportJSON = async () => {
     const data = {
       conversationId: conversation?.conversationId,

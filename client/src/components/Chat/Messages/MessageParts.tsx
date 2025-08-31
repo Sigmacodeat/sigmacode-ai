@@ -149,6 +149,10 @@ export default function Message(props: TMessageProps) {
                       handleContinue={handleContinue}
                       latestMessage={latestMessage}
                       isLast={isLast}
+                      handleFeedback={({ feedback }) => {
+                        /* TODO: bind feedback persistence */
+                        void feedback;
+                      }}
                     />
                   </SubRow>
                 )}

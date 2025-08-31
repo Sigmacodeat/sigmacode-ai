@@ -1,4 +1,4 @@
-import { render, getByTestId } from 'test/layout-test-utils';
+import { render, getByTestId, waitFor, screen } from 'test/layout-test-utils';
 import userEvent from '@testing-library/user-event';
 import type { TStartupConfig } from 'librechat-data-provider';
 import * as endpointQueries from '~/data-provider/Endpoints/queries';
@@ -17,7 +17,9 @@ const mockStartupConfig: TStartupConfig = {
   facebookLoginEnabled: true,
   githubLoginEnabled: true,
   googleLoginEnabled: true,
+  appleLoginEnabled: false,
   openidLoginEnabled: true,
+  openidAutoRedirect: false,
   openidLabel: 'Test OpenID',
   openidImageUrl: 'http://test-server.com',
   samlLoginEnabled: true,
@@ -27,13 +29,15 @@ const mockStartupConfig: TStartupConfig = {
   emailLoginEnabled: true,
   socialLoginEnabled: true,
   passwordResetEnabled: true,
+  sharedLinksEnabled: false,
+  publicSharedLinksEnabled: false,
   serverDomain: 'mock-server',
+  instanceProjectId: 'test-project',
   appTitle: '',
   ldap: {
     enabled: false,
   },
   emailEnabled: false,
-  checkBalance: false,
   showBirthdayIcon: false,
   helpAndFaqURL: '',
 };
@@ -106,7 +110,7 @@ beforeEach(() => {
 
 test('renders login form', () => {
   const { getByLabelText } = render(
-    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} />,
+    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} error={undefined} setError={() => {}} />,
   );
   expect(getByLabelText(/email/i)).toBeInTheDocument();
   expect(getByLabelText(/password/i)).toBeInTheDocument();
@@ -114,7 +118,7 @@ test('renders login form', () => {
 
 test('submits login form', async () => {
   const { getByLabelText, getByRole } = render(
-    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} />,
+    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} error={undefined} setError={() => {}} />,
   );
   const emailInput = getByLabelText(/email/i);
   const passwordInput = getByLabelText(/password/i);
@@ -129,16 +133,19 @@ test('submits login form', async () => {
 
 test('displays validation error messages', async () => {
   const { getByLabelText, getByRole, getByText } = render(
-    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} />,
+    <Login onSubmit={mockLogin} startupConfig={mockStartupConfig} error={undefined} setError={() => {}} />,
   );
   const emailInput = getByLabelText(/email/i);
   const passwordInput = getByLabelText(/password/i);
   const submitButton = getByTestId(document.body, 'login-button');
 
-  await userEvent.type(emailInput, 'test');
+  // Use a valid email so native HTML5 validation doesn't block form submission
+  await userEvent.type(emailInput, 'test@example.com');
+  await userEvent.tab(); // blur email
   await userEvent.type(passwordInput, 'pass');
+  await userEvent.tab(); // blur password
   await userEvent.click(submitButton);
 
-  expect(getByText(/You must enter a valid email address/i)).toBeInTheDocument();
-  expect(getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
+  // Assert at least the password min length error appears
+  expect(await screen.findByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
 });

@@ -4,7 +4,15 @@ import {
   PromptForm,
   CreatePromptForm,
   EmptyPromptPreview,
-} from '~/components/Prompts';
+} from '@/components/Prompts';
+import {
+  EmailRawList,
+  EmailRawDetail,
+  EmailDMARCList,
+  EmailDMARCDetail,
+  EmailSettings,
+  EmailOverview,
+} from '@/components/EmailAnalytics';
 import DashboardRoute from './Layouts/Dashboard';
 
 const dashboardRoutes = {
@@ -73,8 +81,20 @@ const dashboardRoutes = {
       ],
     },
     {
+      path: 'email',
+      children: [
+        { index: true, element: <Navigate to="/d/email/overview" replace={true} /> },
+        { path: 'overview', element: <EmailOverview /> },
+        { path: 'raw', element: <EmailRawList /> },
+        { path: 'raw/:id', element: <EmailRawDetail /> },
+        { path: 'dmarc', element: <EmailDMARCList /> },
+        { path: 'dmarc/:id', element: <EmailDMARCDetail /> },
+        { path: 'settings', element: <EmailSettings /> },
+      ],
+    },
+    {
       path: '*',
-      element: <Navigate to="/d/files" replace={true} />,
+      element: <Navigate to="/d/email/overview" replace={true} />,
     },
   ],
 };
