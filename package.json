@@ -92,6 +92,9 @@
     "url": "https://github.com/SIGMACODE-AI/sigmacode-ai/issues"
   },
   "homepage": "https://sigmacode.ai/",
+  "engines": {
+    "node": "22.x"
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@eslint/compat": "^1.2.6",
