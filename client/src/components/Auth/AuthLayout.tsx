@@ -76,7 +76,6 @@ function AuthLayout({
           filter: 'blur(0px)',
           transition: {
             duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
             delayChildren: delay, // Start der Kinder nach Brand-Intro/Wink
             staggerChildren: 0.12,
             when: 'beforeChildren',
@@ -98,7 +97,7 @@ function AuthLayout({
           opacity: 1,
           y: 0,
           filter: 'blur(0px)',
-          transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: 0.7 },
         },
       } as const;
 

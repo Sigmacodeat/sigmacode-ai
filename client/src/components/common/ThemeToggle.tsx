@@ -25,7 +25,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
       type="button"
       aria-label={`Theme wechseln (aktuell: ${label})`}
       title={`Theme wechseln (aktuell: ${label})`}
-      className={`inline-flex items-center justify-center rounded-full border border-border bg-surface-primary p-2 text-text-secondary shadow-sm transition hover:bg-surface-hover focus:outline-none focus:ring-2 focus:ring-border ${className}`}
+      className={`inline-flex items-center justify-center rounded-full border border-border bg-transparent p-2 text-text-secondary shadow-sm transition hover:bg-transparent focus:outline-none focus:ring-2 focus:ring-border ${className}`}
       onClick={() => setTheme(nextTheme)}
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}

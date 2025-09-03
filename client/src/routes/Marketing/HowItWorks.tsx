@@ -173,7 +173,7 @@ function Hero() {
           <div className="mt-7 flex flex-wrap gap-3 sm:gap-4">
             <Link
               to="/c/new"
-              className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
+              className={`${buttonStyles.primary} ${buttonSizeXs.primary} bg-gradient-to-r from-[#0ea5e9] via-[#7dd3fc] to-[#cffafe] hover:from-[#38bdf8] hover:via-[#a5e3ff] hover:to-[#e0faff] text-slate-900`}
             >
               <span className="inline-flex items-center">{tt('marketing.howto.hero.primary')} <ArrowRight className="ml-2 h-4 w-4" /></span>
             </Link>

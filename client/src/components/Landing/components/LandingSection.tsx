@@ -65,7 +65,7 @@ export default function LandingSection({
       data-analytics-id={computedAnalyticsId}
       {...rest}
     >
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full px-3 sm:px-6 lg:px-8">
         {children}
       </div>
     </section>

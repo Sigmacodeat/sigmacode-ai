@@ -1,58 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CallToAction renders card variant with motion enabled 1`] = `
-<div>
-  <section
-    aria-labelledby="test-cta-title"
-    class="my-8"
-  >
-    <div
-      style="opacity: 0; transform: translateY(12px);"
-    >
-      <div
-        class="ui-glass-card ui-glass-card-hover p-6 text-center shadow-sm transition-shadow hover:shadow"
-      >
-        <h2
-          class="sr-only"
-          id="test-cta-title"
-        >
-          Test Title
-        </h2>
-        <p
-          class="text-sm text-gray-700 dark:text-gray-300"
-          id="test-cta-subtitle"
-        >
-          Test Subtitle
-        </p>
-        <div
-          class="mt-4 flex flex-wrap justify-center gap-2"
-        >
-          <a
-            aria-describedby="test-cta-subtitle"
-            aria-label="Primary Label"
-            class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 focus-visible:ring-teal-500 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
-            data-analytics="primary-analytics"
-            href="/primary"
-            title="Primary Title"
-          >
-            Primary
-          </a>
-          <a
-            aria-describedby="test-cta-subtitle"
-            class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 text-teal-300 border border-teal-400/30 bg-white/0 dark:bg-white/0 hover:bg-teal-500/10 focus-visible:ring-teal-500 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
-            data-analytics="secondary-analytics"
-            href="/secondary"
-            title="Secondary Title"
-          >
-            Secondary
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-`;
-
 exports[`CallToAction renders hero variant with buttons 1`] = `
 <div>
   <section
@@ -93,7 +40,7 @@ exports[`CallToAction renders hero variant with buttons 1`] = `
       >
         <a
           aria-label="Primary Label"
-          class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 focus-visible:ring-teal-500 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
+          class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 dark:focus-visible:ring-offset-0 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 focus-visible:ring-teal-500/70 dark:focus-visible:ring-teal-300/60 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
           data-analytics="primary-analytics"
           href="/primary"
           title="Primary Title"
@@ -102,7 +49,7 @@ exports[`CallToAction renders hero variant with buttons 1`] = `
         </a>
         <a
           aria-label="Secondary Label"
-          class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 text-teal-300 border border-teal-400/30 bg-white/0 dark:bg-white/0 hover:bg-teal-500/10 focus-visible:ring-teal-500 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
+          class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0 dark:focus-visible:ring-offset-0 text-teal-300 border border-teal-400/30 bg-white/0 dark:bg-white/0 hover:bg-teal-500/10 focus-visible:ring-teal-500/70 dark:focus-visible:ring-teal-300/60 px-3 py-2 text-xs sm:px-4 sm:py-2.5 sm:text-sm"
           data-analytics="secondary-analytics"
           href="/secondary"
           title="Secondary Title"

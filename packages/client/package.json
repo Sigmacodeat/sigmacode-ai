@@ -79,8 +79,6 @@
     "concat-with-sourcemaps": "^1.1.0",
     "i18next": "^24.2.3",
     "jotai": "^2.12.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-i18next": "^15.4.0",
     "rimraf": "^5.0.1",
     "rollup": "^4.0.0",

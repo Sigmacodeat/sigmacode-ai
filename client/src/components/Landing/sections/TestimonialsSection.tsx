@@ -53,25 +53,24 @@ export default function TestimonialsSection() {
             return (
               <li key={`testimonial-${i}`}>
                 <Reveal as="div" variant="rise" y={10}>
-                  <div>
-                    <Card
-                      data-analytics-id="testimonial"
-                      data-idx={i}
-                      onClick={() =>
-                        trackEvent('landing.testimonials.card.click', {
-                          index: i,
-                          author: author || undefined,
-                        })
-                      }
-                    >
-                      <figure>
-                        <blockquote className="text-sm italic text-gray-700 dark:text-gray-300">{text}</blockquote>
-                        {author ? (
-                          <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">{author}</figcaption>
-                        ) : null}
-                      </figure>
-                    </Card>
-                  </div>
+                  <Card
+                    variant="subtle"
+                    data-analytics-id="testimonial"
+                    data-idx={i}
+                    onClick={() =>
+                      trackEvent('landing.testimonials.card.click', {
+                        index: i,
+                        author: author || undefined,
+                      })
+                    }
+                  >
+                    <figure>
+                      <blockquote className="text-sm italic text-gray-700 dark:text-gray-300">{text}</blockquote>
+                      {author ? (
+                        <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">{author}</figcaption>
+                      ) : null}
+                    </figure>
+                  </Card>
                 </Reveal>
               </li>
             );

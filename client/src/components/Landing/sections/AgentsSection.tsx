@@ -1,11 +1,12 @@
  import { useEffect, useState } from 'react';
- import { Bot, Plug, ShieldCheck, Gauge } from 'lucide-react';
- import SectionHeader from '../../marketing/SectionHeader';
- import LandingSection from '../components/LandingSection';
- import { useTranslation } from 'react-i18next';
- import { Reveal } from '../../motion/Reveal';
- import Stagger from '../../motion/Stagger';
- import { AgentLaunchScene } from '../HeroAgentScene';
+import { Bot, Plug, ShieldCheck, Gauge } from 'lucide-react';
+import SectionHeader from '../../marketing/SectionHeader';
+import LandingSection from '../components/LandingSection';
+import { useTranslation } from 'react-i18next';
+import { Reveal } from '../../motion/Reveal';
+import Stagger from '../../motion/Stagger';
+import { AgentLaunchScene } from '../HeroAgentScene';
+import Card from '../components/Card';
 
 export default function AgentHeroSection() {
   const { t } = useTranslation();
@@ -42,13 +43,22 @@ export default function AgentHeroSection() {
         className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10"
         data-analytics-id="agent-hero-grid"
       >
-        <div>
+        <div
+          className="relative overflow-visible mx-auto w-full p-0 order-2 md:order-1"
+          data-analytics-id="agent-hero-visual"
+        >
+          <Reveal as="div" variant="fade" delay={140}>
+            {/* Neue Launch-Szene: Agenten werden aus dem Zentrum auf Orbit geschossen mit Tool-Orbits */}
+            <AgentLaunchScene instant={reduceAll} />
+          </Reveal>
+        </div>
+        <div className="order-1 md:order-2">
           <Reveal as="div" variant="rise" y={12}>
             <SectionHeader
               icon={Bot}
               badgeText={tt('marketing.landing.sections.badges.agents', 'AI Agents')}
               badgeVariant="glass"
-              badgeTone="indigo"
+              badgeTone="teal"
               badgeSize="md"
               badgeClassName="h-8 py-0"
               title={tt('marketing.agents.hero.title', 'AI‑Agenten, die verbinden und verstehen')}
@@ -65,7 +75,7 @@ export default function AgentHeroSection() {
           </Reveal>
           <Stagger
             as="ul"
-            className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+            className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch gap-3 sm:gap-4"
             data-analytics-id="agent-hero-bullets"
             role="list"
             gap={80}
@@ -74,35 +84,23 @@ export default function AgentHeroSection() {
             {bullets.map((b, i) => {
               const Icon = [Plug, ShieldCheck, Gauge][i] ?? Plug;
               return (
-                <li key={`${b}-${i}`} data-idx={i} data-title={b} className="list-none">
+                <li key={`${b}-${i}`} data-idx={i} data-title={b} className="list-none h-full">
                   <Reveal as="div" variant="rise" y={8}>
-                    <div
-                      className="grid grid-cols-[auto,1fr] items-start gap-3 rounded-2xl border border-gray-200 bg-white/80 px-4 py-3 text-sm sm:text-[0.95rem] shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-[1px] hover:shadow-md hover:border-brand-primary/40 hover:bg-white focus-visible:outline-none focus-within:outline-none focus-visible:ring-2 focus-within:ring-2 focus-visible:ring-brand-primary/30 focus-within:ring-brand-primary/30 dark:border-gray-800 dark:bg-gray-900/70 dark:hover:border-brand-primary/40"
-                      role="group"
-                      aria-label={b}
-                      tabIndex={0}
-                    >
-                      <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/30 bg-white text-brand-primary shadow-sm dark:border-brand-primary/25 dark:bg-gray-950">
-                        <Icon className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                      <span className="text-gray-800 dark:text-gray-100 leading-snug sm:leading-relaxed tracking-[0.005em] break-words">
-                        {b}
-                      </span>
-                    </div>
+                    <Card variant="subtle" role="group" aria-label={b} data-analytics-id="agent-bullet-card">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 ring-1 ring-black/5 dark:ring-zinc-300/15">
+                          <Icon className="h-5 w-5" strokeWidth={2.1} aria-hidden="true" />
+                        </span>
+                        <span title={b} className="min-w-0 max-w-full text-sm leading-tight tracking-[0.005em] break-words whitespace-normal hyphens-auto font-medium antialiased">
+                          {b}
+                        </span>
+                      </div>
+                    </Card>
                   </Reveal>
                 </li>
               );
             })}
           </Stagger>
-        </div>
-        <div
-          className="relative overflow-visible mx-auto w-full p-0"
-          data-analytics-id="agent-hero-visual"
-        >
-          <Reveal as="div" variant="fade" delay={140}>
-            {/* Neue Launch-Szene: Agenten werden aus dem Zentrum auf Orbit geschossen mit Tool-Orbits */}
-            <AgentLaunchScene instant={reduceAll} />
-          </Reveal>
         </div>
       </div>
     </LandingSection>

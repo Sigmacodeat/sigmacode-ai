@@ -28,6 +28,7 @@ const BusinessAI = lazy(() => import('./Marketing/BusinessAI'));
 const PricingDetails = lazy(() => import('./Marketing/PricingDetails'));
 const HowItWorks = lazy(() => import('./Marketing/HowItWorks'));
 const PitchDeck = lazy(() => import('./Marketing/PitchDeck'));
+const RoadmapOnly = lazy(() => import('./Marketing/RoadmapOnly'));
 const HowToConnect = lazy(() => import('./Marketing/HowToConnect'));
 const HowToOrchestrate = lazy(() => import('./Marketing/HowToOrchestrate'));
 const HowToDeploy = lazy(() => import('./Marketing/HowToDeploy'));
@@ -123,6 +124,21 @@ export const router = createBrowserRouter([
             <main>
               <Suspense fallback={<RouteLoader />}>
                 <PitchDeck />
+              </Suspense>
+            </main>
+          </div>
+        ),
+        errorElement: <RouteErrorBoundary />,
+      },
+      // Öffentliche Roadmap-Ansicht (nur Roadmap, ohne übrige Pitchdeck-Sektionen)
+      {
+        path: 'roadmap',
+        element: (
+          <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
+            <MarketingHeader />
+            <main>
+              <Suspense fallback={<RouteLoader />}>
+                <RoadmapOnly />
               </Suspense>
             </main>
           </div>

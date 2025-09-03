@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
 import LandingSection from '../components/LandingSection';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
-import { buttonStyles } from '../../ui/Button';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 import SectionHeader from '../../marketing/SectionHeader';
 import { trackEvent } from '../../../utils/analytics';
 
@@ -65,7 +66,7 @@ export default function FinalCTA() {
   ];
 
   return (
-    <LandingSection id="final-cta">
+    <LandingSection id="final-cta" className="-mt-px">
         <SectionHeader
           id="final-cta-heading"
           badgeText={tt('marketing.landing.finalCta.badge', 'Los geht\'s')}
@@ -152,16 +153,14 @@ export default function FinalCTA() {
                     }
                   };
 
-                  // Karte als Link rendern (intern/extern)
+                  // Karte als Link (Anker um Card, um Semantik und Navigation zu behalten)
                   return (
                     <li key={item.id}>
                       <a
                         href={href}
                         target={isExternal ? '_blank' : undefined}
                         rel={isExternal ? 'noopener noreferrer' : undefined}
-                        className="group block h-full rounded-2xl border border-gray-200/70 bg-white/60 p-5 shadow-sm backdrop-blur-sm transition
-                                   hover:-translate-y-0.5 hover:shadow-md hover:bg-white/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400
-                                   dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
+                        className="group block"
                         aria-label={title}
                         data-analytics-id="integration-card"
                         data-integration-id={item.id}
@@ -175,28 +174,27 @@ export default function FinalCTA() {
                           })
                         }
                       >
-                        <div className="flex items-start gap-3.5">
-                          <span
-                            aria-hidden="true"
-                            className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl
-                                       bg-gradient-to-br from-teal-500/15 via-teal-500/10 to-cyan-400/10
-                                       text-teal-700 ring-1 ring-teal-600/25 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.35)]
-                                       transition-transform group-hover:scale-[1.03] dark:text-teal-300 dark:ring-teal-300/25"
-                          >
-                            <Icon />
-                          </span>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2.5">
-                              <h4 className="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">{title}</h4>
-                              {badge ? (
-                                <span className="rounded-md border border-teal-600/30 bg-teal-600/10 px-1.5 py-0.5 text-[10px] font-medium text-teal-700 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3)] dark:text-teal-300">
-                                  {badge}
-                                </span>
-                              ) : null}
+                        <Card variant="elevated" interactive className="h-full">
+                          <div className="flex items-start gap-3.5">
+                            <span
+                              aria-hidden="true"
+                              className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-700 ring-1 ring-black/5 dark:bg-zinc-800 dark:text-gray-200 dark:ring-zinc-300/15"
+                            >
+                              <Icon />
+                            </span>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2.5">
+                                <h4 className="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">{title}</h4>
+                                {badge ? (
+                                  <span className="rounded-md border border-black/10 bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-700 dark:border-white/10 dark:bg-zinc-800 dark:text-gray-200">
+                                    {badge}
+                                  </span>
+                                ) : null}
+                              </div>
+                              <p className="mt-1.5 text-[13.5px] leading-6 text-gray-700/90 dark:text-gray-200/90">{desc}</p>
                             </div>
-                            <p className="mt-1.5 text-[13.5px] leading-6 text-gray-700/90 dark:text-gray-200/90">{desc}</p>
                           </div>
-                        </div>
+                        </Card>
                       </a>
                     </li>
                   );
@@ -207,7 +205,7 @@ export default function FinalCTA() {
             <div className="mt-8">
               <Link
                 to="/c/new"
-                className={`${buttonStyles.primary} px-6 py-2.5 text-sm font-semibold shadow-lg hover:shadow-xl`}
+                className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
                 data-analytics-id="final-cta"
                 onClick={() => trackEvent('landing.final.cta.click')}
               >

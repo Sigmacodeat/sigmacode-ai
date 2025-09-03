@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LoginAgentIcon from '../components/LoginAgentIcon';
 import { AGENT_ICON } from './VisualUtils';
 
@@ -20,10 +20,36 @@ export type AgentAvatarProps = {
  * - variant "plain": zeichneter Bot (AGENT_ICON) mit dezentem Glow und Augenoverlay
  */
 export default function AgentAvatar({ size = 80, variant = 'login', instant = false, onReady, className }: AgentAvatarProps) {
+  // Wake-up State: steuert Graustufen -> Farbe/Glow Transition für "login"
+  const [awake, setAwake] = useState<boolean>(!!instant);
+
+  useEffect(() => {
+    if (instant) setAwake(true);
+  }, [instant]);
+
   if (variant === 'login') {
     return (
-      <div className={className}>
-        <LoginAgentIcon size={size} eyeRadius={1.0} instant={instant} onReady={onReady} />
+      <div
+        className={[
+          'relative inline-grid place-items-center transition-all duration-700',
+          // Start: entsättigt und leicht transparent; Ziel: vollfarbig mit Glow
+          awake
+            ? 'opacity-100 filter-none'
+            : 'opacity-80 grayscale contrast-90',
+          className ?? '',
+        ].join(' ')}
+        // sanfte Glow-Schicht beim Awake
+        style={{ filter: awake ? 'drop-shadow(0 0 12px rgba(56,189,248,0.22)) drop-shadow(0 0 24px rgba(14,165,233,0.16))' : undefined }}
+      >
+        <LoginAgentIcon
+          size={size}
+          eyeRadius={1.0}
+          instant={instant}
+          onReady={() => {
+            setAwake(true);
+            onReady?.();
+          }}
+        />
       </div>
     );
   }

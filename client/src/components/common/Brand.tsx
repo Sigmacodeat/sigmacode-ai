@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Bot } from 'lucide-react';
 
 export type BrandProps = {
@@ -70,6 +70,16 @@ export default function Brand({
   const totalIntro = reduceAll
     ? 0
     : eyesRevealDelay + eyesRevealDuration;
+
+  // Ensure onReady also fires in instant/reduced-motion mode where animations have 0 duration
+  useEffect(() => {
+    if (reduceAll && !readyCalled.current) {
+      readyCalled.current = true;
+      onReady?.();
+    }
+    // Only depends on reduceAll; onReady is stable from props
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceAll]);
 
   const Content = (
     <span

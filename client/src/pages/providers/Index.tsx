@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Seo from '~/components/SEO/Seo';
 import { useProvidersList } from '~/hooks/providers';
 import { tt as makeTt } from '~/utils/i18n/tt';
 import { trackEvent } from '~/utils/analytics';
-import Loading from '~/components/Common/Loading';
-import ErrorState from '~/components/Common/ErrorState';
+import Loading from '~/components/common/Loading';
+import ErrorState from '~/components/common/ErrorState';
 import { getProvidersIndexJsonLd } from '~/utils/seo/providers';
 import { Search, ArrowUpDown, ExternalLink, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';

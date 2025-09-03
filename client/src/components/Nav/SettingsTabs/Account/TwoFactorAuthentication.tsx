@@ -26,8 +26,8 @@ export type Phase = 'setup' | 'qr' | 'verify' | 'backup' | 'disable';
 
 const phaseVariants = {
   initial: { opacity: 0, scale: 0.95 },
-  animate: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: 'easeOut' } },
-  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3, ease: 'easeIn' } },
+  animate: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] } },
 };
 
 const TwoFactorAuthentication: React.FC = () => {

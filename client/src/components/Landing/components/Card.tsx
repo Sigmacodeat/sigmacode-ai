@@ -1,55 +1,94 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
-  title?: string;
-  variant?: 'glass' | 'plain' | 'solid' | 'outline' | 'muted';
-  size?: 'sm' | 'md' | 'lg';
+type ElementTag = keyof JSX.IntrinsicElements;
+
+export type CardVariant = 'default' | 'muted' | 'solid' | 'glass' | 'outline' | 'subtle' | 'elevated';
+export type CardSize = 'sm' | 'md' | 'lg';
+
+export type CardProps<T extends ElementTag = 'div'> = {
+  as?: T;
+  variant?: CardVariant;
+  size?: CardSize;
   interactive?: boolean;
+  noInner?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+} & Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'children' | 'className'>;
+
+function cn(...parts: Array<string | false | null | undefined>) {
+  return parts.filter(Boolean).join(' ');
+}
+
+const sizeClasses: Record<CardSize, string> = {
+  sm: 'rounded-xl',
+  md: 'rounded-2xl',
+  lg: 'rounded-3xl',
 };
 
-export default function Card({
-  title,
-  children,
-  className = '',
-  variant = 'glass',
-  size = 'md',
-  interactive = false,
-  ...rest
-}: CardProps) {
-  // Varianten
-  const baseGlass =
-    'rounded-xl border border-white/20 bg-white/50 backdrop-blur-md shadow-[0_8px_32px_rgba(56,189,248,0.10)] dark:border-white/10 dark:bg-white/5';
-  const basePlain = 'rounded-xl border border-gray-200 bg-transparent shadow-sm dark:border-gray-800 dark:bg-transparent';
-  const baseSolid = 'rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900';
-  const baseOutline = 'rounded-xl border border-gray-200 bg-transparent shadow-none dark:border-gray-800 dark:bg-transparent';
-  const baseMuted = 'rounded-xl border border-transparent bg-gray-50 shadow-sm dark:bg-gray-800/60';
+const variantClasses: Record<CardVariant, string> = {
+  default:
+    'bg-white dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-zinc-300/15',
+  muted:
+    'bg-zinc-50/90 dark:bg-zinc-800/60 ring-1 ring-black/5 dark:ring-zinc-300/15 backdrop-blur-sm',
+  // Einheitlich dunkle Surface, unabhängig vom Theme – wie in den Marketing-FeatureCards
+  solid:
+    'bg-zinc-900/95 text-white ring-1 ring-zinc-300/15',
+  glass:
+    'bg-white/60 dark:bg-zinc-900/40 ring-1 ring-black/10 dark:ring-zinc-300/15 backdrop-blur-md',
+  outline:
+    'bg-transparent ring-1 ring-black/10 dark:ring-zinc-300/20',
+  subtle:
+    'bg-zinc-50/80 dark:bg-zinc-800/60 ring-1 ring-black/5 dark:ring-zinc-300/15 backdrop-blur',
+  elevated:
+    'bg-white/70 dark:bg-zinc-900/50 ring-1 ring-black/5 dark:ring-zinc-300/15 backdrop-blur-sm shadow-sm',
+};
 
-  const variantBase =
-    variant === 'glass'
-      ? baseGlass
-      : variant === 'plain'
-      ? basePlain
-      : variant === 'solid'
-      ? baseSolid
-      : variant === 'outline'
-      ? baseOutline
-      : baseMuted;
+const interactiveClasses =
+  'transition-[box-shadow,transform,background-color] duration-200 ease-out will-change-transform ' +
+  'hover:-translate-y-0.5 active:translate-y-0 hover:shadow-md focus-visible:shadow-md ' +
+  'hover:ring-black/10 dark:hover:ring-zinc-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 ' +
+  'motion-reduce:transition-none motion-reduce:hover:shadow-none motion-reduce:focus:shadow-none';
 
-  // Größen-Padding (Kompatibilität: md entspricht vorherigem p-6)
-  const padding = size === 'sm' ? 'p-4' : size === 'lg' ? 'p-8' : 'p-6';
+const baseClasses =
+  'antialiased select-none ring-offset-0';
 
-  // Interaktivität: einheitliche Hover-/Focus-Styles
-  const interactiveStyles = interactive
-    ? 'transition-all duration-300 ease-out hover:shadow-md hover:border-brand-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/50 focus-visible:ring-offset-2'
-    : '';
+const InnerPadding = {
+  sm: 'p-3.5 sm:p-4',
+  md: 'p-5 md:p-6',
+  lg: 'p-5 sm:p-6',
+} as const;
 
-  const base = `${variantBase} ${padding} ${interactiveStyles}`;
+function _Card<T extends ElementTag = 'div'>(
+  {
+    as,
+    variant = 'default',
+    size = 'md',
+    interactive = false,
+    noInner = false,
+    className,
+    children,
+    ...rest
+  }: CardProps<T>,
+  ref: React.Ref<Element>
+) {
+  const As = (as || 'div') as any;
+
+  const outer = cn(
+    baseClasses,
+    sizeClasses[size],
+    variantClasses[variant],
+    interactive && interactiveClasses,
+    className
+  );
 
   return (
-    <div className={`${base} ${className}`} {...rest}>
-      {title ? <h3 className="text-lg font-semibold">{title}</h3> : null}
-      {children ? <div className={title ? 'mt-2' : ''}>{children}</div> : null}
-    </div>
+    <As ref={ref as any} className={outer} {...rest}>
+      {noInner ? children : <div className={InnerPadding[size]}>{children}</div>}
+    </As>
   );
 }
 
+const Card = forwardRef(_Card) as <T extends ElementTag = 'div'>(
+  props: CardProps<T> & { ref?: React.Ref<Element> }
+) => React.ReactElement | null;
+export default Card;

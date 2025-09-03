@@ -5,10 +5,10 @@ import SectionHeader from '../../marketing/SectionHeader';
 import LandingSection from '../components/LandingSection';
 import { BadgeCheck, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { buttonStyles } from '../../ui/Button';
-import { Reveal } from '../../motion/Reveal';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 import { useParallax } from '../../motion/useParallax';
-import Stagger from '../../motion/Stagger';
+import { motion, useReducedMotion } from 'framer-motion';
+import { containerVar, itemVar, fadeInUp, viewportOnce } from '~/components/pitchdeck/Shared/variants';
 import { trackEvent } from '../../../utils/analytics';
 import MarketingTeaser from '../../marketing/MarketingTeaser';
 
@@ -21,6 +21,7 @@ export default function PricingSection() {
   const tt = t as unknown as (key: string, defaultValue?: string, options?: Record<string, unknown>) => string;
   const tAny = t as unknown as (key: string, options?: any) => any;
   const fmt = useMemo(() => new Intl.NumberFormat(i18n?.language || 'de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }), [i18n?.language]);
+  const prefersReducedMotion = useReducedMotion();
 
   // Default-Pläne (Fallback), falls i18n keine strukturierten Objekte liefert
   const defaultPlans: Plan[] = [
@@ -114,7 +115,12 @@ export default function PricingSection() {
 
   return (
     <LandingSection id="pricing" className="-mt-px">
-      <Reveal as="div" variant="rise" y={12}>
+      <motion.div
+        initial={prefersReducedMotion ? undefined : 'hidden'}
+        whileInView={prefersReducedMotion ? undefined : 'show'}
+        viewport={viewportOnce}
+        variants={fadeInUp}
+      >
         <SectionHeader
           icon={BadgeCheck}
           badgeText={tt('marketing.landing.pricingTeaser.badge', 'Preise')}
@@ -124,7 +130,7 @@ export default function PricingSection() {
           subtitleClassName="mt-2 text-sm text-gray-600 dark:text-gray-300"
           baseDelay={0.08}
         />
-      </Reveal>
+      </motion.div>
       <div className="relative">
         {/* Konsolidierter Teaser-Block */}
         <MarketingTeaser
@@ -178,10 +184,17 @@ export default function PricingSection() {
           </span>
           <span aria-live="polite" className="sr-only">{yearly ? tt('marketing.landing.pricing.aria_yearly', 'Jährliche Preise aktiviert') : tt('marketing.landing.pricing.aria_monthly', 'Monatliche Preise aktiviert')}</span>
         </div>
-        <Stagger as="div" className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-5" data-billing={yearly ? 'yearly' : 'monthly'} gap={80} startDelay={120}>
+        <motion.div
+          className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-5"
+          data-billing={yearly ? 'yearly' : 'monthly'}
+          initial={prefersReducedMotion ? undefined : 'hidden'}
+          whileInView={prefersReducedMotion ? undefined : 'show'}
+          viewport={viewportOnce}
+          variants={containerVar}
+        >
           {plans.map((p, i) => (
-            <Reveal key={p.name} as="div" variant="elevation" y={8} duration={360}>
-              <Card className={`relative p-6 ${p.name === bestseller ? 'border-teal-500 ring-1 ring-teal-400/40' : ''}`} data-analytics-id="pricing-plan" data-plan-name={p.name} data-billing={yearly ? 'yearly' : 'monthly'}>
+            <motion.div key={p.name} variants={itemVar}>
+              <Card variant="elevated" interactive className="relative" data-analytics-id="pricing-plan" data-plan-name={p.name} data-billing={yearly ? 'yearly' : 'monthly'}>
                 {p.name === bestseller && (
                   <div className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold text-white shadow">{tt('marketing.landing.pricing.best_seller_label', 'Beliebteste')}</div>
                 )}
@@ -197,7 +210,7 @@ export default function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <Reveal as="div" variant="spring" delay={100 + i * 40} duration={280} easing={'var(--motion-ease-emph)'}>
+                <motion.div variants={itemVar}>
                   <Link
                     to="/c/new"
                     className={`${buttonStyles.primary} mt-6 w-full justify-center`}
@@ -214,75 +227,93 @@ export default function PricingSection() {
                   >
                     {tt('marketing.landing.pricing.cta', 'Loslegen')}
                   </Link>
-                </Reveal>
+                </motion.div>
               </Card>
-            </Reveal>
+            </motion.div>
           ))}
-        </Stagger>
+        </motion.div>
 
         {/* Preise im Detail – reichhaltige Inhalte */}
         <div className="mt-12">
-          <Reveal as="h3" className="text-base font-semibold text-gray-900 dark:text-white">
+          <motion.h3
+            className="text-base font-semibold text-gray-900 dark:text-white"
+            initial={prefersReducedMotion ? undefined : 'hidden'}
+            whileInView={prefersReducedMotion ? undefined : 'show'}
+            viewport={viewportOnce}
+            variants={fadeInUp}
+          >
             {tt('marketing.landing.pricing.details.heading', 'Preise im Detail')}
-          </Reveal>
-          <Reveal as="p" className="mt-2 max-w-3xl text-sm text-gray-600 dark:text-gray-300" variant="fade" delay={80}>
+          </motion.h3>
+          <motion.p
+            className="mt-2 max-w-3xl text-sm text-gray-600 dark:text-gray-300"
+            initial={prefersReducedMotion ? undefined : 'hidden'}
+            whileInView={prefersReducedMotion ? undefined : 'show'}
+            viewport={viewportOnce}
+            variants={fadeInUp}
+          >
             {tt(
               'marketing.landing.pricing.details.lead',
               'Transparente Kosten: BYOK vs. Managed, Limits, SLAs – plus interaktiver Kalkulator.'
             )}
-          </Reveal>
+          </motion.p>
 
-          <Stagger as="div" className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4" gap={70} startDelay={100}>
+          <motion.div
+            className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+            initial={prefersReducedMotion ? undefined : 'hidden'}
+            whileInView={prefersReducedMotion ? undefined : 'show'}
+            viewport={viewportOnce}
+            variants={containerVar}
+          >
             {/* BYOK vs Managed */}
-            <Reveal as="div" variant="rise" y={10}>
-            <Card title={tt('marketing.landing.pricing.details.byok.title', 'BYOK vs. Managed')} className="p-5">
+            <motion.div variants={itemVar}>
+            <Card variant="subtle" title={tt('marketing.landing.pricing.details.byok.title', 'BYOK vs. Managed')}>
               <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li><span className="font-medium">BYOK:</span> {tt('marketing.landing.pricing.details.byok.item1', 'Eigene Cloud‑Schlüssel, direkte Provider‑Abrechnung')}</li>
                 <li><span className="font-medium">Managed:</span> {tt('marketing.landing.pricing.details.byok.item2', 'Abrechnung über SIGMACODE AI, vereinfachtes Setup')}</li>
                 <li>{tt('marketing.landing.pricing.details.byok.item3', 'Switch jederzeit möglich, pro Projekt konfigurierbar')}</li>
               </ul>
             </Card>
-            </Reveal>
+            </motion.div>
 
             {/* Token Basics & Samples */}
-            <Reveal as="div" variant="rise" y={10}>
-            <Card title={tt('marketing.landing.pricing.details.tokens.title', 'Token‑Basics & Provider‑Samples')} className="p-5">
+            <motion.div variants={itemVar}>
+            <Card variant="subtle" title={tt('marketing.landing.pricing.details.tokens.title', 'Token‑Basics & Provider‑Samples')}>
               <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li>{tt('marketing.landing.pricing.details.tokens.item1', 'Vergleich: Input/Output‑Preise (OpenAI, Anthropic, Google, Mistral)')}</li>
                 <li>{tt('marketing.landing.pricing.details.tokens.item2', 'Konverter & Beispiele zur Kostenschätzung pro Prompt')}</li>
                 <li>{tt('marketing.landing.pricing.details.tokens.item3', 'Hinweis: Kontextgröße, Caching & RAG‑Einfluss')}</li>
               </ul>
             </Card>
-            </Reveal>
+            </motion.div>
 
             {/* Limits & SLAs */}
-            <Reveal as="div" variant="rise" y={10}>
-            <Card title={tt('marketing.landing.pricing.details.limits.title', 'Limits & Raten, SLA‑Infos')} className="p-5">
+            <motion.div variants={itemVar}>
+            <Card variant="subtle" title={tt('marketing.landing.pricing.details.limits.title', 'Limits & Raten, SLA‑Infos')}>
               <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li>{tt('marketing.landing.pricing.details.limits.item1', 'Requests/Minute, Concurrency, Retry/Backoff‑Strategien')}</li>
                 <li>{tt('marketing.landing.pricing.details.limits.item2', 'SLA 99.9% (Business) / 99.95% (Scale & Enterprise)')}</li>
                 <li>{tt('marketing.landing.pricing.details.limits.item3', 'Status‑Seite & Compliance‑Nachweise')}</li>
               </ul>
             </Card>
-            </Reveal>
+            </motion.div>
 
             {/* Calculator CTA */}
-            <Reveal as="div" variant="rise" y={10}>
-            <Card title={tt('marketing.landing.pricing.details.calculator.title', 'Preis‑Kalkulator für eigene Szenarien')} className="p-5">
+            <motion.div variants={itemVar}>
+            <Card variant="subtle" title={tt('marketing.landing.pricing.details.calculator.title', 'Preis‑Kalkulator für eigene Szenarien')}>
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 {tt('marketing.landing.pricing.details.calculator.desc', 'Schätzen Sie Kosten für Volumen, Modelle, Kontextgröße, Caching und RAG. BYOK und Managed werden automatisch berücksichtigt.')}
               </p>
               <Link
                 to="/pricing#calculator"
-                className={`${buttonStyles.secondary} mt-4`}
+                className={`${buttonStyles.secondary} ${buttonSizeXs.secondary} mt-4`}
                 data-analytics-id="pricing-calculator-cta"
                 onClick={() => trackEvent('landing.pricing.calculator.cta.click')}
               >
                 {tt('marketing.landing.pricing.details.calculator.cta', 'Kalkulator öffnen')}
               </Link>
             </Card>
-            </Reveal>
-          </Stagger>
+            </motion.div>
+          </motion.div>
         </div>
         {/* SEO: OfferCatalog JSON-LD */}
         <script

@@ -3,6 +3,7 @@ import { HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SectionHeader from '../../marketing/SectionHeader';
 import LandingSection from '../components/LandingSection';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 
 export default function WhatAreAgentsSection() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function WhatAreAgentsSection() {
         <div className="mt-6" data-analytics-id="what-are-agents-cta">
           <Link
             to="/ai-agents"
-            className="inline-flex items-center rounded-md border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+            className={`${buttonStyles.secondary} ${buttonSizeXs.secondary}`}
             data-analytics-id="link-ai-agents"
             data-title={tt('marketing.landing.whatAreAgents.cta', 'Mehr über AI Agents')}
           >

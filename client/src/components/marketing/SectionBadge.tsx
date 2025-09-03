@@ -77,7 +77,7 @@ export default function SectionBadge({
     ? {
         initial: { opacity: 0, y: 8, filter: 'blur(1px) grayscale(60%) saturate(60%)' },
         whileInView: { opacity: 1, y: 0, filter: 'blur(0px) grayscale(0%) saturate(100%)' },
-        transition: { duration: colorDurationSec, delay: startDelaySec, ease: [0.25, 0.1, 0.25, 1.0] },
+        transition: { duration: colorDurationSec, delay: startDelaySec, ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number] },
         viewport: { once: true, amount: inViewAmount },
       }
     : {};
@@ -103,12 +103,12 @@ export default function SectionBadge({
         {/* Outer aurora glow frame */}
         <span
           aria-hidden
-          className="pointer-events-none absolute -inset-px rounded-full bg-gradient-to-r from-sky-500/6 via-cyan-400/6 to-emerald-400/6 blur-[1.5px]"
+          className="pointer-events-none absolute -inset-px rounded-full bg-gradient-to-r from-sky-400/8 via-teal-400/8 to-cyan-400/8 blur-[1.5px]"
         />
         {/* Inner crisp border */}
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-[1px] rounded-full shadow-[inset_0_0_0_1px_rgba(56,189,248,0.18)]"
+          className="pointer-events-none absolute inset-[1px] rounded-full shadow-[inset_0_0_0_1px_rgba(56,189,248,0.20)]"
         />
 
         {/* CSS-basierter Shine: einmalig bei InView, zusätzlich sanft bei Hover. Respektiert Reduced Motion. */}
@@ -129,8 +129,8 @@ export default function SectionBadge({
         {/* Stronger color and shine for text */}
         <span
           className={cn(
-            'relative z-[1] bg-clip-text text-transparent bg-gradient-to-r from-cyan-100 via-teal-200 to-emerald-300',
-            'drop-shadow-[0_0_6px_rgba(56,189,248,0.25)] dark:drop-shadow-[0_0_10px_rgba(56,189,248,0.4)]',
+            'relative z-[1] bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-teal-200 to-cyan-200',
+            'drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] dark:drop-shadow-[0_0_10px_rgba(56,189,248,0.5)]',
             !prefersReduced && animateOnView && inView ? 'animate-text-shine' : '',
             !prefersReduced ? 'group-hover:animate-text-shine' : '',
           )}

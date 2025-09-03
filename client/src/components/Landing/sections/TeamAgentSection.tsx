@@ -10,6 +10,7 @@ import LandingSection from '../components/LandingSection';
 
 export default function TeamAgentSection() {
   const { t } = useTranslation();
+  const tt = t as unknown as (key: string, defaultValue?: string, options?: Record<string, unknown>) => string;
   // Zwei visuelle Ringe; die Icons laufen exakt mittig dazwischen
   const R_INNER = 160;
   const R_OUTER = 240;
@@ -36,13 +37,13 @@ export default function TeamAgentSection() {
         {/* Header (i18n) */}
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {t('landing.teamAgents.title' as any, 'Agenten, die sich ihre Informationen holen') as string}
+            {tt('landing.teamAgents.title', 'Agenten, die sich ihre Informationen holen')}
           </h2>
           <p className="mt-3 text-gray-600 dark:text-gray-300">
-            {t(
-              'landing.teamAgents.subtitle' as any,
+            {tt(
+              'landing.teamAgents.subtitle',
               'Ein koordiniertes Agenten-Team orchestriert Datenquellen, sammelt Kontext und liefert präzise Ergebnisse – zuverlässig und nachvollziehbar.'
-            ) as string}
+            )}
           </p>
         </div>
         <div className="relative mx-auto mt-12" style={{ height: CONTAINER_H, width: CONTAINER_H }}>

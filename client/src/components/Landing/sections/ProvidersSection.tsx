@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion, type Variants } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Server } from 'lucide-react';
@@ -7,6 +8,7 @@ import Card from '../components/Card';
 import SectionHeader from '../../marketing/SectionHeader';
 import LandingSection from '../components/LandingSection';
 import { trackEvent } from '../../../utils/analytics';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 
 export default function ProvidersSection() {
   const { t } = useTranslation();
@@ -111,20 +113,44 @@ export default function ProvidersSection() {
         )}
       />
 
-      <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5" role="list">
+      <motion.ul
+        className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5"
+        role="list"
+        variants={listContainerVar}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         {providers.map((p, i) => {
           const logo = logoBySlug[p.slug];
           return (
             <AccordionItem key={p.slug} index={i} provider={p} logo={logo} />
           );
         })}
-      </ul>
+      </motion.ul>
     </LandingSection>
   );
 }
 
 type ProviderItem = { name: string; slug: string; subtitle: string; content: string };
 type LogoInfo = { src: string; alt: string; invertOnDark?: boolean } | undefined;
+
+const listContainerVar: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, when: 'beforeChildren' },
+  },
+};
+
+const listItemVar: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  },
+};
 
 function AccordionItem({ index, provider, logo }: { index: number; provider: ProviderItem; logo: LogoInfo }) {
   const [open, setOpen] = useState(false);
@@ -162,8 +188,8 @@ function AccordionItem({ index, provider, logo }: { index: number; provider: Pro
   }, [open]);
 
   return (
-    <li>
-      <Card variant="plain" className="p-0 transition-none">
+    <motion.li variants={listItemVar} whileHover={{ scale: 1.01 }}>
+      <Card variant="subtle" noInner>
         <button
           type="button"
           className="w-full flex items-center gap-2 px-2 py-1.5 cursor-pointer select-none rounded-md text-left"
@@ -193,12 +219,19 @@ function AccordionItem({ index, provider, logo }: { index: number; provider: Pro
               <span className="text-xs text-gray-600 dark:text-gray-300 whitespace-normal break-words">{provider.subtitle}</span>
             )}
           </div>
-          <span className="ml-auto text-xs text-gray-500">▾</span>
+          <motion.span
+            className="ml-auto text-xs text-gray-500"
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            aria-hidden
+          >
+            ▾
+          </motion.span>
         </button>
         <div className="px-2 pb-1">
           <Link
             to={`/providers/${provider.slug}`}
-            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+            className={`${buttonStyles.secondary} ${buttonSizeXs.secondary}`}
             onClick={(e) => {
               e.stopPropagation();
               trackEvent('landing.providers.card.details_click', { slug: provider.slug, name: provider.name });
@@ -216,12 +249,17 @@ function AccordionItem({ index, provider, logo }: { index: number; provider: Pro
             id={`provider-panel-${provider.slug}`}
             aria-labelledby={`provider-header-${provider.slug}`}
           >
-            <div ref={contentRef}>
+            <motion.div
+              ref={contentRef}
+              initial={false}
+              animate={{ opacity: open ? 1 : 0.5 }}
+              transition={{ duration: 0.2 }}
+            >
               <p className="text-sm leading-snug text-gray-700 dark:text-gray-200 px-2.5 py-2">{provider.content}</p>
-            </div>
+            </motion.div>
           </div>
         )}
       </Card>
-    </li>
+    </motion.li>
   );
 }

@@ -1,14 +1,18 @@
 // Statisches Rendering – alle Motion-Wrapper entfernt
 import SectionHeader from '../../marketing/SectionHeader';
+import Card from '../components/Card';
 import { UNIFIED_ICON_SET } from '../shared/VisualUtils';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import LandingSection from '../components/LandingSection';
 import { trackEvent } from '../../../utils/analytics';
+import { motion, useReducedMotion } from 'framer-motion';
+import { containerVar, itemVar, fadeInUp, viewportOnce } from '~/components/pitchdeck/Shared/variants';
 
 export default function FAQSection() {
   const { t } = useTranslation();
   const tt = t as unknown as (key: string, defaultValue?: string, options?: Record<string, unknown>) => string;
+  const prefersReducedMotion = useReducedMotion();
   // Inhalte sofort rendern – kein Gating durch Badge-Animation erforderlich
   const Icon = UNIFIED_ICON_SET[3];
   const faqs = [
@@ -117,26 +121,41 @@ export default function FAQSection() {
   }), [faqs]);
   return (
     <LandingSection id="faq">
-      <SectionHeader
-        icon={Icon}
-        badgeText={tt('marketing.landing.faq.badge', 'FAQ')}
-        id="faq-heading"
-        title={tt('marketing.landing.faq.title', 'FAQ')}
-        badgeAnimateOnView={true}
-        badgeInViewAmount={0.45}
-        badgeStartDelaySec={0.08}
-        badgeColorDurationSec={1.4}
-        contentLagSec={0.3}
-        baseDelay={0.12}
-      />
+      <motion.div
+        initial={prefersReducedMotion ? undefined : 'hidden'}
+        whileInView={prefersReducedMotion ? undefined : 'show'}
+        viewport={viewportOnce}
+        variants={fadeInUp}
+      >
+        <SectionHeader
+          icon={Icon}
+          badgeText={tt('marketing.landing.faq.badge', 'FAQ')}
+          id="faq-heading"
+          title={tt('marketing.landing.faq.title', 'FAQ')}
+          badgeAnimateOnView={true}
+          badgeInViewAmount={0.45}
+          badgeStartDelaySec={0.08}
+          badgeColorDurationSec={1.4}
+          contentLagSec={0.3}
+          baseDelay={0.12}
+        />
+      </motion.div>
       <>
-          <ul role="list" aria-labelledby="faq-heading" className="mt-6 divide-y divide-gray-100/70 dark:divide-white/10">
+          <motion.ul
+            role="list"
+            aria-labelledby="faq-heading"
+            className="mt-6 space-y-3"
+            initial={prefersReducedMotion ? undefined : 'hidden'}
+            whileInView={prefersReducedMotion ? undefined : 'show'}
+            viewport={viewportOnce}
+            variants={containerVar}
+          >
             {faqs.map((f, i) => {
               const id = ids[i] || `faq-${i}`;
               const isOpen = openIdx === i;
               return (
-                <li key={id}>
-                  <div className="first:pt-0 last:pb-0 py-1">
+                <motion.li key={id} variants={itemVar}>
+                  <Card noInner className="p-0">
                     <h3 id={id} className="sr-only">{f.q}</h3>
                     <button
                       type="button"
@@ -148,28 +167,28 @@ export default function FAQSection() {
                       ref={(el) => (btnRefs.current[i] = el)}
                       data-analytics-id="faq-toggle"
                       data-faq-id={id}
-                      className="flex w-full items-center justify-between gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-3.5 min-h-11 text-left rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400/60 hover:bg-gray-50/60 dark:hover:bg-white/5"
+                      className="flex w-full items-center justify-between gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-3.5 min-h-11 text-left focus:outline-none"
                     >
                       <span className="font-normal leading-snug tracking-tight text-[15px] sm:text-[15.5px] text-gray-900 dark:text-gray-100">{f.q}</span>
-                      <span className={`i-heroicons-chevron-down h-4 w-4 text-gray-400 dark:text-gray-500 opacity-70 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden />
+                      <span className={`${isOpen ? 'rotate-180' : ''} i-heroicons-chevron-down h-4 w-4 text-gray-400 dark:text-gray-500 opacity-70 transition-transform`} aria-hidden />
                     </button>
                     {isOpen && (
                       <div
                         id={`${id}-panel`}
                         role="region"
                         aria-labelledby={id}
-                        className="overflow-hidden"
+                        className="px-3 sm:px-4 pb-3 sm:pb-3.5"
                       >
-                        <div className="mt-2 rounded-lg border border-gray-200/70 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04]">
+                        <div className="mt-2 border-t border-gray-100/70 dark:border-white/10 pt-3">
                           <div className="text-[14px] leading-7 text-gray-700 dark:text-gray-200">{f.a}</div>
                         </div>
                       </div>
                     )}
-                  </div>
-                </li>
+                  </Card>
+                </motion.li>
               );
             })}
-          </ul>
+          </motion.ul>
           <script
             type="application/ld+json"
             // eslint-disable-next-line react/no-danger

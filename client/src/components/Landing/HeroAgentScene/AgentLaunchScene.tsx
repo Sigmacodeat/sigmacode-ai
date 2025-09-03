@@ -5,7 +5,7 @@ import IconTool from '../shared/IconTool';
 
 export type AgentLaunchSceneProps = {
   instant?: boolean;
-  agentsCount?: number;
+  maxAgents?: number; // Maximale Anzahl der Agenten
   toolsPerAgent?: number;
 };
 
@@ -16,7 +16,7 @@ export type AgentLaunchSceneProps = {
 // 4) Respektiert Reduced Motion via `instant` (pausiert alle Bewegungen)
 export default function AgentLaunchScene({
   instant = false,
-  agentsCount = 6,
+  maxAgents = 5, // Maximale Anzahl der Agenten
   toolsPerAgent = 3,
 }: AgentLaunchSceneProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -32,7 +32,10 @@ export default function AgentLaunchScene({
     const obs = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const cr = entry.contentRect;
-        setSize({ w: cr.width, h: cr.height });
+        const w = Math.round(cr.width);
+        const h = Math.round(cr.height);
+        // nur aktualisieren, wenn sich die gerundeten Maße wirklich ändern
+        setSize((prev) => (prev.w !== w || prev.h !== h ? { w, h } : prev));
       }
     });
     obs.observe(el);
@@ -65,8 +68,8 @@ export default function AgentLaunchScene({
 
   // Stabil verteilte Winkel für Agenten
   const agentAngles = useMemo(() => {
-    return new Array(agentsCount).fill(0).map((_, i) => (i / agentsCount) * 360 + 10 * (i % 3));
-  }, [agentsCount]);
+    return new Array(maxAgents).fill(0).map((_, i) => (i / maxAgents) * 360 + 10 * (i % 3));
+  }, [maxAgents]);
 
   // Tools aus dem gemeinsamen Icon-Set beziehen
   const toolIcons = useMemo(() => {
@@ -78,6 +81,11 @@ export default function AgentLaunchScene({
 
   // Szene spielt erst NACH Augen-Animation des Login-Icons + Scroll-Trigger
   const [play, setPlay] = useState<boolean>(false);
+  // Zähler pro Tool-Instance, um Icons nach jedem Animationszyklus zu wechseln
+  const [toolCycles, setToolCycles] = useState<Record<string, number>>({});
+  const bumpToolCycle = (key: string) => {
+    setToolCycles((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + 1 }));
+  };
 
   const paused = !!instant;
 
@@ -200,22 +208,27 @@ export default function AgentLaunchScene({
           40% { opacity: 1; filter: blur(0px); }
           100% { transform: var(--agent-target-transform) scale(1); opacity: 1; filter: blur(0px); }
         }
-        @keyframes tool-spin {
+        @keyframes agent-tool-spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
         @keyframes tool-suction {
-          0% { transform: translate(-50%, -50%) translate(var(--tool-x), var(--tool-y)) scale(1); opacity: 0.95; }
-          35% { transform: translate(-50%, -50%) translate(calc(var(--tool-x) * 0.8), calc(var(--tool-y) * 0.8)) scale(1.04); opacity: 0.96; }
-          60% { transform: translate(-50%, -50%) translate(calc(var(--tool-x) * 0.5), calc(var(--tool-y) * 0.5)) scale(0.96); opacity: 0.92; }
-          72% { transform: translate(-50%, -50%) translate(calc(var(--tool-x) * 0.3), calc(var(--tool-y) * 0.3)) scale(0.9); opacity: 0.88; }
-          100% { transform: translate(-50%, -50%) translate(var(--tool-x), var(--tool-y)) scale(1); opacity: 0.95; }
+          /* Start: am Orbit */
+          0% { translate: var(--tool-x) var(--tool-y); scale: 1; opacity: 0.95; }
+          35% { translate: calc(var(--tool-x) * 0.8) calc(var(--tool-y) * 0.8); scale: 1.04; opacity: 0.96; }
+          60% { translate: calc(var(--tool-x) * 0.5) calc(var(--tool-y) * 0.5); scale: 0.96; opacity: 0.92; }
+          /* Einsaugen zum Zentrum */
+          80% { translate: 0 0; scale: 0.86; opacity: 0; }
+          /* Sofort am Orbit neu platzieren – noch unsichtbar */
+          81% { translate: var(--tool-x) var(--tool-y); scale: 0.9; opacity: 0; }
+          /* Pop zurück am Orbit */
+          100% { translate: var(--tool-x) var(--tool-y); scale: 1; opacity: 0.95; }
         }
         .scene-rotate {
-          animation: orbit-rotate var(--orbit-duration, 84s) linear infinite;
+          animation: agent-orbit-rotate var(--orbit-duration, 84s) linear infinite;
           animation-play-state: var(--scene-play, running);
         }
-        @keyframes orbit-rotate {
+        @keyframes agent-orbit-rotate {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
@@ -226,43 +239,41 @@ export default function AgentLaunchScene({
           will-change: transform, opacity;
         }
         .tools-ring {
-          animation: tool-spin var(--tools-spin-duration, 14s) linear infinite;
+          animation: agent-tool-spin var(--tools-spin-duration, 14s) linear infinite;
           animation-play-state: var(--scene-play, running);
           transform-origin: center;
           will-change: transform;
         }
-        .tools-ring:hover {
-          animation-duration: calc(var(--tools-spin-duration, 14s) * 0.85);
-        }
+        /* Entfernt: Hover-Beschleunigung, da sie Animationen resetten kann */
         /* Sanftes Schweben für Mini-Agenten */
-        @keyframes agent-float {
+        @keyframes agent-agent-float {
           0% { transform: translateY(-1.5px); }
           50% { transform: translateY(1.5px); }
           100% { transform: translateY(-1.5px); }
         }
         .agent-float {
-          animation: agent-float 3.6s ease-in-out infinite alternate;
+          animation: agent-agent-float 3.6s ease-in-out infinite alternate;
           animation-play-state: var(--scene-play, running);
           will-change: transform;
         }
         /* Gegenrotation-Klasse bleibt für Tools erhalten; Agenten verwenden sie nicht mehr */
         .counter-rotate {
-          animation: orbit-rotate var(--counter-rotate-duration, var(--orbit-duration, 84s)) linear infinite reverse;
+          animation: agent-orbit-rotate var(--counter-rotate-duration, var(--orbit-duration, 84s)) linear infinite reverse;
           animation-play-state: var(--scene-play, running);
           transform-origin: center;
           will-change: transform;
         }
         .tool-counter {
-          animation: tool-spin var(--tools-spin-duration, 14s) linear infinite reverse;
+          animation: agent-tool-spin var(--tools-spin-duration, 14s) linear infinite reverse;
           animation-play-state: var(--scene-play, running);
           transform-origin: center;
           will-change: transform;
         }
         .tool-item {
-          animation: tool-suction var(--tool-ingest-duration, 6.5s) ease-in-out infinite;
+          animation: tool-suction var(--tool-ingest-duration, 6.5s) cubic-bezier(0.33, 1, 0.68, 1) infinite both;
           animation-delay: var(--tool-ingest-delay, 0ms);
           animation-play-state: var(--scene-play, running);
-          will-change: transform, opacity;
+          will-change: translate, opacity, scale;
         }
         @media (prefers-reduced-motion: reduce) {
           .agent-launch,
@@ -273,23 +284,23 @@ export default function AgentLaunchScene({
           .tool-counter { animation: none !important; }
         }
         /* Farbiger Glow um Tool-Icons in Brand-Farbe */
-        @keyframes tool-glow-pulse {
+        @keyframes agent-tool-glow-pulse {
           0% { opacity: 0.90; }
           50% { opacity: 0.98; }
           100% { opacity: 0.90; }
         }
         .tool-glow {
-          animation: tool-glow-pulse 3.6s ease-in-out infinite;
+          animation: agent-tool-glow-pulse 3.6s ease-in-out infinite;
           will-change: opacity, filter;
         }
         /* Glow-Pulse für Mini-Agenten-Icons (dezenter als Tools) */
-        @keyframes agent-glow-pulse {
+        @keyframes agent-agent-glow-pulse {
           0% { opacity: 0.94; }
           50% { opacity: 0.99; }
           100% { opacity: 0.94; }
         }
         .agent-glow {
-          animation: agent-glow-pulse 4.2s ease-in-out infinite;
+          animation: agent-agent-glow-pulse 4.2s ease-in-out infinite;
           will-change: opacity, filter;
         }
         /* Dekorative Orbit-Ringe (SVG-basiert für runde Dash-Kanten) */
@@ -427,21 +438,26 @@ export default function AgentLaunchScene({
                             const r = Math.round(agentSize * 0.95);
                             const tx = Math.cos((a * Math.PI) / 180) * r;
                             const ty = Math.sin((a * Math.PI) / 180) * r;
-                            const Icon = toolIcons[(idx + ti) % toolIcons.length];
+                            const keyId = `${idx}-${ti}`;
+                            const cycle = toolCycles[keyId] ?? 0;
+                            const Icon = toolIcons[(idx + ti + cycle) % toolIcons.length];
                             const ingestDelay = (idx * 1100 + ti * 1700) % 4000; // unregelmäßig
                             const ingestDur = 5200 + (ti % 2) * 800;
                             return (
-                              <div key={ti} className="absolute left-1/2 top-1/2" style={{ translate: `${tx}px ${ty}px` }}>
+                              <div key={ti} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                                 <div
-                                  className="tool-item tool-counter counter-rotate tool-glow"
+                                  className="tool-item"
                                   style={{
                                     '--tool-ingest-delay': `${ingestDelay}ms`,
                                     '--tool-ingest-duration': `${ingestDur}ms`,
                                     '--tool-x': `${tx}px`,
                                     '--tool-y': `${ty}px`,
                                   } as React.CSSProperties & Record<string, string>}
+                                  onAnimationIteration={() => bumpToolCycle(keyId)}
                                 >
-                                  <IconTool icon={Icon} size={toolSize} color={TOOL_COLORS[ti % TOOL_COLORS.length]} />
+                                  <div className="tool-counter counter-rotate tool-glow will-change-transform" style={{ willChange: 'transform' }}>
+                                    <IconTool icon={Icon} size={toolSize} color={TOOL_COLORS[ti % TOOL_COLORS.length]} />
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -476,21 +492,26 @@ export default function AgentLaunchScene({
                                 const r = Math.round(agentSize * 0.95);
                                 const tx = Math.cos((a * Math.PI) / 180) * r;
                                 const ty = Math.sin((a * Math.PI) / 180) * r;
-                                const Icon = toolIcons[(idx + ti) % toolIcons.length];
+                                const keyId = `${idx}-${ti}`;
+                                const cycle = toolCycles[keyId] ?? 0;
+                                const Icon = toolIcons[(idx + ti + cycle) % toolIcons.length];
                                 const ingestDelay = (idx * 1100 + ti * 1700) % 4000; // unregelmäßig
                                 const ingestDur = 5200 + (ti % 2) * 800;
                                 return (
-                                  <div key={ti} className="absolute left-1/2 top-1/2" style={{ translate: `${tx}px ${ty}px` }}>
+                                  <div key={ti} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                                     <div
-                                      className="tool-item tool-counter counter-rotate tool-glow"
+                                      className="tool-item"
                                       style={{
                                         '--tool-ingest-delay': `${ingestDelay}ms`,
                                         '--tool-ingest-duration': `${ingestDur}ms`,
                                         '--tool-x': `${tx}px`,
                                         '--tool-y': `${ty}px`,
                                       } as React.CSSProperties & Record<string, string>}
+                                      onAnimationIteration={() => bumpToolCycle(keyId)}
                                     >
-                                      <IconTool icon={Icon} size={toolSize} color={TOOL_COLORS[ti % TOOL_COLORS.length]} />
+                                      <div className="tool-counter counter-rotate tool-glow will-change-transform" style={{ willChange: 'transform' }}>
+                                        <IconTool icon={Icon} size={toolSize} color={TOOL_COLORS[ti % TOOL_COLORS.length]} />
+                                      </div>
                                     </div>
                                   </div>
                                 );

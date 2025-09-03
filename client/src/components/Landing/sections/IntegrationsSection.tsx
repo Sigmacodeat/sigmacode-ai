@@ -1,4 +1,3 @@
-import IconGlow from '../components/IconGlow';
 import { CircuitBoard } from 'lucide-react';
 // Motion: Reveal/Stagger
 import SectionHeader from '../../marketing/SectionHeader';
@@ -10,6 +9,7 @@ import { Reveal } from '../../motion/Reveal';
 import Stagger from '../../motion/Stagger';
 import { trackEvent } from '../../../utils/analytics';
 import { Link } from 'react-router-dom';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 
 export default function IntegrationsSection() {
   const { t } = useTranslation();
@@ -57,22 +57,24 @@ export default function IntegrationsSection() {
         </Reveal>
         <>
           <Reveal as="div" variant="fade" delay={80}>
-            <div className="mt-4 max-w-3xl rounded-lg border border-gray-200/60 bg-white/60 p-4 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.03]">
-              <p className="text-[13px] leading-relaxed text-gray-700 dark:text-gray-300">
-                {tt('marketing.landing.integrations.lead', 'Integrationen verbinden Ihre AI‑Agenten und Workflows mit externen Diensten und Datenquellen – z. B. Modelle, Vektorspeicher, CRMs, Ticketsysteme oder interne APIs. So fließen Daten sicher in Prompts, Aktionen und Automationen.')}
-              </p>
-              <p className="mt-2 text-[12px] leading-relaxed text-gray-600 dark:text-gray-400">
-                {tt('marketing.landing.integrations.lead2', 'Jedes Icon steht exemplarisch für eine Anbindung. Details und Berechtigungen definieren Sie granular in Projekten, inklusive BYOK, Scopes und Audit‑Logs.')}
-              </p>
-              <div className="mt-3">
-                <Link
-                  to="/integrations"
-                  onClick={() => trackEvent('landing.integrations.cta.click', {})}
-                  className="inline-flex items-center rounded-lg bg-teal-600 px-3 py-1.5 text-[12px] font-semibold text-white shadow-sm transition hover:bg-teal-700"
-                >
-                  {tt('marketing.landing.integrations.cta', 'Alle Integrationen ansehen')}
-                </Link>
-              </div>
+            <div className="mt-4 max-w-3xl">
+              <Card variant="subtle">
+                <p className="text-[13px] leading-relaxed text-gray-700 dark:text-gray-300">
+                  {tt('marketing.landing.integrations.lead', 'Integrationen verbinden Ihre AI‑Agenten und Workflows mit externen Diensten und Datenquellen – z. B. Modelle, Vektorspeicher, CRMs, Ticketsysteme oder interne APIs. So fließen Daten sicher in Prompts, Aktionen und Automationen.')}
+                </p>
+                <p className="mt-2 text-[12px] leading-relaxed text-gray-600 dark:text-gray-400">
+                  {tt('marketing.landing.integrations.lead2', 'Jedes Icon steht exemplarisch für eine Anbindung. Details und Berechtigungen definieren Sie granular in Projekten, inklusive BYOK, Scopes und Audit‑Logs.')}
+                </p>
+                <div className="mt-3">
+                  <Link
+                    to="/integrations"
+                    onClick={() => trackEvent('landing.integrations.cta.click', {})}
+                    className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
+                  >
+                    {tt('marketing.landing.integrations.cta', 'Alle Integrationen ansehen')}
+                  </Link>
+                </div>
+              </Card>
             </div>
           </Reveal>
           {/* Responsive Grid, zwei Reihen auf großen Screens */}
@@ -83,50 +85,50 @@ export default function IntegrationsSection() {
                 return (
                   <li key={idx}>
                     <Reveal as="div" variant="rise" y={10}>
-                      <div className="group">
-                        <Card
-                          className="relative flex items-center gap-3 px-3 py-3 rounded-xl border border-gray-200/70 bg-white/70 shadow-sm backdrop-blur-sm transition-colors hover:shadow-md dark:border-white/10 dark:bg-white/[0.03]"
-                          aria-label={`${item.title}${item.subtitle ? ' – ' + item.subtitle : ''}`}
-                          data-analytics-id="integration-card"
-                          data-idx={idx}
-                          data-title={item.title}
-                          onClick={() =>
-                            trackEvent('landing.integrations.card.click', {
-                              index: idx,
-                              title: item.title,
-                            })
-                          }
-                        >
-                          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-300/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                          <div aria-hidden="true" className="pointer-events-none absolute -inset-px rounded-xl bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.18),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                          <span aria-hidden="true">
-                            <IconGlow
-                              Icon={I}
-                              size={20}
-                              colorClass="text-teal-600 dark:text-teal-300"
-                              glowColor="rgba(56,189,248,0.35)"
-                            />
-                          </span>
-                          <div className="min-w-0">
-                            <div className="text-[13px] font-semibold leading-tight text-gray-900 dark:text-white">
-                              {item.title}
-                            </div>
-                            {item.subtitle ? (
-                              <div className="text-[11px] leading-tight text-gray-600 dark:text-gray-400">
-                                {item.subtitle}
-                              </div>
-                            ) : null}
+                    <Card
+                      variant="elevated"
+                      interactive
+                      aria-label={`${item.title}${item.subtitle ? ' – ' + item.subtitle : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      data-analytics-id="integration-card"
+                      data-idx={idx}
+                      data-title={item.title}
+                      onClick={() =>
+                        trackEvent('landing.integrations.card.click', {
+                          index: idx,
+                          title: item.title,
+                        })
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          trackEvent('landing.integrations.card.click', {
+                            index: idx,
+                            title: item.title,
+                          });
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 ring-1 ring-black/5 dark:ring-zinc-300/15" aria-hidden="true">
+                          <I className="h-5 w-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-[13px] font-semibold leading-tight text-gray-900 dark:text-white">
+                            {item.title}
                           </div>
-                          <div
-                            aria-hidden="true"
-                            className="pointer-events-none absolute left-3 top-1/2 -z-10 -translate-y-1/2 rounded-full"
-                            style={{ width: 34, height: 34, background: 'radial-gradient(circle, rgba(56,189,248,0.25) 0%, rgba(56,189,248,0) 70%)' }}
-                          />
-                        </Card>
+                          {item.subtitle ? (
+                            <div className="text-[11px] leading-tight text-gray-600 dark:text-gray-400">
+                              {item.subtitle}
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
-                    </Reveal>
-                  </li>
-                );
+                    </Card>
+                  </Reveal>
+                </li>
+              );
               })}
             </Stagger>
           }

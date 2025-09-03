@@ -51,21 +51,22 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
     // Fallback if not measured yet
     const fallback = 320; // px
     const base = minSide > 0 ? minSide : fallback;
-    // Leave a small margin to avoid touching edges
-    const margin = 12;
+    // Leave a tiny margin to avoid touching edges
+    const margin = 6;
     const maxRadius = Math.max(0, base / 2 - margin);
     // Layer ratios tuned to maintain aesthetics and avoid overlap
-    const rOuter = Math.floor(maxRadius * 0.92);
-    const rMid = Math.floor(maxRadius * 0.72);
-    const rInner = Math.floor(maxRadius * 0.48);
+    // slightly larger rings for a fuller look
+    const rOuter = Math.floor(maxRadius * 0.98);
+    const rMid = Math.floor(maxRadius * 0.78);
+    const rInner = Math.floor(maxRadius * 0.52);
     return { rOuter, rMid, rInner };
   }, [size.w, size.h]);
 
   // Dynamische Skalierung der Orbit-Elementgrößen je nach verfügbarem Platz (Mobile kompakter)
   const scale = useMemo(() => {
     const baseW = Math.max(1, size.w || 320);
-    // Clampen: sehr schmal -> 0.75, normal -> 1.0
-    return Math.min(1, Math.max(0.7, baseW / 420));
+    // Clampen: sehr schmal -> 0.75, normal -> 1.0, großzügig bis 1.15 auf Desktop
+    return Math.min(1.15, Math.max(0.7, baseW / 420));
   }, [size.w]);
 
   // Sicherheits-Padding für den äußersten Orbit, damit Icons/Glows nie am Rand abgeschnitten werden
@@ -73,12 +74,12 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
   const outerSafePad = useMemo(() => {
     // Exakte Geometrie: größter Glow-Durchmesser im äußeren Orbit (glowVariant "medium")
     // maxHalo = iconPx + haloAdd(strong/medium/soft) + extraRadialGlow(18)
-    const iconPx = 20 * scale; // für äußeren Orbit gesetzt
+    const iconPx = 22 * scale; // angepasst an äußeren Orbit (s. unten iconPx)
     const haloAdd = 18; // medium
     const maxRadial = 18; // zusätzliche Radial-Glow-Schicht
     const largestDiameter = iconPx + haloAdd + maxRadial; // px
     const halfLargest = largestDiameter * 0.5; // vom Icon-Zentrum nach außen
-    const margin = 6; // kleiner Puffer gegen Bobbing/Unschärfe
+    const margin = 2; // minimaler Puffer, damit Glows nicht clippen
     return Math.round(halfLargest + margin);
   }, [scale]);
 
@@ -95,7 +96,10 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
   // Keine Maus-/Parallax-Events mehr
 
   return (
-    <div ref={containerRef} className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-[5/4] overflow-hidden">
+    <div
+      ref={containerRef}
+      className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-auto md:h-full lg:h-full overflow-hidden"
+    >
       <div className="relative grid h-full place-items-center">
         {/* Orbits with depth occlusion: far outer -> outer -> glass disc -> inner */}
         {/* Waves entfernt – statisch */}
@@ -107,8 +111,8 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
           direction={1}
           phaseOffsetDeg={31}
           glowVariant="medium"
-          itemSize={Math.round(44 * scale)}
-          iconPx={Math.round(20 * scale)}
+          itemSize={Math.round(48 * scale)}
+          iconPx={Math.round(22 * scale)}
           iconSpinAlternate
           iconSpinDuration={34}
           parallaxOffset={parallax}
@@ -128,8 +132,8 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
           phaseOffsetDeg={14}
           glowVariant="soft"
           dashedAccent={false}
-          itemSize={Math.round(46 * scale)}
-          iconPx={Math.round(22 * scale)}
+          itemSize={Math.round(50 * scale)}
+          iconPx={Math.round(24 * scale)}
           iconSpinAlternate
           iconSpinDuration={38}
           parallaxOffset={parallax}
@@ -151,8 +155,8 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
           direction={-1}
           phaseOffsetDeg={0}
           glowVariant="soft"
-          itemSize={Math.round(38 * scale)}
-          iconPx={Math.round(18 * scale)}
+          itemSize={Math.round(42 * scale)}
+          iconPx={Math.round(20 * scale)}
           dashedAccent={false}
           counterDashedAbove={false}
           iconSpinAlternate
@@ -166,8 +170,8 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
           paused={paused}
         />
 
-        {/* Einheitlicher zentraler Agent (Login-Variante) – Orbits starten via onReady */}
-        <div className="z-30">
+        {/* Einheitlicher zentraler Agent (Login-Variante) – exakt zentriert, Orbits starten via onReady */}
+        <div className="z-30 pointer-events-none absolute inset-0 grid place-items-center">
           <AgentAvatar size={80} variant="login" instant={instant} onReady={() => setPlayOrbits(true)} />
         </div>
       </div>

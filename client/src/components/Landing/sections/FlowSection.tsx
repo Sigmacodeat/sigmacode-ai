@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import SectionHeader from '../../marketing/SectionHeader';
 import { UNIFIED_ICON_SET } from '../shared/VisualUtils';
 import { useTranslation } from 'react-i18next';
-import { buttonStyles } from '../../ui/Button';
+import { buttonStyles, buttonSizeXs } from '../../ui/Button';
 import LandingSection from '../components/LandingSection';
 import { Reveal } from '../../motion/Reveal';
 import Stagger from '../../motion/Stagger';
@@ -87,49 +87,45 @@ export default function HowItWorksSection() {
           return (
             <li key={`${s.title}-${i}`}>
               <Reveal as="div" variant="rise" y={10}>
-                <div>
-                  <Card
-                    variant="plain"
-                    className="group relative overflow-hidden rounded-2xl border border-white/10 ring-1 ring-black/5 bg-white/60 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-within:ring-2 focus-within:ring-teal-400/40 dark:bg-gray-900/60 dark:ring-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/40"
-                    data-analytics-id="how-step-card"
-                    data-idx={i}
-                    data-title={s.title}
-                  >
-                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-teal-500/40 via-cyan-500/30 to-transparent" />
-                    <div className="flex items-start gap-3">
-                      <span
-                        aria-hidden
-                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-500/80 to-cyan-500/80 text-white text-[13px] font-semibold ring-1 ring-black/10 shadow-sm"
-                      >
-                        {num}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{s.title}</h3>
-                        <p className="mt-1 text-sm leading-relaxed text-gray-700/95 dark:text-gray-200/95">{s.desc}</p>
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
-                          <Link
-                            to={primary.to}
-                            className={buttonStyles.primary}
-                            aria-label={primary.aria}
-                            data-analytics-id={`how-step:${num}:primary`}
-                            onClick={() => trackEvent('landing.how.step.click', { step: num, to: primary.to })}
-                          >
-                            {primary.label}
-                          </Link>
-                          <Link
-                            to={overview.to}
-                            className={buttonStyles.ghost}
-                            aria-label={overview.aria}
-                            data-analytics-id={`how-step:${num}:overview`}
-                          >
-                            {overview.label}
-                          </Link>
-                        </div>
+                <Card
+                  variant="subtle"
+                  data-analytics-id="how-step-card"
+                  data-idx={i}
+                  data-title={s.title}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      aria-hidden
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[13px] font-semibold ring-1 ring-black/5 dark:bg-zinc-800 dark:text-gray-200 dark:ring-zinc-300/15"
+                    >
+                      {num}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{s.title}</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-gray-700/95 dark:text-gray-200/95">{s.desc}</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <Link
+                          to={primary.to}
+                          className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
+                          aria-label={primary.aria}
+                          data-analytics-id={`how-step:${num}:primary`}
+                          onClick={() => trackEvent('landing.how.step.click', { step: num, to: primary.to })}
+                        >
+                          {primary.label}
+                        </Link>
+                        <Link
+                          to={overview.to}
+                          className={`${buttonStyles.ghost} ${buttonSizeXs.ghost}`}
+                          aria-label={overview.aria}
+                          data-analytics-id={`how-step:${num}:overview`}
+                        >
+                          {overview.label}
+                        </Link>
                       </div>
-                      <StepIcon className="ml-auto h-5 w-5 text-teal-700/70 dark:text-teal-300/80" />
                     </div>
-                  </Card>
-                </div>
+                    <StepIcon className="ml-auto h-5 w-5 text-gray-500 dark:text-gray-300" />
+                  </div>
+                </Card>
               </Reveal>
             </li>
           );

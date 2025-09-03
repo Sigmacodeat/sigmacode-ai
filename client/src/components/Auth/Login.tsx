@@ -5,7 +5,6 @@ import { useOutletContext, useSearchParams, Link } from 'react-router-dom';
 import type { TLoginLayoutContext } from '~/common';
 import { ErrorMessage } from '~/components/Auth/ErrorMessage';
 import SocialButton from '~/components/Auth/SocialButton';
-import SocialLoginRender from '~/components/Auth/SocialLoginRender';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { getLoginError } from '~/utils';
 import { useLocalize } from '~/hooks';
@@ -101,9 +100,7 @@ function Login() {
           setError={setError}
         />
       )}
-      {/* Social Login Buttons (Google, GitHub, etc.) */}
-      <SocialLoginRender startupConfig={startupConfig} />
-      {/* Divider */}
+      {/* Divider between login area (including social buttons rendered by AuthLayout) and register CTA */}
       <div
         className="my-6 h-px w-full rounded-full bg-gradient-to-r from-brand-primary/0 via-brand-primary/40 to-brand-accent/0"
         aria-hidden="true"

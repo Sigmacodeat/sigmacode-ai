@@ -94,7 +94,7 @@ const AuthContextProvider = ({
         } else {
           navigate(finalRedirect, { replace: true });
         }
-      }, 50),
+      }, 50), // Debounce-Intervall wieder auf 50ms gesetzt
     [navigate, setUser],
   );
   const doSetError = useTimeout({ callback: (error) => setError(error as string | undefined) });

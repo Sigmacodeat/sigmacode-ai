@@ -4,6 +4,9 @@ import { defineConfig } from 'vite';
 import dotenv from 'dotenv';
 import type { PluginOption } from 'vite';
 import { compression } from 'vite-plugin-compression2';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
 // Temporarily disable PWA to avoid Workbox precache errors in production
 // import { VitePWA } from 'vite-plugin-pwa';
 
@@ -26,6 +29,7 @@ export default defineConfig(({ command }) => ({
     host: 'localhost',
     port: 3092,
     strictPort: false,
+    open: true,
     proxy: (() => {
       // Important: never use process.env.PORT here, Vite may set it to the dev server port (e.g., 3092)
       // which would cause the proxy to target itself and create a loop.
@@ -91,7 +95,8 @@ export default defineConfig(({ command }) => ({
         warn(warning);
       },
     },
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 1600,
+    assetsInlineLimit: 4096,
   },
   resolve: {
     alias: {
@@ -104,6 +109,22 @@ export default defineConfig(({ command }) => ({
       'unenv/mock/empty': path.resolve(__dirname, 'src/shims/empty.ts'),
       'unenv/node/inspector/promises': path.resolve(__dirname, 'src/shims/empty.ts'),
       'unenv/node/readline/promises': path.resolve(__dirname, 'src/shims/empty.ts'),
+    },
+    // Verhindert doppelte React-Instanzen (z. B. wenn verlinkte Pakete React auflösen)
+    dedupe: ['react', 'react-dom'],
+  },
+  css: {
+    devSourcemap: true,
+    modules: {
+      localsConvention: 'camelCaseOnly',
+    },
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "src/styles/_variables.scss";`,
+      },
+    },
+    postcss: {
+      plugins: [tailwindcss, autoprefixer],
     },
   },
 }));

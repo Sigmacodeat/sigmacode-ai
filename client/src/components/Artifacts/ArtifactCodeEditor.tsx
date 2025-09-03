@@ -1,3 +1,5 @@
+// Minimaler lokaler Typ für die sandpack.files Einträge, wir nutzen nur das 'code'-Feld
+type SandpackBundlerFileMinimal = { code: string };
 import debounce from 'lodash/debounce';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
@@ -6,7 +8,6 @@ import {
   SandpackProvider as StyledProvider,
 } from '@codesandbox/sandpack-react';
 import type { SandpackProviderProps } from '@codesandbox/sandpack-react/unstyled';
-import type { SandpackBundlerFile } from '@codesandbox/sandpack-client';
 import type { CodeEditorRef } from '@codesandbox/sandpack-react';
 import type { ArtifactFiles, Artifact } from '~/common';
 import { useEditArtifact, useGetStartupConfig } from '~/data-provider';
@@ -73,7 +74,7 @@ const CodeEditor = ({
       return;
     }
 
-    const currentCode = (sandpack.files['/' + fileKey] as SandpackBundlerFile | undefined)?.code;
+    const currentCode = (sandpack.files['/' + fileKey] as SandpackBundlerFileMinimal | undefined)?.code;
     const isNotOriginal =
       currentCode && artifact.content != null && currentCode.trim() !== artifact.content.trim();
     const isNotRepeated =

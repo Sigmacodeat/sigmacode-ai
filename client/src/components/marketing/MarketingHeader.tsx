@@ -404,6 +404,20 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
 
           
 
+          {/* Roadmap (Desktop Top-Level Link) */}
+          <Link
+            to="/roadmap"
+            className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-border ${
+              isPath('/roadmap')
+                ? 'bg-surface-hover text-accent'
+                : 'text-text-secondary hover:bg-surface-hover'
+            }`}
+            aria-current={isPath('/roadmap') ? 'page' : undefined}
+            data-analytics-id="header-menu-roadmap"
+          >
+            {t('marketing.header.roadmap', { defaultValue: 'Roadmap' }) as string}
+          </Link>
+
           {/* Referrals (Desktop Top-Level Link) */}
           <Link
             to="/referrals"
@@ -437,12 +451,90 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
           <LanguageToggle />
           <ThemeToggle />
           <button
-            className="inline-flex items-center justify-center rounded-md p-2 text-text-secondary hover:bg-surface-hover"
+            className="group inline-flex items-center justify-center rounded-md p-2 text-text-secondary hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-border/60"
             aria-label="Menü öffnen"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? (
+              <motion.svg
+                className="h-5 w-5 will-change-transform"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                initial={false}
+                whileHover={{ scale: 1.06 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+              >
+                <defs>
+                  <linearGradient id="mhIconGradX" gradientUnits="userSpaceOnUse" x1="24" y1="0" x2="0" y2="0">
+                    <stop offset="0%" stopColor="#14b8a6" />
+                    <stop offset="50%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#22d3ee" />
+                  </linearGradient>
+                </defs>
+                <motion.path
+                  d="M6 6L18 18"
+                  stroke="url(#mhIconGradX)"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 1 }}
+                  whileHover={{ pathLength: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }}
+                />
+                <motion.path
+                  d="M18 6L6 18"
+                  stroke="url(#mhIconGradX)"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 1 }}
+                  whileHover={{ pathLength: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }}
+                />
+              </motion.svg>
+            ) : (
+              <motion.svg
+                className="h-5 w-5 will-change-transform"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                initial={false}
+                whileHover={{ scaleX: 1.08 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+              >
+                <defs>
+                  <linearGradient id="mhIconGradMenu" gradientUnits="userSpaceOnUse" x1="24" y1="0" x2="0" y2="0">
+                    <stop offset="0%" stopColor="#14b8a6" />
+                    <stop offset="50%" stopColor="#38bdf8" />
+                    <stop offset="100%" stopColor="#22d3ee" />
+                  </linearGradient>
+                </defs>
+                <motion.path
+                  d="M4 7H20"
+                  stroke="url(#mhIconGradMenu)"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 1 }}
+                  whileHover={{ pathLength: 1, transition: { duration: 0.5 } }}
+                />
+                <motion.path
+                  d="M4 12H20"
+                  stroke="url(#mhIconGradMenu)"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 1 }}
+                  whileHover={{ pathLength: 1, transition: { duration: 0.5, delay: 0.03 } }}
+                />
+                <motion.path
+                  d="M4 17H20"
+                  stroke="url(#mhIconGradMenu)"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 1 }}
+                  whileHover={{ pathLength: 1, transition: { duration: 0.5, delay: 0.06 } }}
+                />
+              </motion.svg>
+            )}
           </button>
         </div>
       </div>
@@ -521,6 +613,17 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
               </div>
             </details>
             
+
+            {/* Roadmap (Mobile Top-Level Link) */}
+            <Link
+              to="/roadmap"
+              className={`mt-2 block rounded px-2 py-2.5 text-sm hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-1 focus-visible:ring-offset-surface-primary ${isPath('/roadmap') ? 'text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-sky-300 to-cyan-200' : 'text-text-secondary'}`}
+              onClick={() => { setMobileOpen(false); closeAll(); }}
+              aria-current={isPath('/roadmap') ? 'page' : undefined}
+              data-analytics-id="header-mobile-roadmap"
+            >
+              {t('marketing.header.roadmap', { defaultValue: 'Roadmap' }) as string}
+            </Link>
 
             {/* Referrals (Mobile Top-Level Link) */}
             <Link

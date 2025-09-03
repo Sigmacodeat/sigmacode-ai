@@ -35,12 +35,14 @@ export default function LanguageToggle({ className }: { className?: string }) {
 
   return (
     <div className={cn('inline-flex items-center', className)}>
-      <div role="group" aria-label="Language selector" className="inline-flex rounded-md border border-border p-0.5">
+      <div role="group" aria-label="Language selector" className="inline-flex rounded-md border border-border p-0.5 bg-transparent">
         <button
           type="button"
           className={cn(
             'rounded px-2 py-1 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-border',
-            isDE ? 'bg-surface-hover text-text-primary' : 'text-text-secondary hover:bg-surface-hover',
+            isDE
+              ? 'text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-sky-300 to-cyan-200'
+              : 'text-text-secondary hover:text-text-primary',
           )}
           aria-pressed={isDE}
           onClick={() => setLanguage('de-DE')}
@@ -51,7 +53,9 @@ export default function LanguageToggle({ className }: { className?: string }) {
           type="button"
           className={cn(
             'rounded px-2 py-1 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-border',
-            isEN ? 'bg-surface-hover text-text-primary' : 'text-text-secondary hover:bg-surface-hover',
+            isEN
+              ? 'text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-sky-300 to-cyan-200'
+              : 'text-text-secondary hover:text-text-primary',
           )}
           aria-pressed={isEN}
           onClick={() => setLanguage('en-US')}

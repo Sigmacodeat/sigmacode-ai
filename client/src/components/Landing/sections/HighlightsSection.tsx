@@ -6,11 +6,15 @@ import LandingSection from '../components/LandingSection';
 import { useTranslation } from 'react-i18next';
 import { UNIFIED_ICON_SET } from '../shared/VisualUtils';
 import { useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { containerVar, itemVar, viewportOnce } from '~/components/pitchdeck/Shared/variants';
 
 export default function FeaturesSection() {
   const { t } = useTranslation();
   const tt = t as unknown as (key: string, defaultValue?: string, options?: Record<string, unknown>) => string;
   const listRef = useRef<HTMLUListElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const reduceAll = prefersReducedMotion; // Skip Animations bei Reduced Motion
   const defaultFeatures = [
     {
       title: tt('marketing.landing.features.0.title', 'AI Agents (No‑Code)'),
@@ -51,40 +55,51 @@ export default function FeaturesSection() {
       })
     : defaultFeatures;
   return (
-    <LandingSection id="features" noBorder>
+    <LandingSection id="features" noBorder className="-mt-px">
       <SectionHeader
         icon={Sparkles}
         badgeText={t('marketing.landing.sections.badges.highlights')}
         id="features-heading"
         title={tt('marketing.landing.features.title', 'Warum SIGMACODE AI')}
       />
-      <ul ref={listRef} className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3" role="list" data-analytics-id="features-grid">
+      <motion.ul
+        ref={listRef}
+        className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3"
+        role="list"
+        data-analytics-id="features-grid"
+        initial={reduceAll ? undefined : 'hidden'}
+        whileInView={reduceAll ? undefined : 'show'}
+        viewport={viewportOnce}
+        variants={containerVar}
+      >
         {features.map((f, i) => (
-          <li key={f.title}>
+          <motion.li key={f.title} variants={itemVar}>
             <div>
               <Card data-analytics-id="feature-card" data-idx={i} data-title={f.title}>
                 {(() => {
                   const Icon = UNIFIED_ICON_SET[i % UNIFIED_ICON_SET.length];
                   return (
-                    <span aria-hidden="true">
+                    <motion.span
+                      aria-hidden="true"
+                      whileHover={reduceAll ? undefined : { scale: 1.03, rotate: 1 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
                       <IconGlow
                         Icon={Icon}
                         size={24}
-                        colorClass="text-teal-600 dark:text-teal-400"
-                        glowColor="rgba(56,189,248,0.38)"
+                        colorClass="text-gray-600 dark:text-gray-300"
+                        glowColor="rgba(120,120,120,0.25)"
                       />
-                    </span>
+                    </motion.span>
                   );
                 })()}
                 <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{f.desc}</p>
               </Card>
             </div>
-          </li>
+          </motion.li>
         ))}
-      </ul>
+      </motion.ul>
     </LandingSection>
   );
 }
-
-

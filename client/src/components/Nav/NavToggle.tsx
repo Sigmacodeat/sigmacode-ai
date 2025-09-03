@@ -62,18 +62,24 @@ export default function NavToggle({
             <div className="flex h-6 w-6 flex-col items-center">
               {/* Top bar */}
               <div
-                className="h-3 w-1 rounded-full bg-black dark:bg-white"
+                className="h-3 w-1 rounded-full bg-gradient-to-b from-teal-400 via-sky-300 to-cyan-200 will-change-transform [backface-visibility:hidden]"
                 style={{
                   ...transition,
                   transform: `translateY(0.15rem) rotate(${topBarRotation}) translateZ(0px)`,
+                  boxShadow: isHovering
+                    ? '0 0 10px rgba(125, 211, 252, 0.55), 0 0 4px rgba(20, 184, 166, 0.35)'
+                    : 'none',
                 }}
               />
               {/* Bottom bar */}
               <div
-                className="h-3 w-1 rounded-full bg-black dark:bg-white"
+                className="h-3 w-1 rounded-full bg-gradient-to-t from-teal-400 via-sky-300 to-cyan-200 will-change-transform [backface-visibility:hidden]"
                 style={{
                   ...transition,
                   transform: `translateY(-0.15rem) rotate(${bottomBarRotation}) translateZ(0px)`,
+                  boxShadow: isHovering
+                    ? '0 0 10px rgba(125, 211, 252, 0.55), 0 0 4px rgba(20, 184, 166, 0.35)'
+                    : 'none',
                 }}
               />
             </div>

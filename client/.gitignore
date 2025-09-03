@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 .vite/
+.next/
+out/
+build/
 
 # Logs
 npm-debug.log*
@@ -30,4 +33,8 @@ junit.xml
 *.cache
 *.tmp
 *.log
+.env*.local
+.env
+
+# Vercel specific
 .vercel

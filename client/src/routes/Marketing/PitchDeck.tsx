@@ -1,8 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle } from 'lucide-react';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import {
+  Cover,
+  Problem,
+  Solution,
+  Product,
+  Market,
+  Business,
+  Pricing,
+  UnitEconomics,
+  KPIs,
+  Financials,
+  Costs,
+  Competition,
+  Technology,
+  GTM,
+  Traction,
+  Roadmap,
+  Risks,
+  Ask,
+  Exit,
+  Team,
+  Contact,
+  Impact,
+  CTA,
+} from '~/components/pitchdeck/Sections';
+import { costData, revenueData } from '~/components/pitchdeck/Sections/data';
+ 
 
 // Theme-Observer: erkennt Wechsel zwischen Light/Dark anhand der 'dark'-Klasse auf <html>
 const useIsDarkMode = () => {
@@ -21,26 +46,14 @@ const useIsDarkMode = () => {
   return isDark;
 };
 
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-3xl font-bold mb-6">{children}</h2>
-);
-
-const fadeIn = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 } };
-const containerVar = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, when: 'beforeChildren' },
-  },
-};
-const itemVar = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+// Hinweis: Counter/Charts werden in modularen Sections gekapselt.
 
 export default function PitchDeck() {
   const isDark = useIsDarkMode();
   const rootRef = useRef<HTMLDivElement | null>(null);
+  // Scroll-Progress über Framer Motion (Container-basiert)
+  const { scrollYProgress } = useScroll({ container: rootRef });
+  const progressSpring = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.3 });
   const sectionOrder = useMemo(
     () => [
       'Cover',
@@ -49,28 +62,34 @@ export default function PitchDeck() {
       'Produkt',
       'Markt',
       'Wettbewerb',
+      'Technik',
       'GTM',
       'Traction',
       'Business',
       'Roadmap',
       'Kosten',
       'Risiken',
+      'Pricing',
+      'UnitEconomics',
+      'KPIs',
+      'Financials',
+      'Ask',
+      'Exit',
       'Team',
       'Kontakt',
       'Impact',
+      'CTA',
     ],
     [],
   );
   const [activeId, setActiveId] = useState<string>('Cover');
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  const linksRef = useRef<HTMLDivElement | null>(null);
+  const [navShadow, setNavShadow] = useState(false);
 
-  const costData = useMemo(
-    () => [
-      { name: 'Personal', value: 700 },
-      { name: 'Hardware', value: 300 },
-      { name: 'Cloud & Pilot', value: 100 },
-    ],
-    []
-  );
+  // Daten werden zentral aus Sections/data.ts importiert (costData, revenueData)
 
   // Recharts Theme-Farben je Modus
   const chartColors = useMemo(() => {
@@ -111,12 +130,72 @@ export default function PitchDeck() {
     return () => obs.disconnect();
   }, [sectionOrder]);
 
+  // Keyboard Shortcuts: j/k oder Pfeiltasten für nächste/vorherige Sektion
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Eingaben in Formularen nicht abfangen
+      const target = e.target as HTMLElement | null;
+      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
+
+      const idx = sectionOrder.indexOf(activeId);
+      const goto = (nextIdx: number) => {
+        const bounded = Math.min(Math.max(nextIdx, 0), sectionOrder.length - 1);
+        const id = sectionOrder[bounded];
+        const el = document.getElementById(id);
+        if (el) {
+          setActiveId(id);
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+
+      switch (e.key) {
+        case 'j':
+        case 'ArrowDown':
+        case 'PageDown':
+          e.preventDefault();
+          goto(idx + 1);
+          break;
+        case 'k':
+        case 'ArrowUp':
+        case 'PageUp':
+          e.preventDefault();
+          goto(idx - 1);
+          break;
+        default:
+          break;
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [activeId, sectionOrder]);
+
+  // Auto-center aktiven Link in der horizontal scrollbaren Link-Leiste
+  useEffect(() => {
+    const container = linksRef.current;
+    if (!container) return;
+    const el = container.querySelector<HTMLAnchorElement>(`a[href="#${activeId}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [activeId]);
+
+  // Navbar-Shadow bei Scroll: zeigt subtilen Schatten, sobald Inhalt gescrollt ist
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const onScroll = () => setNavShadow(el.scrollTop > 2);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll as any);
+  }, []);
+
   const progressPct = useMemo(() => {
     const idx = Math.max(0, sectionOrder.indexOf(activeId));
     return Math.round(((idx + 1) / sectionOrder.length) * 100);
   }, [activeId, sectionOrder]);
 
   const handleExport = async () => {
+    setExportError(null);
+    setIsExporting(true);
     // Verbesserter PDF-Export: versuche html2pdf.js (optional), sonst Fallback print
     try {
       const el = rootRef.current ?? document.body;
@@ -133,10 +212,17 @@ export default function PitchDeck() {
           pagebreak: { mode: ['css', 'legacy'] },
         } as any;
         await html2pdf().set(opt).from(el).save();
+        setIsExporting(false);
         return;
       }
-    } catch {}
-    window.print();
+      // Fallback
+      window.print();
+    } catch (e: any) {
+      console.error('PDF Export fehlgeschlagen', e);
+      setExportError('Export fehlgeschlagen. Bitte erneut versuchen oder Browser-Print nutzen.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -165,253 +251,205 @@ export default function PitchDeck() {
         }
       `}</style>
       {/* Top-Navigation */}
-      <nav className="sticky top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200 dark:border-gray-800 relative">
-        <div className="flex items-center gap-6">
-          {['Problem', 'Lösung', 'Produkt', 'Markt', 'Wettbewerb', 'GTM', 'Traction', 'Business', 'Roadmap', 'Kosten', 'Risiken', 'Team', 'Kontakt', 'Impact'].map((item) => (
-            <a
-              key={item}
-              href={`#${item}`}
-              className={[
-                'hidden sm:inline text-sm font-medium transition-colors',
-                activeId === item
-                  ? 'text-blue-600'
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600',
-              ].join(' ')}
-              aria-current={activeId === item ? 'true' : undefined}
-            >
-              {item}
-            </a>
-          ))}
+      <nav aria-label="Pitchdeck Navigation" className={[
+        'sticky top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200 dark:border-gray-800 relative',
+        navShadow ? 'shadow-sm' : '',
+      ].join(' ')}>
+        <div className="flex items-center gap-4 min-w-0">
+          {/* Mobile TOC */}
+          <label className="sm:hidden text-xs text-gray-600 dark:text-gray-300" htmlFor="toc-select">Sektion</label>
+          <select
+            id="toc-select"
+            className="sm:hidden block text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-md px-2 py-1 text-gray-800 dark:text-gray-100"
+            value={activeId}
+            onChange={(e) => {
+              const id = e.target.value;
+              setActiveId(id);
+              const el = document.getElementById(id);
+              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          >
+            {sectionOrder.filter((s) => s !== 'Cover').map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
+          {/* Desktop/Tablet Link-Leiste */}
+          <div ref={linksRef} className="hidden sm:flex items-center gap-6 overflow-x-auto">
+            {['Problem', 'Lösung', 'Produkt', 'Markt', 'Wettbewerb', 'Technik', 'GTM', 'Traction', 'Business', 'Roadmap', 'Kosten', 'Risiken', 'Pricing', 'UnitEconomics', 'KPIs', 'Financials', 'Ask', 'Exit', 'Team', 'Kontakt', 'Impact', 'CTA'].map((item) => (
+              <a
+                key={item}
+                href={`#${item}`}
+                className={[
+                  'text-sm font-medium transition-colors whitespace-nowrap',
+                  activeId === item
+                    ? 'text-blue-600'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-600',
+                ].join(' ')}
+                aria-current={activeId === item ? 'page' : undefined}
+              >
+                {item}
+              </a>
+            ))}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <a href="#Cover" className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600">Cover</a>
-          <button onClick={handleExport} className="rounded-md bg-blue-600 text-white text-sm px-3 py-2 hover:bg-blue-700">
-            Export als PDF
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const url = `${window.location.origin}${window.location.pathname}#${activeId}`;
+                await navigator.clipboard.writeText(url);
+                setCopiedLink(url);
+                setTimeout(() => setCopiedLink(null), 2000);
+              } catch (err) {
+                setCopiedLink('Fehler beim Kopieren');
+                setTimeout(() => setCopiedLink(null), 2000);
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+            aria-label="Link zur aktiven Sektion kopieren"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 007.07 0l1.41-1.41a5 5 0 00-7.07-7.07L10 5"/>
+              <path d="M14 11a5 5 0 00-7.07 0L5.5 12.43a5 5 0 007.07 7.07L14 19"/>
+            </svg>
+            Link kopieren
+          </button>
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            aria-busy={isExporting}
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 text-white text-sm px-3 py-2 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isExporting ? (
+              <>
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                Export läuft…
+              </>
+            ) : (
+              'Export als PDF'
+            )}
           </button>
         </div>
-        {/* Progress Bar */}
-        <div className="absolute left-0 bottom-0 h-0.5 bg-blue-100 dark:bg-gray-700 w-full">
-          <div className="h-full bg-blue-600 transition-all" style={{ width: `${progressPct}%` }} />
+        {/* Fehler-Hinweis bei Export */}
+        {exportError && (
+          <div role="alert" className="absolute -bottom-7 left-4 right-4 text-xs text-red-600 dark:text-red-400">
+            {exportError}
+          </div>
+        )}
+        {/* Kopiert-Toast */}
+        {copiedLink && (
+          <div role="status" className="fixed bottom-4 left-1/2 -translate-x-1/2 rounded-md bg-gray-900 text-white text-xs px-3 py-2 shadow-lg">
+            {copiedLink === 'Fehler beim Kopieren' ? copiedLink : 'Link kopiert!'}
+          </div>
+        )}
+        {/* Progress Bar (useScroll-basiert) */}
+        <div className="absolute left-0 bottom-0 h-0.5 bg-blue-100 dark:bg-gray-700 w-full overflow-hidden">
+          <motion.div
+            className="h-full bg-blue-600"
+            style={{ scaleX: progressSpring, transformOrigin: 'left' }}
+          />
         </div>
       </nav>
 
-      {/* Cover */}
-      <section id="Cover" className="print-section snap-start h-screen flex flex-col items-center justify-center text-center px-6">
-        <motion.h1 initial={fadeIn.initial} animate={fadeIn.animate} transition={{ duration: 0.6 }} className="text-4xl font-bold text-blue-600 mb-4">
-          SigmaCode AI
-        </motion.h1>
-        <p className="text-2xl">Humanoide Roboter as a Service – KI für Alltag & Pflege</p>
-        <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">„Roboter, die den Alltag erleichtern“</p>
-      </section>
+      {/* Cover (modular) */}
+      <Cover scrollYProgress={scrollYProgress} />
 
-      {/* Problem */}
-      <section id="Problem" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Problem & Marktbedarf</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Demografischer Wandel: 30 % der EU-Bevölkerung 65+ bis 2050</motion.li>
-            <motion.li variants={itemVar}>Pflege- & Dienstleistungsmangel → steigender Fachkräftemangel</motion.li>
-            <motion.li variants={itemVar}>Bisherige Roboterlösungen: teuer, nur für Großkunden, nicht alltagstauglich</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Problem (modular) */}
+      <Problem />
 
-      {/* Lösung */}
-      <section id="Lösung" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Unsere Lösung</SectionTitle>
-          <ul className="space-y-3 text-lg">
-            <motion.li variants={itemVar} className="flex items-center gap-2"><CheckCircle className="text-blue-500"/> KI-Betriebssystem für humanoide Roboter</motion.li>
-            <motion.li variants={itemVar} className="flex items-center gap-2"><CheckCircle className="text-blue-500"/> Skill-Store (App-Store für Roboterfähigkeiten)</motion.li>
-            <motion.li variants={itemVar} className="flex items-center gap-2"><CheckCircle className="text-blue-500"/> Robot-as-a-Service Modell</motion.li>
-            <motion.li variants={itemVar} className="flex items-center gap-2"><CheckCircle className="text-blue-500"/> Use Cases: Pflege, Haushalt, Hotellerie, Logistik</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Lösung (modular) */}
+      <Solution />
 
-      {/* Produkt */}
-      <section id="Produkt" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Produkt & USP</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="font-semibold mb-2">Produkt</h3>
-              <ul className="list-disc pl-6 space-y-1">
-                <motion.li variants={itemVar}>KI-OS für humanoide Roboter mit Skill-Store</motion.li>
-                <motion.li variants={itemVar}>Multimodale Wahrnehmung (Vision, Sprache, Sensorik)</motion.li>
-                <motion.li variants={itemVar}>Edge + Cloud Hybrid, kontinuierliches Lernen</motion.li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2 text-blue-600">USP</h3>
-              <ul className="list-disc pl-6 space-y-1">
-                <motion.li variants={itemVar}>Alltagstauglichkeit & Sicherheit by Design</motion.li>
-                <motion.li variants={itemVar}>Leistbares RaaS mit modularen Skills</motion.li>
-                <motion.li variants={itemVar}>Schnelle Integration auf gängige Hardware</motion.li>
-              </ul>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      {/* Produkt (modular) */}
+      <Product />
 
-      {/* Markt */}
-      <section id="Markt" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Markt & Größe</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>SAM: Haushalte, Pflegeeinrichtungen, Hotels in EU</motion.li>
-            <motion.li variants={itemVar}>Wachstum: +20% CAGR soziale/Service-Robotik</motion.li>
-            <motion.li variants={itemVar}>Einstiegsmärkte: AT/DE Pflege & Hospitality</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Markt (modular) */}
+      <Market />
 
-      {/* Wettbewerb */}
-      <section id="Wettbewerb" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Wettbewerb</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Heute: Digit, Unitree, Optimus, Pepper – teuer/limitiert</motion.li>
-            <motion.li variants={itemVar}>Unsere Differenzierung: Alltag, Preis, EU-Fokus, Skills</motion.li>
-            <motion.li variants={itemVar}>Partnerschaften statt Eigen-Hardware</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Wettbewerb (modular) */}
+      <Competition />
 
-      {/* Technik */}
-      <section id="Technik" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Technisches Konzept</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>KI-Kern: Sprachmodell + Entscheidungs-Engine</motion.li>
-            <motion.li variants={itemVar}>Sensorik: Kamera, LiDAR, Audio → multimodal</motion.li>
-            <motion.li variants={itemVar}>Skill-Store: Cloud-basiert, jederzeit erweiterbar</motion.li>
-            <motion.li variants={itemVar}>Hardware: Integration auf bestehende humanoide Plattformen (Tesla, Unitree, Neura)</motion.li>
-            <motion.li variants={itemVar}>TRL 4 → 7 (Simulation → Prototyp → Pilotkunde)</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Technik (modular) */}
+      <Technology />
 
-      {/* Business */}
-      <section id="Business" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Geschäftsmodell (RaaS)</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Abo-Modell: 1.500–2.500 €/Monat pro Roboter</motion.li>
-            <motion.li variants={itemVar}>Inklusive: Wartung, Updates, Support</motion.li>
-            <motion.li variants={itemVar}>Pay-per-Skill: Zusatzmodule buchbar</motion.li>
-            <motion.li variants={itemVar}>Kundensegmente: Haushalte, Pflegeeinrichtungen, Hotels, KMU</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Business (modular) */}
+      <Business />
 
-      {/* GTM */}
-      <section id="GTM" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Go-To-Market</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Pilotkunden in Pflege & Hotels, Referenzen aufbauen</motion.li>
-            <motion.li variants={itemVar}>Direktvertrieb + Partner (Systemintegratoren)</motion.li>
-            <motion.li variants={itemVar}>Pricing/Packaging-Experimente, Skill-Bundles</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* GTM (modular) */}
+      <GTM />
 
-      {/* Traction */}
-      <section id="Traction" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Traction & Validierung</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>LoIs/Interessenbekundungen (Pflege, Hospitality)</motion.li>
-            <motion.li variants={itemVar}>Technik-Demos/Prototypen, Feldtests geplant</motion.li>
-            <motion.li variants={itemVar}>Advisory/Partnerschaften in Aufbau</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Traction (modular) */}
+      <Traction />
 
-      {/* Roadmap */}
-      <section id="Roadmap" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Roadmap & Meilensteine</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>2025–2026: Softwareprototyp + Integration</motion.li>
-            <motion.li variants={itemVar}>2026–2027: Pilotprojekte (Pflegeheim, Hotel, Haushalt)</motion.li>
-            <motion.li variants={itemVar}>2027+: Marktstart Robot-as-a-Service (Österreich/EU)</motion.li>
-            <motion.li variants={itemVar}>2028+: Skalierung international</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Roadmap (modular) */}
+      <Roadmap />
 
-      {/* Kosten */}
-      <section id="Kosten" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Kostenstruktur (2 Jahre)</SectionTitle>
-          <div className="w-full h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={costData}>
-                <XAxis dataKey="name" stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} />
-                <YAxis stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} />
-                <Tooltip
-                  cursor={{ fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }}
-                  contentStyle={{ backgroundColor: chartColors.tooltipBg, borderColor: chartColors.axisLine, color: chartColors.tooltipText }}
-                  labelStyle={{ color: chartColors.tooltipText }}
-                  itemStyle={{ color: chartColors.tooltipText }}
-                />
-                <Bar dataKey="value" fill={chartColors.bar} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Gesamtvolumen: ~1,1 Mio. €</p>
-        </motion.div>
-      </section>
+      {/* Kosten (modular) */}
+      <Costs data={costData} chartColors={chartColors} isDark={isDark} />
 
-      {/* Risiken */}
-      <section id="Risiken" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Risiken & Mitigation</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Hardware-Abhängigkeit → Multi-Vendor-Strategie</motion.li>
-            <motion.li variants={itemVar}>Sicherheit/Haftung → Safety-Layer, Zulassungen</motion.li>
-            <motion.li variants={itemVar}>Akzeptanz → UX-Design, Piloten, kontinuierliches Feedback</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Risiken (modular) */}
+      <Risks />
 
-      {/* Team */}
-      <section id="Team" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12 bg-gray-50 dark:bg-gray-800">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Team & Rollen</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>KI/Robotik, Produkt, Partnerschaften, Regulierung</motion.li>
-            <motion.li variants={itemVar}>Advisors: Pflege, HRI, Sicherheit</motion.li>
-            <motion.li variants={itemVar}>Hiring-Plan: Core-Engineering, Field Ops</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Pricing (modular) */}
+      <Pricing />
 
-      {/* Kontakt */}
-      <section id="Kontakt" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Kontakt</SectionTitle>
-          <p className="text-lg text-gray-700 dark:text-gray-300">Kontaktieren Sie uns für Demos, Piloten und Partnerschaften.</p>
-          <ul className="mt-4">
-            <li className="text-blue-600">hello@sigmacode.ai</li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* Unit Economics (modular) */}
+      <UnitEconomics />
 
-      {/* Impact */}
-      <section id="Impact" className="print-section snap-start h-screen flex flex-col justify-center px-6 md:px-12">
-        <motion.div variants={containerVar} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }}>
-          <SectionTitle>Impact</SectionTitle>
-          <ul className="list-disc pl-6 space-y-2 text-lg">
-            <motion.li variants={itemVar}>Wirtschaftlich: Wertschöpfung & neue High-Tech-Jobs in Österreich</motion.li>
-            <motion.li variants={itemVar}>Gesellschaftlich: Entlastung Pflege, Selbstständigkeit für Senioren</motion.li>
-            <motion.li variants={itemVar}>Ökologisch: RaaS = Kreislauf, effizientere Ressourcennutzung</motion.li>
-            <motion.li variants={itemVar}>Wissenschaftlich: Europäischer Beitrag zu KI & Robotik</motion.li>
-          </ul>
-        </motion.div>
-      </section>
+      {/* KPIs (modular) */}
+      <KPIs />
+
+      {/* Financials (modular) */}
+      <Financials data={revenueData} chartColors={chartColors} isDark={isDark} />
+
+      {/* Ask (modular) */}
+      <Ask />
+
+      {/* Exit (modular) */}
+      <Exit />
+
+      {/* Team (modular) */}
+      <Team />
+
+      {/* Kontakt (modular) */}
+      <Contact />
+
+      {/* Impact (modular) */}
+      <Impact />
+
+      {/* CTA (modular) */}
+      <CTA />
+
+      {/* Progress Dots (mobil unten zentriert, Desktop rechts vertikal) */}
+      <div
+        aria-label="Progress Navigation"
+        className="no-print fixed z-40 flex gap-2 p-2 rounded-full bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-sm
+                   bottom-3 left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:right-3 md:top-1/2 md:-translate-y-1/2 md:translate-x-0
+                   md:flex-col"
+      >
+        {sectionOrder.map((id) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => {
+              setActiveId(id);
+              const el = document.getElementById(id);
+              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            aria-label={`Gehe zu ${id}`}
+            aria-current={activeId === id ? 'page' : undefined}
+            className={[
+              'h-2.5 w-2.5 rounded-full transition-all',
+              activeId === id ? 'bg-blue-600 scale-110' : 'bg-gray-400/70 hover:bg-gray-500',
+            ].join(' ')}
+          />
+        ))}
+      </div>
     </div>
   );
 }
