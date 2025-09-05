@@ -2,6 +2,7 @@ import type React from 'react';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { buttonStyles, buttonSizeXs } from '../ui/Button';
 
 export type MarketingTeaserProps = {
   id: string;
@@ -34,6 +35,14 @@ export type MarketingTeaserProps = {
   bulletVariant?: 'default' | 'subtle';
   /** Optional: Darstellungsvariante – plain (Default) oder card (Glass-Card mit Ring) */
   variant?: 'plain' | 'card';
+  /** Optional: Ausrichtung des Headers samt Icon/Titel */
+  align?: 'left' | 'center';
+  /** Optional: Darstellungsstil der Bullet-Container */
+  bulletStyle?: 'card' | 'bare';
+  /** Optional: Icon ohne Container (kein Hintergrund, kein Ring) */
+  iconBare?: boolean;
+  /** Optional: Ausrichtung nur für das Icon (überschreibt align für das Icon) */
+  iconAlign?: 'left' | 'center';
 };
 
 /**
@@ -63,6 +72,10 @@ export default function MarketingTeaser({
   iconSize = 'md',
   bulletVariant = 'default',
   variant = 'plain',
+  align = 'left',
+  bulletStyle = 'card',
+  iconBare = false,
+  iconAlign,
 }: MarketingTeaserProps) {
   const prefersReduced = useReducedMotion();
   const [played, setPlayed] = useState(false);
@@ -147,8 +160,13 @@ export default function MarketingTeaser({
   const iconBoxSize = iconSizeMap[iconSize] ?? (compact ? 'h-10 w-10' : 'h-11 w-11');
   const cardWrapper = variant === 'card';
   const cardClasses =
-    'rounded-2xl border border-white/10 ring-1 ring-black/5 bg-white/5 dark:bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/5 hover:shadow-md transition duration-200';
+    // Use shared glass card utilities for consistent look & theming
+    'ui-glass-card ui-glass-card-hover rounded-2xl transition duration-200';
   const cardPad = compact ? 'p-4 sm:p-5' : 'p-5 sm:p-6';
+  const headerAlignClasses = align === 'center'
+    ? 'items-center text-center'
+    : 'items-start text-left';
+  const headerTitleAlign = align === 'center' ? 'text-center' : 'text-left';
 
   // In Reduced Motion sollte die Section sofort freigegeben werden
   useEffect(() => {
@@ -183,7 +201,7 @@ export default function MarketingTeaser({
             <div className={`grid grid-cols-1 ${compact ? 'gap-6' : 'gap-10'} ${hasBullets ? 'md:grid-cols-2 lg:grid-cols-3' : ''}`}>
               <div className={`${hasBullets ? 'md:col-span-1' : ''}`}>
                 <motion.div
-                  className="flex flex-col items-start text-left gap-3 sm:flex-row sm:items-center sm:text-left"
+                  className={`flex flex-col ${headerAlignClasses} gap-3 ${align === 'center' ? '' : 'sm:flex-row sm:items-center sm:text-left'}`}
                   initial={playOnClick ? { opacity: 1, y: 0 } : prefersReduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
                   whileInView={playOnClick ? undefined : prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
                   viewport={playOnClick ? undefined : { once: true, amount: 0.2 }}
@@ -198,29 +216,33 @@ export default function MarketingTeaser({
                   }}
                 >
                   {icon ? (
-                    <div className={`grid ${iconBoxSize} place-items-center rounded-xl ring-1 backdrop-blur-sm ${toneClasses.iconBox}`}>
-                      {icon}
-                    </div>
+                    iconBare ? (
+                      <span className={(iconAlign ?? align) === 'center' ? 'mx-auto' : ''}>{icon}</span>
+                    ) : (
+                      <div className={`grid ${iconBoxSize} place-items-center rounded-xl ring-1 backdrop-blur-sm ${toneClasses.iconBox} ${(iconAlign ?? align) === 'center' ? 'mx-auto' : ''}`}>
+                        {icon}
+                      </div>
+                    )
                   ) : null}
                   <h2
                     id={`${id}-heading`}
-                    className={`${compact ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-semibold tracking-tight text-gray-900 dark:text-white text-left`}
+                    className={`typo-section-title text-gray-900 dark:text-white ${headerTitleAlign}`}
                   >
                     {title}
                   </h2>
                 </motion.div>
                 {description ? (
-                  <p className={`${compact ? 'mt-3 text-[15px]' : 'mt-4 text-base'} max-w-none leading-relaxed text-gray-700/90 dark:text-gray-300 text-left`}>
+                  <p className={`${compact ? 'mt-3' : 'mt-4'} max-w-none typo-card-body leading-relaxed text-gray-700/90 dark:text-gray-300 ${headerTitleAlign}`}>
                     {description}
                   </p>
                 ) : null}
                 {!hideCta && (
-                  <div className="mt-6 flex justify-start">
+                  <div className={`mt-6 flex ${align === 'center' ? 'justify-center' : 'justify-start'}`}>
                     {ctaHref.startsWith('#') ? (
                       <a
                         href={ctaHref}
                         aria-label={`${title} – ${ctaLabel}`}
-                        className={`inline-flex items-center gap-2 rounded-lg ${compact ? 'px-3.5 py-2 text-[13px]' : 'px-4 py-2.5 text-sm'} font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 ${toneClasses.cta} focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900`}
+                        className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
                         data-analytics-id={ctaAnalyticsId}
                         data-title={ctaLabel}
                       >
@@ -230,7 +252,7 @@ export default function MarketingTeaser({
                       <Link
                         to={ctaHref}
                         aria-label={`${title} – ${ctaLabel}`}
-                        className={`inline-flex items-center gap-2 rounded-lg ${compact ? 'px-3.5 py-2 text-[13px]' : 'px-4 py-2.5 text-sm'} font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 ${toneClasses.cta} focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900`}
+                        className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
                         data-analytics-id={ctaAnalyticsId}
                         data-title={ctaLabel}
                       >
@@ -246,7 +268,11 @@ export default function MarketingTeaser({
                     {bullets.map((b, i) => (
                       <motion.div
                         key={b}
-                        className={`group relative rounded-2xl border ${toneClasses.cardBorder} bg-white/60 ${compact ? 'p-4 text-[13px]' : 'p-5 text-sm'} shadow-sm ring-1 ring-black/5 transition hover:shadow-md ${toneClasses.cardHover} dark:bg-gray-900/60 dark:ring-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/40`}
+                        className={
+                          bulletStyle === 'bare'
+                            ? `${compact ? 'py-1.5' : 'py-2'} text-sm`
+                            : `group relative ui-glass-card ui-glass-card-hover rounded-2xl ${toneClasses.cardBorder} ${compact ? 'p-4 text-[13px]' : 'p-5 text-sm'}`
+                        }
                         initial={playOnClick ? { opacity: 0, y: prefersReduced ? 0 : 10 } : prefersReduced ? { opacity: 0 } : { opacity: 0, y: 10 }}
                         animate={playOnClick ? (played ? { opacity: 1, y: 0 } : { opacity: 0, y: prefersReduced ? 0 : 10 }) : undefined}
                         whileInView={playOnClick ? undefined : prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
@@ -261,7 +287,7 @@ export default function MarketingTeaser({
                           }
                         }}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className={`flex items-start gap-3 ${align === 'center' ? 'justify-center' : ''}`}>
                           {bulletVariant === 'subtle' ? (
                             <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-gray-400 dark:text-gray-300`}>
                               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -275,12 +301,12 @@ export default function MarketingTeaser({
                               </svg>
                             </span>
                           )}
-                          <p className="text-gray-800 dark:text-gray-200">{b}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
+                          <p className={`typo-card-body text-gray-800 dark:text-gray-200 ${align === 'center' ? 'text-center' : ''}`}>{b}</p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
+              </div>
               )}
             </div>
           </div>
@@ -288,7 +314,7 @@ export default function MarketingTeaser({
           <div className={`grid grid-cols-1 ${compact ? 'gap-6' : 'gap-10'} ${hasBullets ? 'md:grid-cols-2 lg:grid-cols-3' : ''}`}>
             <div className={`${hasBullets ? 'md:col-span-1' : ''}`}>
               <motion.div
-                className="flex flex-col items-start text-left gap-3 sm:flex-row sm:items-center sm:text-left"
+                className={`flex flex-col ${headerAlignClasses} gap-3 ${align === 'center' ? '' : 'sm:flex-row sm:items-center sm:text-left'}`}
                 initial={playOnClick ? { opacity: 1, y: 0 } : prefersReduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
                 whileInView={playOnClick ? undefined : prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 viewport={playOnClick ? undefined : { once: true, amount: 0.2 }}
@@ -303,29 +329,33 @@ export default function MarketingTeaser({
                 }}
               >
                 {icon ? (
-                  <div className={`grid ${iconBoxSize} place-items-center rounded-xl ring-1 backdrop-blur-sm ${toneClasses.iconBox}`}>
-                    {icon}
-                  </div>
+                  iconBare ? (
+                    <span className={(iconAlign ?? align) === 'center' ? 'mx-auto' : ''}>{icon}</span>
+                  ) : (
+                    <div className={`grid ${iconBoxSize} place-items-center rounded-xl ring-1 backdrop-blur-sm ${toneClasses.iconBox} ${(iconAlign ?? align) === 'center' ? 'mx-auto' : ''}`}>
+                      {icon}
+                    </div>
+                  )
                 ) : null}
                 <h2
                   id={`${id}-heading`}
-                  className={`${compact ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-semibold tracking-tight text-gray-900 dark:text-white text-left`}
+                  className={`typo-section-title text-gray-900 dark:text-white ${headerTitleAlign}`}
                 >
                   {title}
                 </h2>
               </motion.div>
               {description ? (
-                <p className={`${compact ? 'mt-3 text-[15px]' : 'mt-4 text-base'} max-w-none leading-relaxed text-gray-700/90 dark:text-gray-300 text-left`}>
+                <p className={`${compact ? 'mt-3' : 'mt-4'} max-w-none typo-card-body leading-relaxed text-gray-700/90 dark:text-gray-300 ${headerTitleAlign}`}>
                   {description}
                 </p>
               ) : null}
               {!hideCta && (
-                <div className="mt-6 flex justify-start">
+                <div className={`mt-6 flex ${align === 'center' ? 'justify-center' : 'justify-start'}`}>
                   {ctaHref.startsWith('#') ? (
                     <a
                       href={ctaHref}
                       aria-label={`${title} – ${ctaLabel}`}
-                      className={`inline-flex items-center gap-2 rounded-lg ${compact ? 'px-3.5 py-2 text-[13px]' : 'px-4 py-2.5 text-sm'} font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 ${toneClasses.cta} focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900`}
+                      className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
                       data-analytics-id={ctaAnalyticsId}
                       data-title={ctaLabel}
                     >
@@ -335,7 +365,7 @@ export default function MarketingTeaser({
                     <Link
                       to={ctaHref}
                       aria-label={`${title} – ${ctaLabel}`}
-                      className={`inline-flex items-center gap-2 rounded-lg ${compact ? 'px-3.5 py-2 text-[13px]' : 'px-4 py-2.5 text-sm'} font-medium text-white shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 ${toneClasses.cta} focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900`}
+                      className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
                       data-analytics-id={ctaAnalyticsId}
                       data-title={ctaLabel}
                     >
@@ -351,7 +381,11 @@ export default function MarketingTeaser({
                   {bullets.map((b, i) => (
                     <motion.div
                       key={b}
-                      className={`group relative rounded-2xl border ${toneClasses.cardBorder} bg-white/60 ${compact ? 'p-4 text-[13px]' : 'p-5 text-sm'} shadow-sm ring-1 ring-black/5 transition hover:shadow-md ${toneClasses.cardHover} dark:bg-gray-900/60 dark:ring-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/40`}
+                      className={
+                        bulletStyle === 'bare'
+                          ? `${compact ? 'py-1.5' : 'py-2'} text-sm`
+                          : `group relative rounded-2xl border ${toneClasses.cardBorder} bg-white/60 ${compact ? 'p-4 text-[13px]' : 'p-5 text-sm'} shadow-sm ring-1 ring-black/5 transition hover:shadow-md ${toneClasses.cardHover} dark:bg-gray-900/60 dark:ring-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/40`
+                      }
                       initial={playOnClick ? { opacity: 0, y: prefersReduced ? 0 : 10 } : prefersReduced ? { opacity: 0 } : { opacity: 0, y: 10 }}
                       animate={playOnClick ? (played ? { opacity: 1, y: 0 } : { opacity: 0, y: prefersReduced ? 0 : 10 }) : undefined}
                       whileInView={playOnClick ? undefined : prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
@@ -366,7 +400,7 @@ export default function MarketingTeaser({
                         }
                       }}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className={`flex items-start gap-3 ${align === 'center' ? 'justify-center' : ''}`}>
                         {bulletVariant === 'subtle' ? (
                           <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-gray-400 dark:text-gray-300`}>
                             <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -380,7 +414,7 @@ export default function MarketingTeaser({
                             </svg>
                           </span>
                         )}
-                        <p className="text-gray-800 dark:text-gray-200">{b}</p>
+                        <p className={`typo-card-body text-gray-800 dark:text-gray-200 ${align === 'center' ? 'text-center' : ''}`}>{b}</p>
                       </div>
                     </motion.div>
                   ))}

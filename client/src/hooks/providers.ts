@@ -22,12 +22,13 @@ export function useProvidersList(i18nInstance: i18n) {
 }
 
 export function useProviderDetail(slug: string | undefined, i18nInstance: i18n) {
-  return useQuery<Provider | undefined>({
+  return useQuery<Provider | null>({
     queryKey: ['providers:detail', slug, i18nInstance.language],
     queryFn: async () => {
-      if (!slug) return undefined;
+      if (!slug) return null;
       const data = await loadProvidersData(i18nInstance);
-      return data.providers.find((p) => p.slug === slug);
+      const found = data.providers.find((p) => p.slug === slug);
+      return found ?? null;
     },
     enabled: Boolean(slug),
     staleTime: 5 * 60 * 1000,

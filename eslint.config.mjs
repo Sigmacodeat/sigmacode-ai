@@ -205,6 +205,23 @@ export default [
       'jsx-a11y/interactive-supports-focus': 'off',
       'jsx-a11y/no-noninteractive-tabindex': 'off',
       'jsx-a11y/img-redundant-alt': 'off',
+      // Forbid barrel imports from pitchdeck Sections, enforce explicit file+extension
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@/components/pitchdeck/Sections',
+                '@/components/pitchdeck/Sections/index',
+              ],
+              message:
+                'Verwende explizite Dateiimporte mit Endung, z.B.: import Roadmap from \'@/components/pitchdeck/Sections/Roadmap.tsx\';',
+              allowTypeImports: false,
+            },
+          ],
+        },
+      ],
     },
   },
   {

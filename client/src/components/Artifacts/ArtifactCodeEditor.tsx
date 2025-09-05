@@ -2,13 +2,20 @@
 type SandpackBundlerFileMinimal = { code: string };
 import debounce from 'lodash/debounce';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import {
-  useSandpack,
-  SandpackCodeEditor,
-  SandpackProvider as StyledProvider,
-} from '@codesandbox/sandpack-react';
-import type { SandpackProviderProps } from '@codesandbox/sandpack-react/unstyled';
-import type { CodeEditorRef } from '@codesandbox/sandpack-react';
+// Dynamisches Lazy-Loading von Sandpack, um Initial-Bundle zu entlasten
+type SandpackModule = {
+  SandpackProvider: React.ComponentType<any>;
+  SandpackCodeEditor: React.ForwardRefExoticComponent<any>;
+  useSandpack: () => { sandpack: { files: Record<string, unknown> } };
+};
+type SandpackProviderProps = {
+  template?: string;
+  files?: Record<string, unknown>;
+  options?: Record<string, unknown>;
+  theme?: string;
+  children?: React.ReactNode;
+};
+type CodeEditorRef = unknown;
 import type { ArtifactFiles, Artifact } from '~/common';
 import { useEditArtifact, useGetStartupConfig } from '~/data-provider';
 import { useEditorContext, useArtifactsContext } from '~/Providers';
@@ -28,13 +35,15 @@ const CodeEditor = ({
   readOnly,
   artifact,
   editorRef,
+  sandpackMod,
 }: {
   fileKey: string;
   readOnly?: boolean;
   artifact: Artifact;
   editorRef: React.MutableRefObject<CodeEditorRef>;
+  sandpackMod: SandpackModule;
 }) => {
-  const { sandpack } = useSandpack();
+  const { sandpack } = sandpackMod.useSandpack();
   const [currentUpdate, setCurrentUpdate] = useState<string | null>(null);
   const { isMutating, setIsMutating, setCurrentCode } = useEditorContext();
   const editArtifact = useEditArtifact({
@@ -110,7 +119,7 @@ const CodeEditor = ({
   ]);
 
   return (
-    <SandpackCodeEditor
+    <sandpackMod.SandpackCodeEditor
       ref={editorRef}
       showTabs={false}
       showRunButton={false}
@@ -133,8 +142,8 @@ export const ArtifactCodeEditor = function ({
   fileKey: string;
   artifact: Artifact;
   files: ArtifactFiles;
-  template: SandpackProviderProps['template'];
-  sharedProps: Partial<SandpackProviderProps>;
+  template: string | undefined;
+  sharedProps: unknown;
   editorRef: React.MutableRefObject<CodeEditorRef>;
 }) {
   const { data: config } = useGetStartupConfig();
@@ -153,10 +162,39 @@ export const ArtifactCodeEditor = function ({
     setReadOnly(isSubmitting ?? false);
   }, [isSubmitting]);
 
+  // Lazy-load Sandpack-Module
+  const [sandpackMod, setSandpackMod] = useState<SandpackModule | null>(null);
+  useEffect(() => {
+    let active = true;
+    import('@codesandbox/sandpack-react')
+      .then((m) => {
+        if (!active) return;
+        const mod: SandpackModule = {
+          SandpackProvider: (m as any).SandpackProvider ?? (m as any).default?.SandpackProvider ?? (m as any).StyledProvider ?? (m as any),
+          SandpackCodeEditor: (m as any).SandpackCodeEditor,
+          useSandpack: (m as any).useSandpack,
+        };
+        setSandpackMod(mod);
+      })
+      .catch(() => setSandpackMod(null));
+    return () => {
+      active = false;
+    };
+  }, []);
+
   if (Object.keys(files).length === 0) {
     return null;
   }
 
+  if (!sandpackMod) {
+    return (
+      <div className="w-full h-full min-h-[240px] rounded-md bg-neutral-900/60 text-neutral-300 grid place-items-center text-sm">
+        Editor wird geladen …
+      </div>
+    );
+  }
+
+  const StyledProvider = sandpackMod.SandpackProvider as React.ComponentType<SandpackProviderProps>;
   return (
     <StyledProvider
       theme="dark"
@@ -164,11 +202,17 @@ export const ArtifactCodeEditor = function ({
         ...files,
         ...sharedFiles,
       }}
-      options={options}
-      {...sharedProps}
+      options={options as unknown as Record<string, unknown>}
+      {...(sharedProps as Record<string, unknown>)}
       template={template}
     >
-      <CodeEditor fileKey={fileKey} artifact={artifact} editorRef={editorRef} readOnly={readOnly} />
+      <CodeEditor
+        sandpackMod={sandpackMod}
+        fileKey={fileKey}
+        artifact={artifact}
+        editorRef={editorRef}
+        readOnly={readOnly}
+      />
     </StyledProvider>
   );
 };

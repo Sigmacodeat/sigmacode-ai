@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Roadmap from '~/components/pitchdeck/Sections/Roadmap';
+import Roadmap from '@/components/pitchdeck/Sections/Roadmap.tsx';
 
 export default function RoadmapOnly() {
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ export default function RoadmapOnly() {
               </Link>
               <Link
                 to="/c/new"
-                className="inline-flex items-center rounded-md border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-border"
+                className="inline-flex items-center rounded-md text-gray-800 dark:text-gray-100 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-border"
                 data-analytics-id="roadmap-cta-chat"
               >
                 {tt('marketing.roadmap.cta_chat', { defaultValue: 'Jetzt chatten' })}

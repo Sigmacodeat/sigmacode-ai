@@ -1,10 +1,8 @@
-import { memo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 import supersub from 'remark-supersub';
 import ReactMarkdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
 import type { PluggableList } from 'unified';
 import { code, codeNoExecution, a, p } from './MarkdownComponents';
 import { CodeBlockProvider, ArtifactProvider } from '~/Providers';
@@ -13,18 +11,32 @@ import { langSubset } from '~/utils';
 
 const MarkdownLite = memo(
   ({ content = '', codeExecution = true }: { content?: string; codeExecution?: boolean }) => {
-    const rehypePlugins: PluggableList = [
-      /** @ts-ignore – plugin signature differences across versions */
-      [rehypeKatex as unknown as any],
-      [
-        rehypeHighlight as unknown as any,
-        {
-          detect: true,
-          ignoreMissing: true,
-          subset: langSubset,
-        },
-      ],
-    ];
+    // Lazy-load rehype plugins only when component is used
+    const [rehypeKatex, setRehypeKatex] = useState<any | null>(null);
+    const [rehypeHighlight, setRehypeHighlight] = useState<any | null>(null);
+    useEffect(() => {
+      import('rehype-highlight')
+        .then((m) => setRehypeHighlight(m.default ?? m))
+        .catch(() => setRehypeHighlight(null));
+      import('rehype-katex')
+        .then((m) => setRehypeKatex(m.default ?? m))
+        .catch(() => setRehypeKatex(null));
+    }, []);
+
+    const rehypePlugins: PluggableList = useMemo(() => {
+      const plugins: PluggableList = [];
+      if (rehypeKatex) plugins.push([rehypeKatex as any]);
+      if (rehypeHighlight)
+        plugins.push([
+          rehypeHighlight as any,
+          {
+            detect: true,
+            ignoreMissing: true,
+            subset: langSubset,
+          },
+        ]);
+      return plugins;
+    }, [rehypeKatex, rehypeHighlight]);
 
     return (
       <MarkdownErrorBoundary content={content} codeExecution={codeExecution}>

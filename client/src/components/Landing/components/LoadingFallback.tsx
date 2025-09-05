@@ -14,7 +14,12 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
   className,
 }) => {
   return (
-    <div className={['py-8 text-center text-sm text-gray-500', className].filter(Boolean).join(' ')}>
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      className={['py-8 text-center text-sm text-gray-500', className].filter(Boolean).join(' ')}
+    >
       {label}
     </div>
   );

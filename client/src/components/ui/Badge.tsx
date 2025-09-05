@@ -6,7 +6,7 @@ export type BadgeVariant = 'glass' | 'gradient' | 'outline';
 
 const badgeStyles = cva(
   // base
-  'inline-flex items-center rounded-full font-medium tracking-tight will-change-transform transition-colors motion-safe:transition-all motion-safe:duration-200 gap-1.5 sm:gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-950 no-underline',
+  'inline-flex items-center rounded-full font-medium tracking-tight will-change-transform transition-colors motion-safe:transition-all motion-safe:duration-200 gap-1.5 sm:gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/70 dark:focus-visible:ring-teal-300/60 focus-visible:ring-offset-0 dark:focus-visible:ring-offset-0 no-underline',
   {
     variants: {
       variant: {

@@ -23,6 +23,10 @@ interface SectionHeaderProps {
   contentLagSec?: number;
   /** Callback, sobald Badge-Completion (+Lag) erreicht ist und Content erscheinen darf */
   onReady?: () => void;
+  /** Optional: Minimaler Badge-Stil als Convenience-Flag (Backward-compat) */
+  badgeMinimal?: boolean;
+  /** Optional: Ausrichtung des Badges */
+  badgeAlign?: 'left' | 'center' | 'right';
 
   // Headline
   title: string;
@@ -31,10 +35,20 @@ interface SectionHeaderProps {
   /** Semantische Überschriftenebene (SEO/A11y), Standard: h2 */
   as?: ElementType;
   titleClassName?: string;
+  /**
+   * Optional: Ausrichtung des Headline-Blocks (Titel + RightContent)
+   * - 'left' (Default): bisheriges Verhalten
+   * - 'center': zentriert nur in der jeweiligen Section
+   */
+  contentAlign?: 'left' | 'center';
 
   // Optional Subtext
   subtitle?: ReactNode;
   subtitleClassName?: string;
+
+  // Optional: Content rechts neben der Headline (CTA, Links, etc.)
+  rightContent?: ReactNode;
+  rightClassName?: string;
 
   // Timing
   baseDelay?: number; // start time for headline relative to badge (default 0.12s)
@@ -60,46 +74,67 @@ export default function SectionHeader({
   badgeColorDurationSec = 2.0,
   contentLagSec = 0.5,
   onReady,
+  badgeMinimal,
+  badgeAlign = 'center',
   title,
   id,
   as,
-  titleClassName = 'text-2xl font-semibold text-gray-900 dark:text-white',
+  // titleClassName is intentionally not honored to enforce global uniform H2 typography
+  // Keep the prop for backward-compat, but compute a unified class below.
+  titleClassName = 'text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white',
+  contentAlign = 'left',
   subtitle,
-  subtitleClassName = 'mt-2 text-gray-600 dark:text-gray-300',
+  subtitleClassName = 'mt-2 text-sm md:text-base text-gray-600 dark:text-gray-300',
   baseDelay = 0.12,
+  rightContent,
+  rightClassName,
 }: SectionHeaderProps) {
   const Heading: ElementType = as ?? 'h2';
+  const unifiedTitleClass = '!text-[36px] font-bold !font-bold tracking-tight !tracking-tight text-gray-900 dark:text-white';
   const headingId = id ?? undefined;
+  const badgeAlignClass =
+    badgeAlign === 'center' ? 'justify-center' : badgeAlign === 'right' ? 'justify-end' : 'justify-start';
+  const headRowClass =
+    contentAlign === 'center'
+      ? 'mt-2 md:mt-3 flex flex-col items-center justify-center gap-2 text-center'
+      : 'mt-2 md:mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2';
 
   return (
-    <div aria-labelledby={headingId}>
-      <SectionBadge
-        icon={icon}
-        variant={badgeVariant}
-        tone={badgeTone}
-        size={badgeSize}
-        className={badgeClassName}
-        ariaLabel={badgeAriaLabel ?? badgeText}
-        animateOnView={badgeAnimateOnView}
-        inViewAmount={badgeInViewAmount}
-        startDelaySec={badgeStartDelaySec}
-        colorDurationSec={badgeColorDurationSec}
-        onColorComplete={() => {
-          if (!onReady) return;
-          const lag = Math.max(0, contentLagSec ?? 0) * 1000;
-          if (lag === 0) {
-            onReady();
-          } else {
-            window.setTimeout(onReady, lag);
-          }
-        }}
-      >
-        {badgeText}
-      </SectionBadge>
-      <Heading id={headingId} className={titleClassName}>
-        {title}
-      </Heading>
-      {subtitle ? <p className={subtitleClassName}>{subtitle}</p> : null}
+    <div aria-labelledby={headingId} className="mb-6 sm:mb-8 md:mb-10">
+      <div className={`flex ${badgeAlignClass}`}>
+        <SectionBadge
+          icon={icon}
+          variant={badgeMinimal ? 'glass' : badgeVariant}
+          tone={badgeTone}
+          size={badgeSize}
+          className={badgeClassName}
+          ariaLabel={badgeAriaLabel ?? badgeText}
+          animateOnView={badgeAnimateOnView}
+          inViewAmount={badgeInViewAmount}
+          startDelaySec={badgeStartDelaySec}
+          colorDurationSec={badgeColorDurationSec}
+          onColorComplete={() => {
+            if (!onReady) return;
+            const lag = Math.max(0, contentLagSec ?? 0) * 1000;
+            if (lag === 0) {
+              onReady();
+            } else {
+              window.setTimeout(onReady, lag);
+            }
+          }}
+        >
+          {badgeText}
+        </SectionBadge>
+      </div>
+      <div className={headRowClass}>
+        <Heading id={headingId} className={`not-prose ${unifiedTitleClass} ${contentAlign === 'center' ? 'text-center' : ''}`}>
+          {title}
+        </Heading>
+        {rightContent ? (
+          <div className={rightClassName}>{rightContent}</div>
+        ) : null}
+      </div>
+      {subtitle ? <p className={`${subtitleClassName} ${contentAlign === 'center' ? 'text-center' : ''}`}>{subtitle}</p> : null}
     </div>
   );
 }

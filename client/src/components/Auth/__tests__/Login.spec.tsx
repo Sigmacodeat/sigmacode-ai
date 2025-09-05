@@ -209,6 +209,22 @@ test('Navigates to / on successful login', async () => {
   const navigate = jest.fn();
   jest.spyOn(reactRouter, 'useNavigate').mockReturnValue(navigate);
   
+  const setUserContext = jest.fn();
+  const login = jest.fn((/* data */) => {
+    // Simuliere, was AuthContext bei Erfolg tun würde
+    setUserContext({ token: 'mock-token', isAuthenticated: true, user: {}, redirect: '/c/new' });
+  });
+  // WICHTIG: AuthContext vor dem Rendern mocken, damit Login-Komponente ihn nutzt
+  jest.spyOn(authContext, 'useAuthContext').mockReturnValue({
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    error: null,
+    login,
+    logout: jest.fn(),
+    setUserContext,
+  } as unknown as ReturnType<typeof authContext.useAuthContext>);
+
   const { getByLabelText } = setup({
     triggerLoginSuccess: true,
     useGetStartupConfigReturnValue: {
@@ -221,21 +237,6 @@ test('Navigates to / on successful login', async () => {
     },
   });
 
-  const setUserContext = jest.fn();
-  const login = jest.fn((/* data */) => {
-    // Simuliere, was AuthContext bei Erfolg tun würde
-    setUserContext({ token: 'mock-token', isAuthenticated: true, user: {}, redirect: '/c/new' });
-  });
-  jest.spyOn(authContext, 'useAuthContext').mockReturnValue({
-    user: null,
-    token: null,
-    isAuthenticated: false,
-    error: null,
-    login,
-    logout: jest.fn(),
-    setUserContext,
-  } as unknown as ReturnType<typeof authContext.useAuthContext>);
-  
   const emailInput = getByLabelText(/email/i);
   const passwordInput = getByLabelText(/password/i);
   const submitButton = getByTestId(document.body, 'login-button');
@@ -252,5 +253,5 @@ test('Navigates to / on successful login', async () => {
     navigate('/c/new', { replace: true });
   }
 
-  expect(navigate).toHaveBeenCalled();
+  await waitFor(() => expect(navigate).toHaveBeenCalled());
 }, 15000);

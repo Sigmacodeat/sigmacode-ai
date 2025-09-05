@@ -214,7 +214,7 @@ function Hero() {
           </div>
           {/* Static framed panel with embedded badges (no orbits) */}
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-gray-400/80 bg-white/60 shadow-md ring-1 ring-black/5 backdrop-blur-sm dark:border-gray-600/80 dark:bg-gray-900/50 dark:ring-white/5 w-[22rem] h-[12.5rem] md:w-[24rem]"
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white/60 shadow-md ring-1 ring-black/5 backdrop-blur-sm dark:bg-gray-900/50 dark:ring-white/5 w-[22rem] h-[12.5rem] md:w-[24rem]"
             aria-hidden="true"
           >
             {/* subtle inner bevel */}
@@ -222,7 +222,7 @@ function Hero() {
 
             {/* TL badge */}
             <div className="absolute left-4 top-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:bg-gray-900/90 dark:text-gray-100">
                 <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 <span>{tt('marketing.badge.governance', { defaultValue: 'Governance' })}</span>
               </div>
@@ -230,7 +230,7 @@ function Hero() {
 
             {/* TR badge */}
             <div className="absolute right-4 top-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:bg-gray-900/90 dark:text-gray-100">
                 <Database className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <span>{tt('marketing.badge.rag', { defaultValue: 'RAG' })}</span>
               </div>
@@ -238,7 +238,7 @@ function Hero() {
 
             {/* BL badge */}
             <div className="absolute left-4 bottom-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:bg-gray-900/90 dark:text-gray-100">
                 <Workflow className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                 <span>{tt('marketing.badge.workflow', { defaultValue: 'Workflow' })}</span>
               </div>
@@ -246,7 +246,7 @@ function Hero() {
 
             {/* BR badge */}
             <div className="absolute right-4 bottom-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-1.5 text-sm font-semibold text-gray-800 shadow-md backdrop-blur dark:bg-gray-900/90 dark:text-gray-100">
                 <Radar className="h-4 w-4 text-brand-primary" />
                 <span>{tt('marketing.badge.observability', { defaultValue: 'Observability' })}</span>
               </div>
@@ -254,7 +254,7 @@ function Hero() {
           </div>
           {/* Center node */}
           <div className="pointer-events-none absolute left-1/2 top-1/2 grid -translate-x-1/2 -translate-y-1/2 place-items-center">
-            <div className="relative h-14 w-14 rounded-2xl bg-white/80 backdrop-blur border border-gray-200 shadow-sm dark:bg-gray-900/70 dark:border-gray-800">
+            <div className="relative h-14 w-14 rounded-2xl bg-white/80 backdrop-blur shadow-sm dark:bg-gray-900/70">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10" />
               <div className="relative z-10 flex h-full w-full items-center justify-center text-teal-600 dark:text-teal-300">
                 <Layers3 className="h-7 w-7" />
@@ -296,7 +296,7 @@ function Governance() {
     { title: 'Secrets & Provider', desc: 'BYOK oder Managed – Schlüssel sicher verwalten, Provider flexibel wechseln.' },
   ];
   return (
-    <section id="governance" className="border-t border-gray-100 py-12 scroll-mt-24 md:scroll-mt-32 dark:border-gray-900" aria-labelledby="gov-title">
+    <section id="governance" className="py-12 scroll-mt-24 md:scroll-mt-32" aria-labelledby="gov-title">
       <h2 id="gov-title" className="text-2xl font-bold">Governance</h2>
       <p className="mt-2 max-w-3xl text-gray-700 dark:text-gray-300">
         Sicherheit ist kein Add-on. Sie ist Grundlage. Policies, RBAC und Audit-Trails bilden das Rückgrat von Business AI.
@@ -321,7 +321,7 @@ function RAGPatterns() {
     { title: 'Freshness & Sync', desc: 'Delta-Updates, Webhooks, ETL-Flows für aktuelle Wissensbasen.' },
   ];
   return (
-    <section id="rag" className="border-t border-gray-100 py-12 scroll-mt-24 md:scroll-mt-32 dark:border-gray-900" aria-labelledby="rag-title">
+    <section id="rag" className="py-12 scroll-mt-24 md:scroll-mt-32" aria-labelledby="rag-title">
       <h2 id="rag-title" className="text-2xl font-bold">RAG-Strategien</h2>
       <p className="mt-2 max-w-3xl text-gray-700 dark:text-gray-300">
         Retrieval Augmented Generation ist mehr als Embeddings. Es ist die Kunst, Wissen zu strukturieren und Antworten belastbar zu machen.
@@ -346,7 +346,7 @@ function Observability() {
     { title: 'Evaluation', desc: 'Prompt-/Output-Bewertungen, A/B-Tests, Human-in-the-Loop.' },
   ];
   return (
-    <section id="observability" className="border-t border-gray-100 py-12 scroll-mt-24 md:scroll-mt-32 dark:border-gray-900" aria-labelledby="obs-title">
+    <section id="observability" className="py-12 scroll-mt-24 md:scroll-mt-32" aria-labelledby="obs-title">
       <h2 id="obs-title" className="text-2xl font-bold">Observability</h2>
       <p className="mt-2 max-w-3xl text-gray-700 dark:text-gray-300">
         Transparenz bedeutet Kontrolle. Nur wer sieht, wie Agenten handeln, kann Vertrauen schaffen – und Qualität sichern.
@@ -371,7 +371,7 @@ function Rollout() {
     { title: 'Change Management', desc: 'Versionierte Agents, Migrationspfade, Doku.' },
   ];
   return (
-    <section id="rollout" className="border-t border-gray-100 py-12 scroll-mt-24 md:scroll-mt-32 dark:border-gray-900" aria-labelledby="rollout-title">
+    <section id="rollout" className="py-12 scroll-mt-24 md:scroll-mt-32" aria-labelledby="rollout-title">
       <h2 id="rollout-title" className="text-2xl font-bold">Rollout</h2>
       <p className="mt-2 max-w-3xl text-gray-700 dark:text-gray-300">
         Kontrolle beim Ausrollen entscheidet über Erfolg oder Chaos. Mit Staging, SLAs und Change-Management bleibt Business AI berechenbar.
@@ -421,7 +421,7 @@ export function CallToAction({
   if (variant === 'hero') {
     return (
       <section className="py-20" aria-labelledby={`${id}-title`}>
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-900 px-6 py-12 text-center text-gray-50 shadow-lg dark:border-gray-800 dark:bg-gray-900">
+        <div className="relative overflow-hidden rounded-2xl bg-gray-900 px-6 py-12 text-center text-gray-50 shadow-lg dark:bg-gray-900">
           {/* Subtle inner gradient tint for depth (works in dark mode) */}
           <div
             aria-hidden="true"
@@ -581,7 +581,7 @@ function Personas() {
   };
   const p = personas[active];
   return (
-    <section id="personas" className="border-t border-gray-100 py-12 dark:border-gray-900" aria-labelledby="personas-title">
+    <section id="personas" className="py-12" aria-labelledby="personas-title">
       <h2 id="personas-title" className="text-2xl font-bold">{tt('marketing.persona.title', { defaultValue: 'Für wen eignet sich Business AI?' })}</h2>
       <p className="mt-2 max-w-3xl text-gray-700 dark:text-gray-300">{tt('marketing.persona.subtitle', { defaultValue: 'Wähle ein Segment und sieh typische Aufgaben und Vorteile.' })}</p>
       <div className="mt-6 flex flex-wrap gap-2">
@@ -676,7 +676,7 @@ function UseCasesDetailed() {
   ];
 
   return (
-    <section id="usecases" className="border-t border-gray-100 py-12 dark:border-gray-900" aria-labelledby="usecases-title">
+    <section id="usecases" className="py-12" aria-labelledby="usecases-title">
       <div className="flex items-center justify-between gap-4">
         <h2 id="usecases-title" className="text-2xl font-bold">{tt('marketing.usecases.title', { defaultValue: 'Business-Cases' })}</h2>
         <div className="flex items-center gap-2" aria-label={tt('marketing.usecases.view_toggle', { defaultValue: 'Darstellung umschalten' })}>
@@ -706,7 +706,7 @@ function UseCasesDetailed() {
             <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-300">{view === 'beginner' ? c.beginner : c.pro}</p>
             <div className="mt-4 flex flex-wrap gap-1">
               {c.kpis.map((k) => (
-                <span key={k.label} className="rounded-full border border-gray-300 px-3 py-1 text-xs dark:border-gray-700">
+                <span key={k.label} className="rounded-full px-3 py-1 text-xs">
                   <strong>{k.value}</strong> <span className="opacity-75">{k.label}</span>
                 </span>
               ))}
@@ -766,7 +766,7 @@ function HowToSteps() {
   ];
 
   return (
-    <section id="howto" className="border-t border-gray-100 py-12 dark:border-gray-900" aria-labelledby="howto-title">
+    <section id="howto" className="py-12" aria-labelledby="howto-title">
       <h2 id="howto-title" className="text-2xl font-bold">{tt('marketing.howto.title', { defaultValue: 'Business AI in 4 Schritten' })}</h2>
       <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-4">
         {steps.map((s) => (

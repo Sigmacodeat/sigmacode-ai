@@ -16,7 +16,7 @@
   position: absolute;
   bottom: 0;
   height: 2px;
-  background-color: currentColor; /* Inherit color from active tab */
+  background-color: var(--tab-color, currentColor); /* Follow active tab color via CSS var */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   left: var(--tab-left, 0);
   width: var(--tab-width, 0);

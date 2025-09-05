@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ErrorState from '~/components/Common/ErrorState';
+import ErrorState from '~/components/common/ErrorState';
 
 describe('ErrorState component', () => {
   it('renders with default message', () => {

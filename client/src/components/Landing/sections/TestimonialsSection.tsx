@@ -65,9 +65,9 @@ export default function TestimonialsSection() {
                     }
                   >
                     <figure>
-                      <blockquote className="text-sm italic text-gray-700 dark:text-gray-300">{text}</blockquote>
+                      <blockquote className="typo-card-body italic text-gray-700 dark:text-gray-300">{text}</blockquote>
                       {author ? (
-                        <figcaption className="mt-2 text-xs text-gray-500 dark:text-gray-400">{author}</figcaption>
+                        <figcaption className="mt-2 typo-caption text-gray-500 dark:text-gray-400">{author}</figcaption>
                       ) : null}
                     </figure>
                   </Card>

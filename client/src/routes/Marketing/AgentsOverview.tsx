@@ -103,7 +103,7 @@ export default function AgentsOverview() {
           },
         ]}
       />
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 md:py-20 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
+      <main className="mx-auto max-w-[1050px] px-4 sm:px-6 py-14 md:py-20 bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
         <div className="mb-4">
           <BackButton />
         </div>
@@ -174,7 +174,7 @@ function Hero() {
             </Link>
             <a
               href="#usecases"
-              className="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               onClick={() => track('cta_click', { location: 'hero', target: 'usecases_anchor' })}
             >
               {tt('marketing.agents.hero.secondary_usecases', { defaultValue: 'Use-Cases entdecken' })}
@@ -357,7 +357,7 @@ function TrustBar() {
         {items.map((it) => (
           <div
             key={it.text}
-            className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-gray-100 bg-white px-3 py-2 text-[13px] sm:text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+            className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-white px-3 py-2 text-[13px] sm:text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-200"
           >
             <it.icon className="h-4 w-4 text-brand-primary" />
             {it.text}
@@ -378,7 +378,7 @@ function Architecture() {
     { title: tt('marketing.agents.arch.items.mas.title', { defaultValue: 'MAS' }), desc: tt('marketing.agents.arch.items.mas.desc', { defaultValue: 'Kooperation, Koordination, Auktions-/Kontrakt-Netze' }), icon: Layers3 },
   ];
   return (
-    <section className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="arch-title">
+    <section className="py-14 md:py-20" aria-labelledby="arch-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={Layers3} variant="glass">
           {tt('marketing.agents.arch.badge', { defaultValue: 'Architektur' })}
@@ -419,7 +419,7 @@ function Capabilities() {
     { icon: Layers3, title: tt('marketing.agents.cap.items.mcp.title', { defaultValue: 'MCP Tools' }), desc: tt('marketing.agents.cap.items.mcp.desc', { defaultValue: 'Standardisierte Tool-Anbindung via Model Context Protocol.' }) },
   ];
   return (
-    <section className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="features-title">
+    <section className="py-14 md:py-20" aria-labelledby="features-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={Zap} variant="glass">
           {tt('marketing.agents.cap.badge', { defaultValue: 'Produkt-Features' })}
@@ -462,7 +462,7 @@ function ValueProps() {
     },
   ];
   return (
-    <section className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="value-title">
+    <section className="py-14 md:py-20" aria-labelledby="value-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={LineChart} variant="glass">
           {tt('marketing.agents.value.badge', { defaultValue: 'Business Value' })}
@@ -494,7 +494,7 @@ function FilesPermissions() {
     { title: tt('marketing.agents.governance.items.security.title', { defaultValue: 'Sicherheit' }), desc: tt('marketing.agents.governance.items.security.desc', { defaultValue: 'Zugriff strikt nach RBAC. Sensible Bereiche per Policies schützen.' }) },
   ];
   return (
-    <section className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="governance-title">
+    <section className="py-14 md:py-20" aria-labelledby="governance-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={ShieldCheck} variant="glass">
           {tt('marketing.agents.governance.badge', { defaultValue: 'Governance' })}
@@ -515,7 +515,7 @@ function FilesPermissions() {
       <div className="mt-6">
         <Link
           to="/business-ai"
-          className="inline-flex items-center rounded-md border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+          className="inline-flex items-center rounded-md px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
         >
           {tt('marketing.agents.governance.link_business_ai', { defaultValue: 'Mehr zu Business AI & Governance' })}
         </Link>
@@ -536,7 +536,7 @@ function UseCases() {
     { title: tt('marketing.agents.usecases.items.hr.title', { defaultValue: 'HR & Compliance' }), detail: tt('marketing.agents.usecases.items.hr.detail', { defaultValue: 'Policy-Q&A, Onboarding-Guides, Richtlinien-Prüfung und Audit-Protokolle.' }) },
   ];
   return (
-    <section id="usecases" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="usecases-title">
+    <section id="usecases" className="py-14 md:py-20" aria-labelledby="usecases-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={LineChart} variant="glass">
           {tt('marketing.agents.usecases.badge', { defaultValue: 'Use-Cases' })}
@@ -567,7 +567,7 @@ function BestPractices() {
     tt('marketing.agents.best.t5', { defaultValue: 'Ziele messbar machen: Artefakte, Metriken, Logs.' }),
   ];
   return (
-    <section className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="best-title">
+    <section className="py-14 md:py-20" aria-labelledby="best-title">
       <div className="mb-3 md:mb-4">
         <SectionBadge icon={ScrollText} variant="glass">
           {tt('marketing.agents.best.badge', { defaultValue: 'Best Practices' })}
@@ -629,7 +629,7 @@ function CTA() {
           {tt('marketing.agents.cta.badge', { defaultValue: 'Jetzt starten' })}
         </SectionBadge>
       </div>
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-900 px-6 py-12 text-center text-gray-50 shadow-lg dark:border-gray-800 dark:bg-gray-900">
+      <div className="relative overflow-hidden rounded-2xl bg-gray-900 px-6 py-12 text-center text-gray-50 shadow-lg dark:bg-gray-900">
         {/* Subtle brand gradient accents (consistent with page brand) */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-16 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-gradient-to-tr from-brand-primary/15 via-brand-accent/10 to-transparent blur-3xl" />
@@ -673,7 +673,7 @@ function Footer() {
   const { t } = useTranslation();
   const tt = t as unknown as (key: string, options?: any) => string;
   return (
-    <footer className="border-t border-gray-100 py-8 text-sm text-gray-600 dark:border-gray-900 dark:text-gray-400">
+    <footer className="py-8 text-sm text-gray-600 dark:text-gray-400">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4">
         <span>{tt('marketing.footer.copyright', { year: new Date().getFullYear(), defaultValue: '© {{year}} SIGMACODE AI' })}</span>
         <nav aria-label={tt('marketing.footer.nav_aria', { defaultValue: 'Footer Navigation' })} className="flex items-center gap-4">

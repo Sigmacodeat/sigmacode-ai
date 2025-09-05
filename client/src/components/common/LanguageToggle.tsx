@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { useRecoilState } from 'recoil';
+import { useTranslation } from 'react-i18next';
 import { cn } from '~/utils';
 import store from '~/store';
+import { ensureLanguage } from '~/locales/ensureLanguage';
 
 /**
  * LanguageToggle
@@ -11,6 +13,7 @@ import store from '~/store';
  * - Setzt document.documentElement.lang client-seitig
  */
 export default function LanguageToggle({ className }: { className?: string }) {
+  const { i18n } = useTranslation();
   const [lang, setLang] = useRecoilState(store.lang);
 
   // documentElement.lang synchron halten (nur Client)
@@ -26,8 +29,12 @@ export default function LanguageToggle({ className }: { className?: string }) {
     (value: 'de-DE' | 'en-US') => {
       setLang(value);
       Cookies.set('lang', value, { expires: 365 });
+      // Ressourcen nachladen und Sprache global wechseln
+      ensureLanguage(value).finally(() => {
+        i18n.changeLanguage(value);
+      });
     },
-    [setLang],
+    [setLang, i18n],
   );
 
   const isDE = lang?.toLowerCase()?.startsWith('de');

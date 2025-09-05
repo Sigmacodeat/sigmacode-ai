@@ -45,7 +45,7 @@ export default function IntegrationsSection() {
       })
     : defaultItems;
   return (
-    <LandingSection id="integrations" className="-mt-px">
+    <LandingSection id="integrations" className="-mt-px pt-6 sm:pt-8 md:pt-10 pb-12 md:pb-16 lg:pb-20">
         <Reveal as="div" variant="rise" y={12}>
           <SectionHeader
             icon={CircuitBoard}
@@ -59,10 +59,10 @@ export default function IntegrationsSection() {
           <Reveal as="div" variant="fade" delay={80}>
             <div className="mt-4 max-w-3xl">
               <Card variant="subtle">
-                <p className="text-[13px] leading-relaxed text-gray-700 dark:text-gray-300">
+                <p className="typo-card-body leading-relaxed text-gray-700 dark:text-gray-300">
                   {tt('marketing.landing.integrations.lead', 'Integrationen verbinden Ihre AI‑Agenten und Workflows mit externen Diensten und Datenquellen – z. B. Modelle, Vektorspeicher, CRMs, Ticketsysteme oder interne APIs. So fließen Daten sicher in Prompts, Aktionen und Automationen.')}
                 </p>
-                <p className="mt-2 text-[12px] leading-relaxed text-gray-600 dark:text-gray-400">
+                <p className="mt-2 typo-card-body leading-relaxed text-gray-600 dark:text-gray-400">
                   {tt('marketing.landing.integrations.lead2', 'Jedes Icon steht exemplarisch für eine Anbindung. Details und Berechtigungen definieren Sie granular in Projekten, inklusive BYOK, Scopes und Audit‑Logs.')}
                 </p>
                 <div className="mt-3">
@@ -79,15 +79,17 @@ export default function IntegrationsSection() {
           </Reveal>
           {/* Responsive Grid, zwei Reihen auf großen Screens */}
           {
-            <Stagger as="ul" gap={70} startDelay={120} className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5" role="list" data-analytics-id="integrations-grid">
+            <Stagger as="ul" gap={70} startDelay={120} className="mt-6 sm:mt-8 md:mt-10 mb-10 md:mb-12 lg:mb-16 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5" role="list" data-analytics-id="integrations-grid">
               {icons.map((I, idx) => {
                 const item = items[idx] ?? { title: tt('marketing.landing.integrations.item', undefined, { n: idx + 1 }), subtitle: '' };
                 return (
-                  <li key={idx}>
+                  <li key={idx} className="h-full">
                     <Reveal as="div" variant="rise" y={10}>
                     <Card
                       variant="elevated"
+                      size="sm"
                       interactive
+                      className="h-full overflow-hidden"
                       aria-label={`${item.title}${item.subtitle ? ' – ' + item.subtitle : ''}`}
                       role="button"
                       tabIndex={0}
@@ -110,16 +112,16 @@ export default function IntegrationsSection() {
                         }
                       }}
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 ring-1 ring-black/5 dark:ring-zinc-300/15" aria-hidden="true">
-                          <I className="h-5 w-5" />
+                      <div className="flex items-center gap-2 min-h-[52px] sm:min-h-[56px] w-full overflow-hidden">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-gray-700 dark:text-gray-200 ring-0" aria-hidden="true">
+                          <I className="h-4 w-4" />
                         </span>
-                        <div className="min-w-0">
-                          <div className="text-[13px] font-semibold leading-tight text-gray-900 dark:text-white">
+                        <div className="min-w-0 w-full">
+                          <div className="typo-card-title leading-tight text-gray-900 dark:text-white text-[15px] sm:text-base line-clamp-1 break-words">
                             {item.title}
                           </div>
                           {item.subtitle ? (
-                            <div className="text-[11px] leading-tight text-gray-600 dark:text-gray-400">
+                            <div className="typo-card-body leading-tight text-gray-600 dark:text-gray-400 text-xs sm:text-sm line-clamp-2 break-words">
                               {item.subtitle}
                             </div>
                           ) : null}

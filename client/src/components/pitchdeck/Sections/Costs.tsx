@@ -1,6 +1,5 @@
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { containerVar, SectionTitle } from './_shared';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import React, { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 
@@ -13,6 +12,21 @@ export type CostsProps = {
 export default function Costs({ data, chartColors, isDark }: CostsProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // Lazy-load Recharts only when this section mounts on client
+  const [Recharts, setRecharts] = useState<null | typeof import('recharts')>(null);
+  useEffect(() => {
+    let active = true;
+    import('recharts')
+      .then((mod) => {
+        if (active) setRecharts(mod);
+      })
+      .catch(() => {
+        // Optional: silently fail, we will render a placeholder
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartInView = useInView(containerRef, { amount: 0.5, once: true });
   const prefersReduced = useReducedMotion();
@@ -61,27 +75,27 @@ export default function Costs({ data, chartColors, isDark }: CostsProps) {
           aria-label="Balkendiagramm der Kostenstruktur über 2 Jahre"
           aria-describedby="costs-caption"
         >
-          {isEmpty ? (
+          {isEmpty || !Recharts ? (
             <div
               className="h-full w-full rounded-md bg-gray-100/70 dark:bg-gray-700 grid place-items-center text-sm text-gray-600 dark:text-gray-300"
               aria-live="polite"
             >
-              Keine Daten verfügbar
+              {isEmpty ? 'Keine Daten verfügbar' : 'Lade Diagramm …'}
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 5, right: 16, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-                <XAxis dataKey="name" stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} interval={0} angle={0} dy={6} />
-                <YAxis stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} tickFormatter={yTickFormatter} allowDecimals domain={[0, 'auto']} />
-                <Tooltip
+            <Recharts.ResponsiveContainer width="100%" height="100%">
+              <Recharts.BarChart data={chartData} margin={{ top: 5, right: 16, left: -10, bottom: 0 }}>
+                <Recharts.CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                <Recharts.XAxis dataKey="name" stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} interval={0} angle={0} dy={6} />
+                <Recharts.YAxis stroke={chartColors.axisLine} tick={{ fill: chartColors.axisTick }} tickFormatter={yTickFormatter} allowDecimals domain={[0, 'auto']} />
+                <Recharts.Tooltip
                   cursor={{ fill: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
                   contentStyle={{ backgroundColor: chartColors.tooltipBg, borderColor: chartColors.axisLine, color: chartColors.tooltipText }}
                   labelStyle={{ color: chartColors.tooltipText }}
                   itemStyle={{ color: chartColors.tooltipText }}
                   formatter={(value: number) => numberFmt.format(value)}
                 />
-                <Bar
+                <Recharts.Bar
                   dataKey="value"
                   fill={chartColors.bar}
                   fillOpacity={chartInView ? 0.95 : 0.65}
@@ -90,8 +104,8 @@ export default function Costs({ data, chartColors, isDark }: CostsProps) {
                   isAnimationActive={enableMotion && chartInView}
                   animationDuration={enableMotion ? 400 : 0}
                 />
-              </BarChart>
-            </ResponsiveContainer>
+              </Recharts.BarChart>
+            </Recharts.ResponsiveContainer>
           )}
         </motion.div>
         <p id="costs-caption" className="mt-4 text-gray-600 dark:text-gray-300">Gesamtvolumen: ~1,1 Mio. €</p>

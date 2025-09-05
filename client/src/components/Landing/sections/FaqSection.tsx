@@ -169,7 +169,7 @@ export default function FAQSection() {
                       data-faq-id={id}
                       className="flex w-full items-center justify-between gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-3.5 min-h-11 text-left focus:outline-none"
                     >
-                      <span className="font-normal leading-snug tracking-tight text-[15px] sm:text-[15.5px] text-gray-900 dark:text-gray-100">{f.q}</span>
+                      <span className="typo-card-title leading-snug tracking-tight text-gray-900 dark:text-gray-100">{f.q}</span>
                       <span className={`${isOpen ? 'rotate-180' : ''} i-heroicons-chevron-down h-4 w-4 text-gray-400 dark:text-gray-500 opacity-70 transition-transform`} aria-hidden />
                     </button>
                     {isOpen && (
@@ -180,7 +180,7 @@ export default function FAQSection() {
                         className="px-3 sm:px-4 pb-3 sm:pb-3.5"
                       >
                         <div className="mt-2 border-t border-gray-100/70 dark:border-white/10 pt-3">
-                          <div className="text-[14px] leading-7 text-gray-700 dark:text-gray-200">{f.a}</div>
+                          <div className="typo-card-body leading-7 text-gray-700 dark:text-gray-200">{f.a}</div>
                         </div>
                       </div>
                     )}

@@ -1,11 +1,9 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import supersub from 'remark-supersub';
-import rehypeKatex from 'rehype-katex';
 import { useRecoilValue } from 'recoil';
 import ReactMarkdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
 import remarkDirective from 'remark-directive';
 import type { PluggableList } from 'unified';
 import { Citation, CompositeCitation, HighlightedText } from '~/components/Web/Citation';
@@ -33,20 +31,40 @@ const Markdown = memo(({ content = '', isLatestMessage }: TContentProps) => {
     return LaTeXParsing ? preprocessLaTeX(content) : content;
   }, [content, LaTeXParsing, isInitializing]);
 
-  const rehypePlugins = useMemo(
-    () => [
-      [rehypeKatex],
-      [
-        rehypeHighlight,
+  // Dynamisches Laden schwerer Rehype-Plugins (KaTeX/Highlight) nur bei Bedarf
+  const [rehypeKatex, setRehypeKatex] = useState<any | null>(null);
+  const [rehypeHighlight, setRehypeHighlight] = useState<any | null>(null);
+  const mightContainLatex = useMemo(
+    () => /\$(.|\n)*\$|\\\[(.|\n)*\\\]|\\begin\{[^}]+\}/.test(content),
+    [content],
+  );
+  useEffect(() => {
+    // Syntax-Highlight wird oft gebraucht, daher lazy aber ohne Bedingung laden
+    import('rehype-highlight')
+      .then((m) => setRehypeHighlight(m.default ?? m))
+      .catch(() => setRehypeHighlight(null));
+  }, []);
+  useEffect(() => {
+    if (!LaTeXParsing && !mightContainLatex) return;
+    import('rehype-katex')
+      .then((m) => setRehypeKatex(m.default ?? m))
+      .catch(() => setRehypeKatex(null));
+  }, [LaTeXParsing, mightContainLatex]);
+
+  const rehypePlugins = useMemo(() => {
+    const plugins: PluggableList = [];
+    if (rehypeKatex) plugins.push([rehypeKatex]);
+    if (rehypeHighlight)
+      plugins.push([
+        rehypeHighlight as any,
         {
           detect: true,
           ignoreMissing: true,
           subset: langSubset,
         },
-      ],
-    ],
-    [],
-  );
+      ]);
+    return plugins;
+  }, [rehypeKatex, rehypeHighlight]);
 
   const remarkPlugins: PluggableList = [
     /** @ts-ignore – plugin type mismatch across unified versions */

@@ -141,14 +141,15 @@ export default function PricingSection() {
           ctaHref="/pricing"
           ctaLabel={tt('marketing.landing.pricingTeaser.cta', 'Zu den Preisen')}
           ctaAnalyticsId="pricing-details-teaser-cta"
-          icon={<ShieldCheck className="h-6 w-6" aria-hidden="true" focusable="false" />}
           tone="neutral"
           compact
           transparentBackground
           hideCta
           iconSize="lg"
           bulletVariant="subtle"
-          className="mt-6 border-t-0 bg-transparent dark:bg-transparent"
+          align="left"
+          bulletStyle="bare"
+          className="mt-2 pt-0 border-t-0 bg-transparent dark:bg-transparent"
           data-analytics-id="pricing-details-teaser"
           data-bullets-count={bullets.length}
         />
@@ -198,12 +199,12 @@ export default function PricingSection() {
                 {p.name === bestseller && (
                   <div className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold text-white shadow">{tt('marketing.landing.pricing.best_seller_label', 'Beliebteste')}</div>
                 )}
-                <h3 className="text-lg font-semibold">{p.name}</h3>
+                <h3 className="typo-card-title">{p.name}</h3>
                 <p className="mt-2 text-3xl font-extrabold">
                   {fmt.format(yearly ? p.priceY : p.priceM)}
                   <span className="text-base font-medium text-gray-500">/{yearly ? tt('marketing.landing.pricing.per_year', 'Jahr') : tt('marketing.landing.pricing.per_month', 'Monat')}</span>
                 </p>
-                <ul className="mt-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <ul className="mt-4 space-y-2 typo-card-body text-gray-700 dark:text-gray-300">
                   {p.features.map((f) => (
                     <li key={f} className="flex items-center gap-2">
                       <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500" aria-hidden="true" /> {f}
@@ -236,7 +237,7 @@ export default function PricingSection() {
         {/* Preise im Detail – reichhaltige Inhalte */}
         <div className="mt-12">
           <motion.h3
-            className="text-base font-semibold text-gray-900 dark:text-white"
+            className="typo-section-title text-gray-900 dark:text-white"
             initial={prefersReducedMotion ? undefined : 'hidden'}
             whileInView={prefersReducedMotion ? undefined : 'show'}
             viewport={viewportOnce}
@@ -245,7 +246,7 @@ export default function PricingSection() {
             {tt('marketing.landing.pricing.details.heading', 'Preise im Detail')}
           </motion.h3>
           <motion.p
-            className="mt-2 max-w-3xl text-sm text-gray-600 dark:text-gray-300"
+            className="mt-2 max-w-3xl typo-card-body text-gray-600 dark:text-gray-300"
             initial={prefersReducedMotion ? undefined : 'hidden'}
             whileInView={prefersReducedMotion ? undefined : 'show'}
             viewport={viewportOnce}
@@ -267,7 +268,7 @@ export default function PricingSection() {
             {/* BYOK vs Managed */}
             <motion.div variants={itemVar}>
             <Card variant="subtle" title={tt('marketing.landing.pricing.details.byok.title', 'BYOK vs. Managed')}>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
+              <ul className="typo-card-body text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li><span className="font-medium">BYOK:</span> {tt('marketing.landing.pricing.details.byok.item1', 'Eigene Cloud‑Schlüssel, direkte Provider‑Abrechnung')}</li>
                 <li><span className="font-medium">Managed:</span> {tt('marketing.landing.pricing.details.byok.item2', 'Abrechnung über SIGMACODE AI, vereinfachtes Setup')}</li>
                 <li>{tt('marketing.landing.pricing.details.byok.item3', 'Switch jederzeit möglich, pro Projekt konfigurierbar')}</li>
@@ -278,7 +279,7 @@ export default function PricingSection() {
             {/* Token Basics & Samples */}
             <motion.div variants={itemVar}>
             <Card variant="subtle" title={tt('marketing.landing.pricing.details.tokens.title', 'Token‑Basics & Provider‑Samples')}>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
+              <ul className="typo-card-body text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li>{tt('marketing.landing.pricing.details.tokens.item1', 'Vergleich: Input/Output‑Preise (OpenAI, Anthropic, Google, Mistral)')}</li>
                 <li>{tt('marketing.landing.pricing.details.tokens.item2', 'Konverter & Beispiele zur Kostenschätzung pro Prompt')}</li>
                 <li>{tt('marketing.landing.pricing.details.tokens.item3', 'Hinweis: Kontextgröße, Caching & RAG‑Einfluss')}</li>
@@ -289,7 +290,7 @@ export default function PricingSection() {
             {/* Limits & SLAs */}
             <motion.div variants={itemVar}>
             <Card variant="subtle" title={tt('marketing.landing.pricing.details.limits.title', 'Limits & Raten, SLA‑Infos')}>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
+              <ul className="typo-card-body text-gray-700 dark:text-gray-300 space-y-1.5">
                 <li>{tt('marketing.landing.pricing.details.limits.item1', 'Requests/Minute, Concurrency, Retry/Backoff‑Strategien')}</li>
                 <li>{tt('marketing.landing.pricing.details.limits.item2', 'SLA 99.9% (Business) / 99.95% (Scale & Enterprise)')}</li>
                 <li>{tt('marketing.landing.pricing.details.limits.item3', 'Status‑Seite & Compliance‑Nachweise')}</li>
@@ -300,7 +301,7 @@ export default function PricingSection() {
             {/* Calculator CTA */}
             <motion.div variants={itemVar}>
             <Card variant="subtle" title={tt('marketing.landing.pricing.details.calculator.title', 'Preis‑Kalkulator für eigene Szenarien')}>
-              <p className="text-sm text-gray-700 dark:text-gray-300">
+              <p className="typo-card-body text-gray-700 dark:text-gray-300">
                 {tt('marketing.landing.pricing.details.calculator.desc', 'Schätzen Sie Kosten für Volumen, Modelle, Kontextgröße, Caching und RAG. BYOK und Managed werden automatisch berücksichtigt.')}
               </p>
               <Link

@@ -16,11 +16,11 @@ import StartupLayout from './Layouts/Startup';
 import LoginLayout from './Layouts/Login';
 import dashboardRoutes from './Dashboard';
 import ShareRoute from './ShareRoute';
-import ChatRoute from './ChatRoute';
-import Search from './Search';
+const ChatRoute = lazy(() => import('./ChatRoute'));
+const Search = lazy(() => import('./Search'));
 import Root from './Root';
 import RouteLoader from '~/components/common/RouteLoader';
-import MarketingHeader from '~/components/marketing/MarketingHeader';
+const MarketingHeader = lazy(() => import('~/components/marketing/MarketingHeader'));
 const LandingPage = lazy(() => import('~/components/Landing/LandingPage'));
 const AgentsOverview = lazy(() => import('./Marketing/AgentsOverview'));
 const AgentsMAS = lazy(() => import('./Marketing/AgentsMAS'));
@@ -82,7 +82,9 @@ export const router = createBrowserRouter([
         path: 'referrals',
         element: (
           <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-            <MarketingHeader />
+            <Suspense fallback={<RouteLoader />}>
+              <MarketingHeader />
+            </Suspense>
             <main className="container mx-auto px-4 py-8">
               <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold mb-8">Empfehlen & verdienen</h1>
@@ -105,7 +107,9 @@ export const router = createBrowserRouter([
         path: 'providers',
         element: (
           <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-            <MarketingHeader />
+            <Suspense fallback={<RouteLoader />}>
+              <MarketingHeader />
+            </Suspense>
             <main>
               <Suspense fallback={<RouteLoader />}>
                 <ProvidersIndex />
@@ -120,7 +124,9 @@ export const router = createBrowserRouter([
         path: 'pitchdeck',
         element: (
           <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-            <MarketingHeader />
+            <Suspense fallback={<RouteLoader />}>
+              <MarketingHeader />
+            </Suspense>
             <main>
               <Suspense fallback={<RouteLoader />}>
                 <PitchDeck />
@@ -135,7 +141,9 @@ export const router = createBrowserRouter([
         path: 'roadmap',
         element: (
           <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-            <MarketingHeader />
+            <Suspense fallback={<RouteLoader />}>
+              <MarketingHeader />
+            </Suspense>
             <main>
               <Suspense fallback={<RouteLoader />}>
                 <RoadmapOnly />
@@ -149,7 +157,9 @@ export const router = createBrowserRouter([
         path: 'providers/:slug',
         element: (
           <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
-            <MarketingHeader />
+            <Suspense fallback={<RouteLoader />}>
+              <MarketingHeader />
+            </Suspense>
             <main>
               <Suspense fallback={<RouteLoader />}>
                 <ProviderDetail />
@@ -292,8 +302,16 @@ export const router = createBrowserRouter([
             path: '/',
             element: <Root />,
             children: [
-              { path: 'c/:conversationId?', element: <ChatRoute /> },
-              { path: 'search', element: <Search /> },
+              { path: 'c/:conversationId?', element: (
+                <Suspense fallback={<RouteLoader />}>
+                  <ChatRoute />
+                </Suspense>
+              ) },
+              { path: 'search', element: (
+                <Suspense fallback={<RouteLoader />}>
+                  <Search />
+                </Suspense>
+              ) },
               { path: 'agents', element: (
                 <Suspense fallback={<RouteLoader />}>
                   <AgentMarketplace />

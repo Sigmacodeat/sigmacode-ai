@@ -1,3 +1,12 @@
+/**
+ * Demo/Example Component: InteractivePitchdeck
+ *
+ * Hinweis:
+ * - Diese Datei dient ausschließlich als interaktive Demo/Spielwiese und wird in der Produktion nicht verwendet.
+ * - Sie wird in der knip.config.json explizit ignoriert, um False Positives bei ungenutzten Dateien/Exports zu vermeiden.
+ * - Produktionsrelevante PitchDeck-Sections werden ausschließlich über `routes/Marketing/PitchDeck.tsx`
+ *   und den Barrel `components/pitchdeck/Sections/index.ts` gerendert.
+ */
 import { motion, useReducedMotion } from 'framer-motion';
 import React from 'react';
 

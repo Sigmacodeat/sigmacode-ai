@@ -5,6 +5,8 @@ import IconTool from '../shared/IconTool';
 
 export type AgentLaunchSceneProps = {
   instant?: boolean;
+  // armed: externer Gate (z. B. Scroll + InView). Solange false, startet nichts automatisch.
+  armed?: boolean;
   maxAgents?: number; // Maximale Anzahl der Agenten
   toolsPerAgent?: number;
 };
@@ -16,6 +18,7 @@ export type AgentLaunchSceneProps = {
 // 4) Respektiert Reduced Motion via `instant` (pausiert alle Bewegungen)
 export default function AgentLaunchScene({
   instant = false,
+  armed = false,
   maxAgents = 5, // Maximale Anzahl der Agenten
   toolsPerAgent = 3,
 }: AgentLaunchSceneProps) {
@@ -87,18 +90,20 @@ export default function AgentLaunchScene({
     setToolCycles((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + 1 }));
   };
 
-  const paused = !!instant;
+  const paused = !!instant || !armed;
 
   // Fallback: Falls onReady nicht feuert, nach 1200ms automatisch "ready"
   useEffect(() => {
+    if (!armed) return; // erst wenn gewaffnet (Scroll-Gate)
     if (ready || paused) return;
     const t = setTimeout(() => setReady(true), 1200);
     return () => clearTimeout(t);
-  }, [ready, paused]);
+  }, [armed, ready, paused]);
 
   // Scroll-Trigger via IntersectionObserver: einmalig starten, wenn Mittelpunkt ~30% VP
   useEffect(() => {
-    if (paused) return; // Reduced Motion: nicht starten
+    if (!armed) return; // erst starten, wenn Scroll-Gate offen
+    if (paused) return; // Reduced Motion oder unarmed: nicht starten
     const el = containerRef.current;
     if (!el) return;
 
@@ -150,18 +155,9 @@ export default function AgentLaunchScene({
     return () => {
       io.disconnect();
     };
-  }, [paused, ready, hasPlayed]);
+  }, [armed, paused, ready, hasPlayed]);
 
-  // Safety: Wenn ready wurde und nichts getriggert hat, nach 1.8s automatisch starten
-  useEffect(() => {
-    if (paused) return;
-    if (!ready || hasPlayed) return;
-    const t = setTimeout(() => {
-      setPlay(true);
-      setHasPlayed(true);
-    }, 1800);
-    return () => clearTimeout(t);
-  }, [ready, hasPlayed, paused]);
+  // Entfernt: kein zeitbasierter Auto-Start – Start nur durch Scroll/Visibility (armed + IO)
 
   // Parallax (sehr subtil, Desktop): ±2px anhand Mausposition
   useEffect(() => {

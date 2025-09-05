@@ -128,7 +128,7 @@ function SubpagesNav() {
             <Link
               to={l.to}
               aria-label={l.label}
-              className="block rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:border-brand-primary/30 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-brand-primary/40 dark:hover:bg-gray-800"
+              className="block rounded-xl bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
             >
               <span className="inline-flex items-center gap-2">
                 <l.icon className="h-4 w-4 text-brand-primary" />
@@ -164,7 +164,7 @@ function Hero() {
 
           <div className="mt-5 flex flex-wrap gap-2">
             {badges.map((b) => (
-              <span key={b.text} className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs sm:text-sm dark:border-gray-800 dark:bg-gray-900">
+              <span key={b.text} className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-xs sm:text-sm dark:bg-gray-900">
                 <b.icon className="h-5 w-5 text-brand-primary" /> {b.text}
               </span>
             ))}
@@ -236,7 +236,7 @@ function Connect() {
   ];
 
   return (
-    <section id="connect" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="connect-title">
+    <section id="connect" className="py-14 md:py-20" aria-labelledby="connect-title">
       <SectionHeader
         icon={Plug}
         badgeText={tt('marketing.howto.connect.badge')}
@@ -279,7 +279,7 @@ function Orchestrate() {
   ];
 
   return (
-    <section id="orchestrate" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="orchestrate-title">
+    <section id="orchestrate" className="py-14 md:py-20" aria-labelledby="orchestrate-title">
       <SectionHeader
         icon={Workflow}
         badgeText={tt('marketing.howto.orchestrate.badge')}
@@ -322,7 +322,7 @@ function Deploy() {
   ];
 
   return (
-    <section id="deploy" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="deploy-title">
+    <section id="deploy" className="py-14 md:py-20" aria-labelledby="deploy-title">
       <SectionHeader
         icon={Rocket}
         badgeText={tt('marketing.howto.deploy.badge')}
@@ -363,7 +363,7 @@ function Governance() {
   ];
 
   return (
-    <section id="governance" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="gov-title">
+    <section id="governance" className="py-14 md:py-20" aria-labelledby="gov-title">
       <SectionHeader
         icon={ShieldCheck}
         badgeText={tt('marketing.howto.gov.badge')}
@@ -405,7 +405,7 @@ function Operations() {
   ];
 
   return (
-    <section id="ops" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="ops-title">
+    <section id="ops" className="py-14 md:py-20" aria-labelledby="ops-title">
       <SectionHeader
         icon={ServerCog}
         badgeText={tt('marketing.howto.ops.badge')}
@@ -521,7 +521,7 @@ function Footer() {
   const { t } = useTranslation();
   const tt = t as unknown as (key: string, options?: any) => string;
   return (
-    <footer className="border-t border-gray-100 py-8 text-sm text-gray-600 dark:border-gray-900 dark:text-gray-400">
+    <footer className="py-8 text-sm text-gray-600 dark:text-gray-400">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4">
         <span>{tt('marketing.footer.copyright', { year: new Date().getFullYear() })}</span>
         <nav aria-label={tt('marketing.footer.nav_aria')} className="flex items-center gap-4">

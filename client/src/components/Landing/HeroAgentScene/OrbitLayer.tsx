@@ -76,6 +76,8 @@ export default function OrbitLayer({ icons, radius, className, phaseOffsetDeg = 
   // Hinweis: Wir verwenden CSS-Klassen (.ams-tool-enter, .ams-icon-rotator) und Variablen,
   // damit Entry (Zentrum -> Radius) und individuelle Rotation pro Icon starten können.
 
+  const animState = paused ? ('paused' as const) : ('running' as const);
+
   return (
     <div
       className="ams-force-motion pointer-events-none absolute"
@@ -196,7 +198,8 @@ export default function OrbitLayer({ icons, radius, className, phaseOffsetDeg = 
                             ['--icon-rot-fast-dur' as any]: `1.2s`,
                             ['--icon-rot-slow-dur' as any]: `16s`,
                             transformOrigin: 'center',
-                            willChange: 'transform',
+                            willChange: paused ? undefined : 'transform',
+                            animationPlayState: animState,
                           }}
                         >
                           {/* Entry: von Zentrum (translateX(0)) auf Radius */}
@@ -206,6 +209,7 @@ export default function OrbitLayer({ icons, radius, className, phaseOffsetDeg = 
                               ['--orbit-r' as any]: `${rBand}px`,
                               ['--tool-enter-delay' as any]: `${enterDelay}s`,
                               ['--tool-enter-dur' as any]: `${enterDur}s`,
+                              animationPlayState: animState,
                             }}
                           >
                             <div className="relative grid place-items-center" style={{ width: itemSize, height: itemSize }}>

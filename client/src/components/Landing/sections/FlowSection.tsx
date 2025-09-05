@@ -9,7 +9,7 @@ import LandingSection from '../components/LandingSection';
 import { Reveal } from '../../motion/Reveal';
 import Stagger from '../../motion/Stagger';
 import { trackEvent } from '../../../utils/analytics';
- 
+
 
 export default function HowItWorksSection() {
   const { t } = useTranslation();
@@ -61,20 +61,25 @@ export default function HowItWorksSection() {
           icon={Icon}
           badgeText={tt('marketing.landing.sections.badges.flow')}
           id="how-it-works-heading"
-          title={tt('marketing.landing.how.title', 'So funktioniert’s')}
+          title={tt('marketing.landing.how.title', 'How it works')}
+          contentAlign="center"
+          badgeSize="sm"
+          badgeMinimal
+          badgeClassName="h-7 py-0 mx-auto"
+          subtitle={tt('marketing.landing.how.keywords', 'Connect • Orchestrate • Deploy')}
+          subtitleClassName="mt-2 text-sm md:text-base text-gray-700 dark:text-gray-300 text-center"
         />
       </Reveal>
 
       <Stagger
         as="ul"
-        className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3"
+        className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6"
         role="list"
         data-analytics-id="how-steps-grid"
         gap={80}
         startDelay={120}
       >
         {steps.map((s, i) => {
-          const StepIcon = UNIFIED_ICON_SET[(i + 2) % UNIFIED_ICON_SET.length];
           const num = i + 1;
           const primary =
             i === 0
@@ -88,7 +93,7 @@ export default function HowItWorksSection() {
             <li key={`${s.title}-${i}`}>
               <Reveal as="div" variant="rise" y={10}>
                 <Card
-                  variant="subtle"
+                  variant="bare"
                   data-analytics-id="how-step-card"
                   data-idx={i}
                   data-title={s.title}
@@ -96,34 +101,25 @@ export default function HowItWorksSection() {
                   <div className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[13px] font-semibold ring-1 ring-black/5 dark:bg-zinc-800 dark:text-gray-200 dark:ring-zinc-300/15"
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700 text-sm font-semibold ring-1 ring-teal-400/30 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-300/25"
                     >
                       {num}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{s.title}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-gray-700/95 dark:text-gray-200/95">{s.desc}</p>
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <h3 className="text-left typo-card-title text-gray-900 dark:text-white">{s.title}</h3>
+                      <p className="mt-1 text-left typo-card-body text-gray-700 dark:text-gray-300 max-w-2xl">{s.desc}</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
                         <Link
                           to={primary.to}
-                          className={`${buttonStyles.primary} ${buttonSizeXs.primary}`}
+                          className={`not-prose no-underline ${buttonStyles.secondary} ${buttonSizeXs.secondary}`}
                           aria-label={primary.aria}
                           data-analytics-id={`how-step:${num}:primary`}
                           onClick={() => trackEvent('landing.how.step.click', { step: num, to: primary.to })}
                         >
                           {primary.label}
                         </Link>
-                        <Link
-                          to={overview.to}
-                          className={`${buttonStyles.ghost} ${buttonSizeXs.ghost}`}
-                          aria-label={overview.aria}
-                          data-analytics-id={`how-step:${num}:overview`}
-                        >
-                          {overview.label}
-                        </Link>
                       </div>
                     </div>
-                    <StepIcon className="ml-auto h-5 w-5 text-gray-500 dark:text-gray-300" />
                   </div>
                 </Card>
               </Reveal>

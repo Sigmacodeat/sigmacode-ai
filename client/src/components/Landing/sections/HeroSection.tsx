@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { motion, useReducedMotion, useInView } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
 import { Suspense, lazy } from 'react';
 // Progressive Enhancement: keine künstlichen Delays, Inhalte rendern sofort
 import BadgeGroup from '../../marketing/BadgeGroup';
@@ -38,8 +38,29 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
   const trustbarAria = tt('marketing.landing.hero.trustbar_aria', { defaultValue: 'Partner-Logos in Endlosschleife' });
   // Keine gating-/Timer-/Variants-Logik mehr – statisches Rendern
   const sceneAnchorRef = useRef<HTMLDivElement | null>(null);
+  const sceneInView = useInView(sceneAnchorRef, { amount: 0.6, margin: '0px 0px -10% 0px' });
   const prefersReducedMotion = useReducedMotion();
   const reduceAll = !!instant || !!prefersReducedMotion; // Skip Animations bei Reduced Motion oder Instant
+
+  // Interaction-Gate: nur nach echter Interaktion rendern
+  const [userInteracted, setUserInteracted] = useState(false);
+  useEffect(() => {
+    const onWheel = () => setUserInteracted(true);
+    const onTouchStart = () => setUserInteracted(true);
+    const onKeyDown = (e: KeyboardEvent) => {
+      const keys = ['ArrowDown', 'PageDown', 'Space', ' '];
+      if (keys.includes(e.key)) setUserInteracted(true);
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+  const armedScene = reduceAll ? true : (userInteracted && sceneInView);
 
   useEffect(() => {
     const heroSection = document.getElementById('hero');
@@ -63,7 +84,7 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
   }, []);
 
   return (
-    <LandingSection id="hero" className="hero-aurora overflow-visible scroll-mt-0 pt-6 md:pt-8 pb-14 md:pb-20" ariaLabelledby="hero-heading" noBorder>
+    <LandingSection id="hero" className="hero-aurora overflow-visible scroll-mt-0 pt-8 pb-14 md:pt-0 md:pb-12 min-h-screen md:min-h-0" ariaLabelledby="hero-heading" noBorder>
       {/* Signature badge: centered across breakpoints */}
       <div className="flex justify-center md:max-w-7xl md:mx-auto">
         <motion.div
@@ -85,31 +106,99 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
         </motion.div>
       </div>
       <div className="grid grid-cols-1 items-start md:items-stretch gap-5 sm:gap-6 md:gap-10 md:grid-cols-12">
-        <div className="px-1.5 sm:px-2 md:pl-2 md:col-span-7">
-              <div className="mt-5 sm:mt-6 md:mt-7">
-              <motion.h1
-                className="mt-8 sm:mt-10 text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-left"
-                initial={reduceAll ? undefined : 'hidden'}
-                whileInView={reduceAll ? undefined : 'show'}
-                viewport={viewportOnce}
-                variants={fadeInUp}
+        <div className="px-0 md:col-span-7">
+              <div className="mt-5 sm:mt-6 md:mt-0">
+              <motion.h2
+                id="hero-heading"
+                className="mt-6 sm:mt-8 md:mt-0 text-3xl sm:text-4xl md:text-5xl !text-3xl sm:!text-4xl md:!text-5xl font-bold !font-bold tracking-tight !tracking-tight text-gray-900 dark:text-white text-center md:text-left leading-[0.95] overflow-visible mx-auto max-w-full"
               >
-                <strong
-                  className={[
-                    'bg-clip-text',
-                    'text-transparent',
-                    'bg-gradient-to-l',
-                    'from-teal-500',
-                    'via-sky-300',
-                    'to-cyan-100',
-                    'whitespace-nowrap',
-                  ].join(' ')}
-                >
-                  {copy.h1Brand}
-                </strong>
-              </motion.h1>
+                {/* Brand Title animation: 3s sequence */}
+                {(() => {
+                  const brandFull = copy.h1Brand;
+                  const match = brandFull.match(/^(\S+)\s+(\S+)$/);
+                  const brandWord = match ? match[1] : brandFull;
+                  const brandAI = match ? match[2] : '';
+
+                  if (reduceAll) {
+                    // Static rendering (no animation)
+                    return (
+                      <strong className="bg-clip-text text-transparent bg-gradient-to-r from-teal-500 via-sky-300 to-cyan-100 whitespace-nowrap">
+                        {brandWord}{'\u00A0'}{brandAI}
+                      </strong>
+                    );
+                  }
+
+                  return (
+                    <span className="inline-flex items-baseline whitespace-nowrap align-baseline">
+                      {/* SIGMACODE layered: neutral underlay + gradient overlay crossfade after AI arrives */}
+                      <span className="relative inline-block">
+                        {/* Neutral layer (sichtbar bis die Welle "durch" ist) */}
+                        <motion.span
+                          className="text-neutral-900 dark:text-white"
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ delay: 2.2, duration: 0.6, ease: 'easeInOut' }}
+                        >
+                          {brandWord}
+                        </motion.span>
+                        {/* Gradient layer mit weicher Wellenkante (Masken-Reveal) */}
+                        <motion.span
+                          className="absolute inset-0 text-transparent bg-clip-text bg-gradient-to-r from-teal-500 via-sky-300 to-cyan-100"
+                          style={{
+                            // Reveal-Position in %, Feather definiert die Weichheit der Wellenkante (in %-Punkten)
+                            ['--reveal' as any]: 0,
+                            ['--feather' as any]: 3,
+                            WebkitMaskImage:
+                              'linear-gradient(to right, black 0%, black calc((var(--reveal) - var(--feather)) * 1%), rgba(0,0,0,0.85) calc(var(--reveal) * 1%), transparent calc((var(--reveal) + var(--feather)) * 1%), transparent 100%)',
+                            maskImage:
+                              'linear-gradient(to right, black 0%, black calc((var(--reveal) - var(--feather)) * 1%), rgba(0,0,0,0.85) calc(var(--reveal) * 1%), transparent calc((var(--reveal) + var(--feather)) * 1%), transparent 100%)',
+                            willChange: 'opacity, transform'
+                          }}
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: 1, ['--reveal' as any]: 100 }}
+                          transition={{ delay: 1.1, duration: 1.15, ease: 'easeInOut' }}
+                          aria-hidden="true"
+                        >
+                          {brandWord}
+                        </motion.span>
+                        {/* Sheen (schmale Glanzfront), die der Welle etwas vorausläuft */}
+                        <motion.span
+                          className="pointer-events-none absolute inset-0 text-transparent bg-clip-text bg-gradient-to-r from-white/80 via-cyan-100 to-transparent"
+                          style={{
+                            ['--sheen' as any]: 0,
+                            ['--band' as any]: 1.2,
+                            WebkitMaskImage:
+                              'linear-gradient(to right, transparent calc((var(--sheen) - var(--band)) * 1%), black calc(var(--sheen) * 1%), transparent calc((var(--sheen) + var(--band)) * 1%))',
+                            maskImage:
+                              'linear-gradient(to right, transparent calc((var(--sheen) - var(--band)) * 1%), black calc(var(--sheen) * 1%), transparent calc((var(--sheen) + var(--band)) * 1%))',
+                            filter: 'blur(0.5px)',
+                            willChange: 'opacity, transform'
+                          }}
+                          initial={{ opacity: 0 }}
+                          animate={{ ['--sheen' as any]: 100, opacity: [0, 0.65, 0] }}
+                          transition={{ delay: 1.0, duration: 1.1, ease: 'easeInOut', times: [0, 0.4, 1] }}
+                          aria-hidden="true"
+                        >
+                          {brandWord}
+                        </motion.span>
+                      </span>
+                      {/* NBSP keeps single line spacing */}
+                      <span aria-hidden="true">&nbsp;</span>
+                      {/* AI slides in from left with gradient already applied */}
+                      <motion.span
+                        className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 via-sky-300 to-cyan-100 inline-block"
+                        initial={{ x: -16, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 1.0, duration: 0.8, ease: 'easeOut' }}
+                      >
+                        {brandAI}
+                      </motion.span>
+                    </span>
+                  );
+                })()}
+              </motion.h2>
               <motion.p
-                className="title-rest block mt-3 sm:mt-4 text-xl sm:text-2xl md:text-3xl font-medium text-neutralx-800 dark:text-neutralx-100 text-left"
+                className="title-rest block mt-3 sm:mt-4 typo-subtitle-lg text-neutralx-800 dark:text-neutralx-100 text-left"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
@@ -118,7 +207,7 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
                 {copy.h1Tagline}
               </motion.p>
               <motion.p
-                className="mt-4 sm:mt-5 max-w-xl text-[14px] sm:text-[15px] md:text-base leading-relaxed text-neutralx-600 dark:text-neutralx-300 text-left mx-0"
+                className="mt-4 sm:mt-6 typo-body-lg text-neutralx-600 dark:text-neutralx-300 max-w-2xl text-left"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
@@ -127,6 +216,7 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
                 {copy.subcopy}
               </motion.p>
               <motion.div
+                className="mt-4 sm:mt-6 mb-6 sm:mb-8 md:mb-10 lg:mb-12"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
@@ -135,7 +225,7 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
                 <BadgeGroup items={heroBadges} className="mt-1 gap-1 px-0" />
               </motion.div>
               <motion.div
-                className="mt-4 flex flex-wrap items-center justify-start gap-2"
+                className="mt-0 flex flex-col sm:flex-row gap-3 sm:gap-4"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
@@ -168,7 +258,7 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
               </motion.div>
               {/* Secondary small CTAs in one line below */}
               <motion.div
-                className="mt-1 flex flex-wrap items-center justify-start gap-1"
+                className="mt-3 sm:mt-4 flex flex-wrap items-center justify-start gap-1"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
@@ -198,82 +288,93 @@ export default function HeroSection({ onReady, instant = false }: HeroSectionPro
                 </motion.div>
               </motion.div>
               <span id="hero-cta-note" className="sr-only">{copy.ctaNoteSrOnly}</span>
-              {/* Trustbar - Infinite Slider mit allen Logos (ruhig, kontinuierlich)
-                 Spacing stark erhöht: padding-top vermeidet Margin-Collapse */}
               <motion.div
-                className="pt-12 sm:pt-16 md:pt-20 mt-0 text-[10px] sm:text-xs text-neutralx-500 dark:text-neutralx-400 md:max-w-7xl md:mx-auto"
+                className="mt-10 sm:mt-14"
                 initial={reduceAll ? undefined : 'hidden'}
                 whileInView={reduceAll ? undefined : 'show'}
                 viewport={viewportOnce}
                 variants={fadeInUp}
               >
-                <div className="hidden sm:block mb-5 md:mb-8">{copy.trustbarLabel}</div>
-                <div className="trustbar-wrapper w-full overflow-hidden">
-                  <div
-                    className={`trustbar-track ${reduceAll ? '' : 'is-animating'}`}
-                    aria-live="off"
-                    aria-label={trustbarAria}
-                    style={{ willChange: 'transform' }}
-                  >
-                    {/* Sequenz A */}
-                    <div className="trustbar-seq">
-                      {TRUST_PROVIDER_ITEMS.map((item) => (
-                        item.src ? (
-                          <img
-                            key={item.name}
-                            src={item.src}
-                            alt={item.alt || item.name}
-                            aria-label={tt('marketing.landing.hero.partner_label', { defaultValue: 'Partner {{name}}', name: item.name })}
-                            className={`!h-[24px] sm:!h-[26px] md:!h-[30px] w-auto logo-neutral ${item.invertOnDark ? 'logo-invert-dark' : ''}`}
-                            loading="eager"
-                            decoding="async"
-                            height={22}
-                          />
-                        ) : (
-                          <span
-                            key={item.name}
-                            className="ui-glass-pill px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-[12px] font-medium dark:text-white/90"
-                            aria-label={tt('marketing.landing.hero.partner_label', { defaultValue: 'Partner {{name}}', name: item.name })}
-                          >
-                            {item.name}
-                          </span>
-                        )
-                      ))}
-                    </div>
-                    {/* Sequenz B (Duplikat für nahtlose Schleife) */}
-                    <div className="trustbar-seq" aria-hidden="true">
-                      {TRUST_PROVIDER_ITEMS.map((item) => (
-                        item.src ? (
-                          <img
-                            key={`${item.name}-dup`}
-                            src={item.src}
-                            alt=""
-                            aria-hidden="true"
-                            className={`!h-[24px] sm:!h-[26px] md:!h-[30px] w-auto logo-neutral ${item.invertOnDark ? 'logo-invert-dark' : ''}`}
-                            loading="eager"
-                            decoding="async"
-                            height={22}
-                          />
-                        ) : (
-                          <span
-                            key={`${item.name}-dup`}
-                            className="ui-glass-pill px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-[12px] font-medium dark:text-white/90"
-                            aria-hidden="true"
-                          >
-                            {item.name}
-                          </span>
-                        )
-                      ))}
+                {/* Trustbar - Infinite Slider mit allen Logos (ruhig, kontinuierlich)
+                 Spacing stark erhöht: padding-top vermeidet Margin-Collapse */}
+                <div className="pt-0 mt-0 typo-caption text-neutralx-500 dark:text-neutralx-400 md:max-w-7xl md:mx-auto">
+                  <div className="hidden sm:block mb-5 md:mb-8">{copy.trustbarLabel}</div>
+                  <div className="trustbar-wrapper w-full overflow-hidden">
+                    <div
+                      className={`trustbar-track ${reduceAll ? '' : 'is-animating'}`}
+                      aria-live="off"
+                      aria-label={trustbarAria}
+                      style={{ willChange: 'transform' }}
+                    >
+                      {/* Sequenz A */}
+                      <div className="trustbar-seq">
+                        {TRUST_PROVIDER_ITEMS.map((item) => (
+                          item.src ? (
+                            <img
+                              key={item.name}
+                              src={item.src}
+                              alt={item.alt || item.name}
+                              aria-label={tt('marketing.landing.hero.partner_label', { defaultValue: 'Partner {{name}}', name: item.name })}
+                              className={`!h-[24px] sm:!h-[26px] md:!h-[30px] w-auto logo-neutral ${item.invertOnDark ? 'logo-invert-dark' : ''}`}
+                              loading="eager"
+                              decoding="async"
+                              height={22}
+                            />
+                          ) : (
+                            <span
+                              key={item.name}
+                              className="ui-glass-pill px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-[12px] font-medium dark:text-white/90"
+                              aria-label={tt('marketing.landing.hero.partner_label', { defaultValue: 'Partner {{name}}', name: item.name })}
+                            >
+                              {item.name}
+                            </span>
+                          )
+                        ))}
+                      </div>
+                      {/* Sequenz B (Duplikat für nahtlose Schleife) */}
+                      <div className="trustbar-seq" aria-hidden="true">
+                        {TRUST_PROVIDER_ITEMS.map((item) => (
+                          item.src ? (
+                            <img
+                              key={`${item.name}-dup`}
+                              src={item.src}
+                              alt=""
+                              aria-hidden="true"
+                              className={`!h-[24px] sm:!h-[26px] md:!h-[30px] w-auto logo-neutral ${item.invertOnDark ? 'logo-invert-dark' : ''}`}
+                              loading="eager"
+                              decoding="async"
+                              height={22}
+                            />
+                          ) : (
+                            <span
+                              key={`${item.name}-dup`}
+                              className="ui-glass-pill px-1.5 py-0.5 sm:px-2 sm:py-1 text-[11px] sm:text-[12px] font-medium dark:text-white/90"
+                              aria-hidden="true"
+                            >
+                              {item.name}
+                            </span>
+                          )
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
             </div>
         </div>
-        <div ref={sceneAnchorRef} className="relative mt-6 sm:mt-8 md:mt-0 md:self-start md:h-full overflow-hidden px-1.5 sm:px-4 md:pl-8 md:pr-0 mx-auto w-full md:col-span-5" style={{ maxWidth: 'clamp(420px, 42vw, 620px)' }}>
-            <Suspense fallback={<div className="aspect-square bg-gradient-to-br from-gray-900/10 to-gray-800/20 rounded-xl" />}>
-              <HeroAgentScene instant={reduceAll} />
-            </Suspense>
+        <div ref={sceneAnchorRef} className="relative mt-6 sm:mt-8 md:mt-0 md:self-start md:h-full overflow-hidden px-2 md:px-2 mx-auto w-full md:col-span-5" style={{ maxWidth: 'clamp(420px, 42vw, 620px)' }}>
+            {/* Render und Laden der 3D-Teaser-Animation erst nach Interaktion + Sichtbarkeit */}
+            {armedScene ? (
+              <Suspense fallback={<div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-auto md:h-full lg:h-full overflow-hidden rounded-xl bg-gradient-to-br from-gray-900/10 to-gray-800/20" />}> 
+                <HeroAgentScene instant={reduceAll} />
+              </Suspense>
+            ) : (
+              // Leichter Platzhalter, bis Scroll/Interaktion erfolgt
+              <div
+                className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-auto md:h-full lg:h-full overflow-hidden rounded-xl bg-gradient-to-br from-gray-900/10 to-gray-800/20"
+                aria-label="Teaser wird bei Scroll/Interaktion geladen"
+              />
+            )}
         </div>
       </div>
     </LandingSection>

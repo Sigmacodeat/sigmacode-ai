@@ -67,7 +67,7 @@ export default function SecuritySection() {
       </motion.div>
       <>
         <motion.ul
-          className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2"
+          className="grid grid-cols-1 gap-4 md:grid-cols-2"
           role="list"
           data-analytics-id="security-features-grid"
           initial={prefersReducedMotion ? undefined : 'hidden'}
@@ -77,7 +77,7 @@ export default function SecuritySection() {
         >
           {features.map(({ title, desc, Icon }, i) => (
             <motion.li key={title} variants={itemVar}>
-              <Card variant="subtle" className="text-sm" data-analytics-id="security-feature-card" data-idx={i} data-title={title}>
+              <Card variant="outline" className="text-sm" data-analytics-id="security-feature-card" data-idx={i} data-title={title}>
                 <div className="flex items-start gap-3">
                   <span
                     className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 ring-1 ring-black/5 dark:ring-zinc-300/15"
@@ -86,8 +86,8 @@ export default function SecuritySection() {
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-                    <p className="mt-1 text-gray-600 dark:text-gray-300">{desc}</p>
+                    <h3 className="typo-card-title text-gray-900 dark:text-gray-100">{title}</h3>
+                    <p className="mt-1 typo-card-body text-gray-600 dark:text-gray-300">{desc}</p>
                   </div>
                 </div>
               </Card>
@@ -132,13 +132,18 @@ export default function SecuritySection() {
                 },
               ].map(({ Icon, title, desc }, i) => (
                 <motion.li key={title} variants={itemVar}>
-                  <Card variant="subtle" className="flex items-center gap-3" data-analytics-id="security-assurance-card" data-idx={i} data-title={title}>
-                    <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 ring-1 ring-black/5 dark:ring-zinc-300/15">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <div className="text-sm font-semibold">{title}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">{desc}</div>
+                  <Card
+                    variant="bare"
+                    className="flex items-start gap-3 no-underline"
+                    data-analytics-id="security-assurance-card"
+                    data-idx={i}
+                    data-title={title}
+                    noInner
+                  >
+                    <Icon className="mt-0.5 h-5 w-5 text-teal-500/90" aria-hidden="true" />
+                    <div className="leading-snug">
+                      <div className="typo-card-title tracking-tight">{title}</div>
+                      <div className="typo-card-body text-gray-600 dark:text-gray-300">{desc}</div>
                     </div>
                   </Card>
                 </motion.li>

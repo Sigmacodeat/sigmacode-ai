@@ -5,6 +5,7 @@ import AgentAvatar from '../shared/AgentAvatar';
 import { UNIFIED_ICON_SET } from '../shared/VisualUtils';
 import UnifiedOrbit from '../shared/UnifiedOrbit';
 import LandingSection from '../components/LandingSection';
+import SectionHeader from '../../marketing/SectionHeader';
 
 // entfernte Debug-/Deko-Helfer und Spokes
 
@@ -34,17 +35,16 @@ export default function TeamAgentSection() {
 
   return (
     <LandingSection id="team-agents" className="-mt-px">
-        {/* Header (i18n) */}
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            {tt('landing.teamAgents.title', 'Agenten, die sich ihre Informationen holen')}
-          </h2>
-          <p className="mt-3 text-gray-600 dark:text-gray-300">
-            {tt(
-              'landing.teamAgents.subtitle',
-              'Ein koordiniertes Agenten-Team orchestriert Datenquellen, sammelt Kontext und liefert präzise Ergebnisse – zuverlässig und nachvollziehbar.'
-            )}
-          </p>
+        {/* Einheitlicher Header via SectionHeader */}
+        <div className="mx-auto max-w-3xl">
+          <SectionHeader
+            id="team-agents-heading"
+            badgeText={tt('marketing.landing.sections.badges.providers', 'Provider')}
+            title={tt('landing.teamAgents.title', 'Agenten, die sich ihre Informationen holen')}
+            subtitle={tt('landing.teamAgents.subtitle', 'Ein koordiniertes Agenten-Team orchestriert Datenquellen, sammelt Kontext und liefert präzise Ergebnisse – zuverlässig und nachvollziehbar.')}
+            badgeAlign="center"
+            subtitleClassName="mt-2 text-center"
+          />
         </div>
         <div className="relative mx-auto mt-12" style={{ height: CONTAINER_H, width: CONTAINER_H }}>
           {/* Zentraler Agent (einheitliche Darstellung) */}
