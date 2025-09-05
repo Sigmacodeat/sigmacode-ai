@@ -9,7 +9,8 @@ import { useCallback, useEffect, useState } from 'react';
 import Loading from '~/components/common/Loading';
 import ErrorState from '~/components/common/ErrorState';
 import { getProviderDetailJsonLd } from '~/utils/seo/providers';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useMotionProps } from '~/hooks/useMotionProps';
 import { ExternalLink, Globe, BookOpen, CheckCircle2, Cpu, Layers, Wallet, Shield, Star } from 'lucide-react';
 
 export default function ProviderDetail() {
@@ -17,6 +18,24 @@ export default function ProviderDetail() {
   const { i18n, t } = useTranslation();
   const tt = makeTt(t);
   const { data: p, isLoading, error, refetch } = useProviderDetail(slug, i18n);
+  const prefersReduced = useReducedMotion();
+  const fadeIn = useMotionProps('fadeIn');
+
+  const listVariants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: prefersReduced ? 0 : 0.06 },
+    },
+  } as const;
+
+  const itemVariants = {
+    hidden: prefersReduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: prefersReduced ? { duration: 0 } : { duration: 0.22 },
+    },
+  } as const;
 
   if (isLoading) return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-50">
@@ -74,10 +93,11 @@ export default function ProviderDetail() {
 
         {/* Hero */}
         <motion.section
-          className="mb-8 rounded-2xl border border-gray-200 bg-white/70 p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/60"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="ui-glass-card mb-8 rounded-2xl p-6 border border-gray-200/60 dark:border-white/10"
+          initial={fadeIn.initial}
+          whileInView={fadeIn.animate}
+          transition={fadeIn.transition}
+          viewport={{ once: true, amount: 0.25 }}
         >
           <div className="flex items-start gap-4">
             <div className="h-12 w-12 shrink-0 rounded-lg bg-gradient-to-br from-sky-500/20 to-teal-400/20 text-sky-600 dark:text-sky-300 flex items-center justify-center text-base font-semibold" aria-hidden>
@@ -204,9 +224,15 @@ export default function ProviderDetail() {
         {Array.isArray(p.pricing) && p.pricing.length > 0 && (
           <section id="pricing" className="mb-8 scroll-mt-24">
             <h2 className="text-xl font-semibold mb-3">{tt('marketing.providers.detail.pricing', 'Preise')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+              variants={listVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {p.pricing.map((pr: any, idx: number) => (
-                <div key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 bg-white/60 dark:bg-gray-900/50">
+                <motion.div key={idx} className="ui-glass-card rounded-lg p-3 border border-gray-200/60 dark:border-white/10" variants={itemVariants}>
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium flex items-center gap-2"><Wallet className="h-4 w-4" />{pr.plan}</div>
                     {pr.url && (
@@ -224,9 +250,9 @@ export default function ProviderDetail() {
                     {tt('marketing.providers.detail.output', 'Output')}: {typeof pr.output === 'number' ? pr.output : '—'}
                   </div>
                   {pr.notes && <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">{pr.notes}</div>}
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </section>
         )}
 
@@ -271,17 +297,23 @@ export default function ProviderDetail() {
         {Array.isArray(p.tasks) && p.tasks.length > 0 && (
           <section id="tasks" className="mb-8 scroll-mt-24">
             <h2 className="text-xl font-semibold mb-3">{tt('marketing.providers.detail.tasks', 'Empfohlene Aufgaben')}</h2>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <motion.ul
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+              variants={listVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {p.tasks.map((tItem: any, idx: number) => (
-                <li key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 bg-white/60 dark:bg-gray-900/50">
+                <motion.li key={idx} className="ui-glass-card rounded-lg p-3 border border-gray-200/60 dark:border-white/10" variants={itemVariants}>
                   <div className="text-sm font-medium">{tItem.type}</div>
                   <div className="mt-0.5 text-xs text-gray-600 dark:text-gray-300">
                     {tt('marketing.providers.detail.recommended', 'Empfohlen:')} {Array.isArray(tItem.recommendedModels) ? tItem.recommendedModels.join(', ') : '—'}
                   </div>
                   {tItem.notes && <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">{tItem.notes}</div>}
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
           </section>
         )}
 
@@ -289,17 +321,23 @@ export default function ProviderDetail() {
         {Array.isArray(p.agentPatterns) && p.agentPatterns.length > 0 && (
           <section id="agent-patterns" className="mb-8 scroll-mt-24">
             <h2 className="text-xl font-semibold mb-3">{tt('marketing.providers.detail.agentPatterns', 'Agent-Patterns')}</h2>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <motion.ul
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+              variants={listVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {p.agentPatterns.map((ap: any, idx: number) => (
-                <li key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 bg-white/60 dark:bg-gray-900/50">
+                <motion.li key={idx} className="ui-glass-card rounded-lg p-3 border border-gray-200/60 dark:border-white/10" variants={itemVariants}>
                   <div className="text-sm font-medium">{ap.name}</div>
                   <div className="mt-0.5 text-xs text-gray-600 dark:text-gray-300">{tt('marketing.providers.detail.bestWith', 'Am besten mit')}: {Array.isArray(ap.bestWith) ? ap.bestWith.join(', ') : '—'}</div>
                   {Array.isArray(ap.pitfalls) && ap.pitfalls.length > 0 && (
                     <div className="mt-1 text-xs text-gray-600 dark:text-gray-300">{tt('marketing.providers.detail.pitfalls', 'Fallstricke')}: {ap.pitfalls.join(', ')}</div>
                   )}
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
           </section>
         )}
 
@@ -307,14 +345,20 @@ export default function ProviderDetail() {
         {Array.isArray(p.faq) && p.faq.length > 0 && (
           <section id="faq" className="mb-8 scroll-mt-24">
             <h2 className="text-xl font-semibold mb-3">FAQ</h2>
-            <ul className="space-y-3">
+            <motion.ul
+              className="space-y-3"
+              variants={listVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {p.faq.map((f: any, idx: number) => (
-                <li key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 bg-white/60 dark:bg-gray-900/50">
+                <motion.li key={idx} className="ui-glass-card rounded-lg p-3 border border-gray-200/60 dark:border-white/10" variants={itemVariants}>
                   <div className="font-medium">{f.q}</div>
                   <div className="text-gray-700 dark:text-gray-200 text-sm">{f.a}</div>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
           </section>
         )}
 

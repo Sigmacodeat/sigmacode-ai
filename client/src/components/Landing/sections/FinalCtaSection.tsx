@@ -77,10 +77,10 @@ export default function FinalCTA() {
             {/* Integrationen Section */}
             <div className="mx-auto max-w-5xl text-left" aria-labelledby="integrations-heading">
               <div className="text-center">
-                <h3 id="integrations-heading" className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                <h3 id="integrations-heading" className="typo-section-title text-gray-900 dark:text-white">
                   {tt('marketing.landing.integrations.title', 'Integrationen')}
                 </h3>
-                <p className="mt-2 text-base leading-relaxed text-gray-700/90 dark:text-gray-200/90">
+                <p className="mt-2 typo-section-subtitle leading-relaxed text-gray-700/90 dark:text-gray-200/90">
                   {tt(
                     'marketing.landing.integrations.subtitle',
                     'Verbinde Datenbanken, APIs, Wissensbasen & Systeme.'
@@ -184,14 +184,14 @@ export default function FinalCTA() {
                             </span>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2.5">
-                                <h4 className="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">{title}</h4>
+                                <h4 className="truncate typo-card-title tracking-tight text-gray-900 dark:text-white">{title}</h4>
                                 {badge ? (
                                   <span className="rounded-md border border-black/10 bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-700 dark:border-white/10 dark:bg-zinc-800 dark:text-gray-200">
                                     {badge}
                                   </span>
                                 ) : null}
                               </div>
-                              <p className="mt-1.5 text-[13.5px] leading-6 text-gray-700/90 dark:text-gray-200/90">{desc}</p>
+                              <p className="mt-1.5 typo-card-body leading-6 text-gray-700/90 dark:text-gray-200/90">{desc}</p>
                             </div>
                           </div>
                         </Card>

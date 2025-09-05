@@ -69,7 +69,7 @@ function Hero() {
           </p>
           <div className="mt-6 flex gap-3">
             <a href="#calculator" className="inline-flex items-center rounded-md bg-teal-600 px-5 py-2.5 font-medium text-white hover:bg-teal-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-400/70 dark:focus-visible:ring-teal-500/70"><Calculator className="mr-2 h-4 w-4" /> Zum Kalkulator</a>
-            <Link to="/c/new" aria-label="AI Chat öffnen" className="inline-flex items-center rounded-md border border-gray-300 px-5 py-2.5 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"><Bot className="mr-2 h-4 w-4" /> Jetzt starten</Link>
+            <Link to="/c/new" aria-label="AI Chat öffnen" className="inline-flex items-center rounded-md px-5 py-2.5 font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"><Bot className="mr-2 h-4 w-4" /> Jetzt starten</Link>
           </div>
         </div>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -94,7 +94,7 @@ function TokenBasics() {
     { title: 'Kontext', desc: 'Lange Kontexte, Dateien (RAG) und Tools erhöhen die Tokenmenge.' },
   ];
   return (
-    <section id="token" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="token" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">Token‑Grundlagen</h2>
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -128,7 +128,7 @@ function BYOKvsManaged() {
     },
   ];
   return (
-    <section id="byok" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="byok" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">BYOK vs. Managed</h2>
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         {cols.map((c) => (
@@ -147,14 +147,14 @@ function BYOKvsManaged() {
 function ProviderSamples() {
   const providers = ['OpenAI', 'Anthropic', 'Mistral', 'Groq', 'DeepSeek', 'Google Vertex/Gemini', 'Azure OpenAI', 'AWS Bedrock'];
   return (
-    <section id="providers" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="providers" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">Provider‑Beispiele</h2>
       <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
         Preise variieren je Anbieter/Modell. Nutze unseren Kalkulator für Näherungen und prüfe die offiziellen Anbieterpreise.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {providers.map((p) => (
-          <span key={p} className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm dark:border-gray-800 dark:bg-gray-900">{p}</span>
+          <span key={p} className="rounded-md bg-white px-3 py-1.5 text-sm dark:bg-gray-900">{p}</span>
         ))}
       </div>
     </section>
@@ -168,7 +168,7 @@ function LimitsAndRates() {
     { icon: ShieldCheck, title: 'Governance', desc: 'Max Tokens/Msg, Max Steps (Ketten), erlaubte Tools & Domains.' },
   ];
   return (
-    <section id="limits" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="limits" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">Limits & Rate Limits</h2>
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -190,7 +190,7 @@ function SLAInfo() {
     { title: 'Compliance', desc: 'DSGVO, Audit‑Logs, Datenhoheit. On‑Prem/Hybrid mit Enterprise möglich.' },
   ];
   return (
-    <section id="sla" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="sla" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">SLA & Support</h2>
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -263,7 +263,7 @@ function CalculatorSection() {
   }, [dMonthlyMessages, dAvgTokensPerMsg, dPricePer1kTokens, dOverheadPct, dManagedPct]);
 
   return (
-    <section id="calculator" className="border-t border-gray-100 py-12 dark:border-gray-900 scroll-mt-24">
+    <section id="calculator" className="py-12 scroll-mt-24">
       <h2 className="text-xl font-semibold">API-Kostenkalkulator (Schätzung)</h2>
       <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Gibt eine Näherung, keine verbindliche Preisangabe.</p>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3" role="group" aria-labelledby="calc-title">
@@ -271,7 +271,7 @@ function CalculatorSection() {
           <label className="block text-sm font-medium" htmlFor="preset">Modell-Preset</label>
           <select
             id="preset"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={preset}
             onChange={(e) => {
               const id = e.target.value as typeof presets[number]['id'];
@@ -295,7 +295,7 @@ function CalculatorSection() {
           <input
             id="msgs"
             type="number"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={monthlyMessages}
             onChange={(e) => setMonthlyMessages(Number(e.target.value || 0))}
             min={0}
@@ -311,7 +311,7 @@ function CalculatorSection() {
           <input
             id="tpm"
             type="number"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={avgTokensPerMsg}
             onChange={(e) => setAvgTokensPerMsg(Number(e.target.value || 0))}
             min={0}
@@ -328,7 +328,7 @@ function CalculatorSection() {
             id="p1k"
             type="number"
             step="0.01"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={pricePer1kTokens}
             onChange={(e) => setPricePer1kTokens(Number(e.target.value || 0))}
             min={0}
@@ -345,7 +345,7 @@ function CalculatorSection() {
             id="oh"
             type="number"
             step="1"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={overheadPct}
             onChange={(e) => setOverheadPct(Number(e.target.value || 0))}
             min={0}
@@ -362,7 +362,7 @@ function CalculatorSection() {
             id="mgd"
             type="number"
             step="1"
-            className="mt-2 w-full rounded-md border border-gray-300 bg-white p-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+            className="mt-2 w-full rounded-md bg-white p-2 text-sm dark:bg-gray-950"
             value={managedPct}
             onChange={(e) => setManagedPct(Number(e.target.value || 0))}
             min={0}
@@ -386,7 +386,7 @@ function CalculatorSection() {
           <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">inkl. Overhead {overheadPct}%, Managed‑Zuschlag {managedPct}%</p>
           <div className="mt-5 text-xs text-gray-500 dark:text-gray-400">Hinweis: Zuschlag als Näherung, reale Preise je nach Plan/Volumen.</div>
           <div className="mt-5">
-            <Link to="/" className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">Zur Landingpage</Link>
+            <Link to="/" className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800">Zur Landingpage</Link>
           </div>
         </Card>
       </div>
@@ -416,7 +416,7 @@ function FAQ() {
 
 function Footer() {
   return (
-    <footer className="border-t border-gray-100 py-8 text-sm text-gray-600 dark:border-gray-900 dark:text-gray-400">
+    <footer className="py-8 text-sm text-gray-600 dark:text-gray-400">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4">
         <span>© {new Date().getFullYear()} SIGMACODE AI</span>
         <div className="flex items-center gap-4">

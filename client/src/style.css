@@ -108,6 +108,11 @@
   .input-brand {
     @apply w-full rounded-xl border border-border-light bg-surface-primary px-4 py-3 text-text-primary placeholder:text-text-secondary focus:border-teal-500 focus:ring-0;
   }
+  /* Semantic theme utilities for gradual adoption across components */
+  .bg-app { background-color: var(--bg); }
+  .bg-surface { background-color: var(--surface); }
+  .text-on-primary { color: var(--on-primary); }
+  .border-app { border-color: var(--border-sem); }
 }
 html {
   --brand-purple: #ab68ff;
@@ -173,6 +178,14 @@ html {
   --overlay-rgb: 255, 255, 255; /* light background approx */
   /* Smooth scrolling for anchor navigation */
   scroll-behavior: smooth;
+
+  /* Semantic Theme Aliases (Light) */
+  /* These alias the existing token system to simpler, app-wide semantics */
+  --bg: hsl(var(--background));
+  --surface: var(--surface-primary);
+  --primary-sem: hsl(var(--primary));
+  --on-primary: hsl(var(--primary-foreground));
+  --border-sem: hsl(var(--border));
 }
 
 /* Respect reduced motion preferences */
@@ -259,6 +272,13 @@ html {
   /* Global heading and focus colors (dark) */
   --heading-color: var(--tw-prose-invert-headings, #ffffff);
   --heading-focus: hsl(var(--ring));
+
+  /* Semantic Theme Aliases (Dark) */
+  --bg: hsl(var(--background));
+  --surface: var(--surface-primary);
+  --primary-sem: hsl(var(--primary));
+  --on-primary: hsl(var(--primary-foreground));
+  --border-sem: hsl(var(--border));
 }
 
 .glass-support-note{} /* anchor for tooling */
@@ -465,6 +485,64 @@ html {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Unified Typography Utilities for consistent, fluid type scale */
+@layer utilities {
+  /* Display title for hero headings */
+  .typo-display {
+    font-size: clamp(1.9rem, 4.8vw, 3rem);
+    line-height: 0.95;
+    letter-spacing: -0.0135em;
+    font-weight: 800;
+  }
+
+  /* Section subtitles (prominent tagline under H1 or section intros) */
+  .typo-subtitle-lg {
+    font-size: clamp(1.125rem, 2.2vw, 1.75rem);
+    line-height: 1.15;
+    font-weight: 600;
+  }
+
+  /* Body lead for prominent section descriptions */
+  .typo-body-lg {
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* Small caption text for labels like trustbar, pills, meta */
+  .typo-caption {
+    font-size: clamp(0.625rem, 1.2vw, 0.75rem);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+
+  /* Default section title (used by SectionHeader) */
+  .typo-section-title {
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  /* Default section subtitle (used by SectionHeader) */
+  .typo-section-subtitle {
+    font-size: clamp(0.9375rem, 1.6vw, 1rem);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* Card title and body for feature/pricing/testimonial cards */
+  .typo-card-title {
+    font-size: clamp(1rem, 1.8vw, 1.125rem); /* ~text-lg */
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .typo-card-body {
+    font-size: clamp(0.875rem, 1.4vw, 0.9375rem); /* ~text-sm to base- */
+    line-height: 1.6;
+    font-weight: 400;
   }
 }
 
@@ -861,6 +939,21 @@ html {
   border-top-width: 0 !important;
 }
 
+/* Agents Hero Bullets – Hard overrides to ensure horizontal layout on desktop */
+#agents-hero [data-analytics-id="agent-hero-bullets"] {
+  writing-mode: horizontal-tb !important;
+}
+#agents-hero [data-analytics-id="agent-hero-bullets"] * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+#agents-hero [data-analytics-id="agent-hero-bullets"] li > div {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
 /* Trustbar – Infinite slider */
 .trustbar-wrapper {
   overflow: hidden;
@@ -1223,12 +1316,8 @@ html {
     @apply font-semibold tracking-tight;
   }
 
-  h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl; }
-  h4 { @apply text-xl; }
-  h5 { @apply text-lg; }
-  h6 { @apply text-base uppercase; }
+  /* Removed global heading font-size applies to avoid conflicts with component-level typography
+     Section titles are controlled by SectionHeader. Other areas should define sizes locally. */
 
   /* Accessible focus indicator for focusable headings (e.g., with tabindex or inside anchors) */
   h1:focus-visible,

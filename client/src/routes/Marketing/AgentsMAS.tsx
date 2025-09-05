@@ -149,7 +149,7 @@ function Hero() {
                 {t('marketing.mas.hero.button_start', { defaultValue: 'Jetzt starten' })}
               </Link>
             </Button>
-            <Link to="/business-ai" className="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">{t('marketing.mas.hero.button_business_ai', { defaultValue: 'Business AI' })}</Link>
+            <Link to="/business-ai" className="inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800">{t('marketing.mas.hero.button_business_ai', { defaultValue: 'Business AI' })}</Link>
           </div>
         </div>
         {/* Floating Illustration: Höhe angeglichen, Icons sichtbar, kein Clipping */}
@@ -175,7 +175,7 @@ function Hero() {
           <div className="absolute inset-0 grid place-items-center">
             {/* Outer orbit ring */}
             <MotionDiv
-              className="relative rounded-full border border-dashed border-gray-300/60 dark:border-gray-700/70"
+              className="relative rounded-full"
               style={{ width: '18rem', height: '18rem', ...gpuStyle }}
               animate={orbitAnim(1)}
               transition={orbitRotate(1, 46)}
@@ -187,7 +187,7 @@ function Hero() {
                 animate={orbitAnim(1)}
                 transition={orbitRotate(1, 18)}
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 border border-gray-200 shadow-sm text-amber-600 dark:bg-gray-900/80 dark:border-gray-800 dark:text-amber-400">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 shadow-sm text-amber-600 dark:bg-gray-900/80 dark:text-amber-400">
                   <Zap className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -197,7 +197,7 @@ function Hero() {
                 animate={orbitAnim(1)}
                 transition={orbitRotate(1, 18, 2)}
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 border border-gray-200 shadow-sm text-teal-600 dark:bg-gray-900/80 dark:border-gray-800 dark:text-teal-400">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 shadow-sm text-teal-600 dark:bg-gray-900/80 dark:text-teal-400">
                   <CircuitBoard className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -207,7 +207,7 @@ function Hero() {
                 animate={orbitAnim(1)}
                 transition={orbitRotate(1, 18, 4)}
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 border border-gray-200 shadow-sm text-pink-600 dark:bg-gray-900/80 dark:border-gray-800 dark:text-pink-400">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 shadow-sm text-pink-600 dark:bg-gray-900/80 dark:text-pink-400">
                   <Brain className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -217,7 +217,7 @@ function Hero() {
                 animate={orbitAnim(1)}
                 transition={orbitRotate(1, 18, 6)}
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 border border-gray-200 shadow-sm text-brand-primary dark:bg-gray-900/80 dark:border-gray-800">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-white/90 shadow-sm text-brand-primary dark:bg-gray-900/80">
                   <Workflow className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -225,7 +225,7 @@ function Hero() {
 
             {/* Inner orbit ring */}
             <MotionDiv
-              className="absolute rounded-full border border-dashed border-gray-300/60 dark:border-gray-700/70"
+              className="absolute rounded-full"
               style={{ width: '12rem', height: '12rem', ...gpuStyle }}
               animate={orbitAnim(-1)}
               transition={orbitRotate(-1, 32)}
@@ -236,7 +236,7 @@ function Hero() {
                 animate={orbitAnim(-1)}
                 transition={orbitRotate(-1, 12)}
               >
-                <div className="flex items-center justify-center h-7 w-7 rounded-full bg-white/90 border border-gray-200 shadow-sm text-brand-primary dark:bg-gray-900/80 dark:border-gray-800">
+                <div className="flex items-center justify-center h-7 w-7 rounded-full bg-white/90 shadow-sm text-brand-primary dark:bg-gray-900/80">
                   <ShieldCheck className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -246,7 +246,7 @@ function Hero() {
                 animate={orbitAnim(-1)}
                 transition={orbitRotate(-1, 12, 3)}
               >
-                <div className="flex items-center justify-center h-7 w-7 rounded-full bg-white/90 border border-gray-200 shadow-sm text-emerald-600 dark:bg-gray-900/80 dark:border-gray-800 dark:text-emerald-400">
+                <div className="flex items-center justify-center h-7 w-7 rounded-full bg-white/90 shadow-sm text-emerald-600 dark:bg-gray-900/80 dark:text-emerald-400">
                   <Database className="h-4 w-4" />
                 </div>
               </MotionDiv>
@@ -254,7 +254,7 @@ function Hero() {
           </div>
 
           <MotionDiv
-            className="absolute right-6 top-12 rounded-lg border border-gray-200/80 bg-white/90 px-3 py-1.5 text-xs sm:text-sm shadow-sm backdrop-blur dark:border-gray-800/80 dark:bg-gray-900/80"
+            className="absolute right-6 top-12 rounded-lg bg-white/90 px-3 py-1.5 text-xs sm:text-sm shadow-sm backdrop-blur dark:bg-gray-900/80"
             style={gpuStyle}
             animate={floatAnim(4, 1.2)}
             whileHover={reduceMotion ? undefined : { scale: 1.03, y: -2, rotate: -1 }}
@@ -274,7 +274,7 @@ function Hero() {
             </span>
           </MotionDiv>
           <MotionDiv
-            className="absolute bottom-8 left-8 rounded-lg border border-gray-200/80 bg-white/90 px-3 py-1.5 text-xs sm:text-sm shadow-sm backdrop-blur dark:border-gray-800/80 dark:bg-gray-900/80"
+            className="absolute bottom-8 left-8 rounded-lg bg-white/90 px-3 py-1.5 text-xs sm:text-sm shadow-sm backdrop-blur dark:bg-gray-900/80"
             style={gpuStyle}
             animate={floatAnimDown(4, 1.2)}
             whileHover={reduceMotion ? undefined : { scale: 1.03, y: 2, rotate: 1 }}
@@ -344,7 +344,7 @@ function Orchestration() {
     { title: t('marketing.mas.orchestration.title_3', { defaultValue: 'Konsolidierung' }), desc: t('marketing.mas.orchestration.desc_3', { defaultValue: 'Finale Antworten werden aggregiert, Konflikte erkannt und aufgelöst.' }), icon: Gauge, tags: [t('marketing.mas.orchestration.tag_5', { defaultValue: 'Merge' }), t('marketing.mas.orchestration.tag_6', { defaultValue: 'Resolve' })] },
   ];
   return (
-    <section id="orchestration" className="border-t border-gray-100 py-8 md:py-12 dark:border-gray-900">
+    <section id="orchestration" className="py-8 md:py-12">
       <h2 className="text-xl font-semibold">{t('marketing.mas.orchestration.title', { defaultValue: 'Orchestrierung' })}</h2>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -377,7 +377,7 @@ function Coordination() {
     { title: t('marketing.mas.coordination.title_3', { defaultValue: 'Fehlertoleranz' }), desc: t('marketing.mas.coordination.desc_3', { defaultValue: 'Fallback-Agents, Retry-Strategien und Grenzwerte für maximale Stabilität.' }), icon: ShieldCheck, tags: [t('marketing.mas.coordination.tag_5', { defaultValue: 'Retry' }), t('marketing.mas.coordination.tag_6', { defaultValue: 'Limits' })] },
   ];
   return (
-    <section id="coordination" className="border-t border-gray-100 py-8 md:py-12 dark:border-gray-900">
+    <section id="coordination" className="py-8 md:py-12">
       <h2 className="text-xl font-semibold">{t('marketing.mas.coordination.title', { defaultValue: 'Koordination' })}</h2>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -410,7 +410,7 @@ function Limits() {
     { title: t('marketing.mas.limits.title_3', { defaultValue: 'Monitoring' }), desc: t('marketing.mas.limits.desc_3', { defaultValue: 'Protokollierung, Audit-Logs, Metriken und Alerts für volle Transparenz.' }), icon: Activity, tags: [t('marketing.mas.limits.tag_5', { defaultValue: 'Logging' }), t('marketing.mas.limits.tag_6', { defaultValue: 'Alerts' })] },
   ];
   return (
-    <section id="limits" className="border-t border-gray-100 py-8 md:py-12 dark:border-gray-900">
+    <section id="limits" className="py-8 md:py-12">
       <h2 className="text-xl font-semibold">{t('marketing.mas.limits.title', { defaultValue: 'Limits & Sicherheit' })}</h2>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((it) => (
@@ -561,7 +561,7 @@ function CTA() {
   const t = useLocalize();
   return (
     <section className="py-10 md:py-14">
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-900 px-6 py-10 text-center text-gray-50 shadow-lg dark:border-gray-800 dark:bg-gray-900">
+      <div className="relative overflow-hidden rounded-2xl bg-gray-900 px-6 py-10 text-center text-gray-50 shadow-lg dark:bg-gray-900">
         {/* Subtle inner gradient tint for depth (works in dark mode) */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -top-16 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-tr from-teal-500/10 via-cyan-400/10 to-transparent blur-3xl" />

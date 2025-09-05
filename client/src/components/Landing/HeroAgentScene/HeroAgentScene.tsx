@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useInView } from 'framer-motion';
 import { UNIFIED_ICON_SET } from '../shared/VisualUtils';
 import UnifiedOrbit from '../shared/UnifiedOrbit';
 import AgentAvatar from '../shared/AgentAvatar';
@@ -19,15 +20,34 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
   const iconsC = UNIFIED_ICON_SET.slice(11, 15);
   // Statisch: keine Parallax-/Speed-/Paused-Logik mehr
   const [speedFactor] = useState<number>(1);
-  // Pause alle Bewegungen bei instant (Reduced Motion / Skip Intro)
-  const paused = !!instant;
-  // Orchestrierung: Orbits starten genau NACH der Login-Augen-Animation
+  // Orchestrierung & Sichtbarkeit: Orbits starten erst wenn user gescrollt hat UND inView (oder instant)
+  // Measure container to keep orbits within viewport (column bounds)
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(containerRef, { amount: 0.65, margin: '0px 0px -10% 0px' });
+  // Interaction-Gate: nur nach echter User-Interaktion (vermeidet Auto-Start bei Page-Load)
+  const [userInteracted, setUserInteracted] = useState(false);
+  useEffect(() => {
+    const onWheel = () => setUserInteracted(true);
+    const onTouchStart = () => setUserInteracted(true);
+    const onKeyDown = (e: KeyboardEvent) => {
+      const keys = ['ArrowDown', 'PageDown', 'Space', ' '];
+      if (keys.includes(e.key)) setUserInteracted(true);
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+  const armed = instant ? true : (userInteracted && inView);
   const [playOrbits, setPlayOrbits] = useState<boolean>(!!instant);
+  const paused = !!instant || !armed;
 
   // Tone-dependent accents removed; scene uses unified icon tokens and neutral glows.
 
-  // Measure container to keep orbits within viewport (column bounds)
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -172,7 +192,14 @@ export default function HeroAgentScene({ messages = [], instant = false }: HeroA
 
         {/* Einheitlicher zentraler Agent (Login-Variante) – exakt zentriert, Orbits starten via onReady */}
         <div className="z-30 pointer-events-none absolute inset-0 grid place-items-center">
-          <AgentAvatar size={80} variant="login" instant={instant} onReady={() => setPlayOrbits(true)} />
+          <AgentAvatar
+            size={80}
+            variant="login"
+            instant={instant}
+            onReady={() => {
+              if (instant || armed) setPlayOrbits(true);
+            }}
+          />
         </div>
       </div>
     </div>

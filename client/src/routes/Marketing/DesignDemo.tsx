@@ -124,7 +124,7 @@ function Tokens() {
     { title: tt('marketing.design_demo.tokens.typography.title', { defaultValue: 'Typografie' }), desc: tt('marketing.design_demo.tokens.typography.desc', { defaultValue: 'Skalierbare Textgrößen, Lesbarkeit und Kontraste.' }) },
   ];
   return (
-    <section id="tokens" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="tokens-title">
+    <section id="tokens" className="py-14 md:py-20" aria-labelledby="tokens-title">
       <SectionHeader
         icon={Palette}
         badgeText={tt('marketing.design_demo.tokens.badge', { defaultValue: 'Design Tokens' })}
@@ -155,7 +155,7 @@ function ComponentsGallery() {
     { title: tt('marketing.design_demo.components.forms.title', { defaultValue: 'Formulare' }), desc: tt('marketing.design_demo.components.forms.desc', { defaultValue: 'Kontrollierte Inputs, Fehlermeldungen, Barrierefreiheit.' }) },
   ];
   return (
-    <section id="components" className="border-t border-gray-100 py-14 md:py-20 dark:border-gray-900" aria-labelledby="components-title">
+    <section id="components" className="py-14 md:py-20" aria-labelledby="components-title">
       <SectionHeader
         icon={Component}
         badgeText={tt('marketing.design_demo.components.badge', { defaultValue: 'Komponenten' })}

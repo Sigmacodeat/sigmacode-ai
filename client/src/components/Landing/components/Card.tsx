@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 
 type ElementTag = keyof JSX.IntrinsicElements;
 
-export type CardVariant = 'default' | 'muted' | 'solid' | 'glass' | 'outline' | 'subtle' | 'elevated';
+export type CardVariant = 'default' | 'muted' | 'solid' | 'glass' | 'outline' | 'subtle' | 'elevated' | 'bare';
 export type CardSize = 'sm' | 'md' | 'lg';
 
 export type CardProps<T extends ElementTag = 'div'> = {
@@ -34,13 +34,15 @@ const variantClasses: Record<CardVariant, string> = {
   solid:
     'bg-zinc-900/95 text-white ring-1 ring-zinc-300/15',
   glass:
-    'bg-white/60 dark:bg-zinc-900/40 ring-1 ring-black/10 dark:ring-zinc-300/15 backdrop-blur-md',
+    'ui-glass-card ui-glass-card-hover',
   outline:
     'bg-transparent ring-1 ring-black/10 dark:ring-zinc-300/20',
   subtle:
     'bg-zinc-50/80 dark:bg-zinc-800/60 ring-1 ring-black/5 dark:ring-zinc-300/15 backdrop-blur',
   elevated:
     'bg-white/70 dark:bg-zinc-900/50 ring-1 ring-black/5 dark:ring-zinc-300/15 backdrop-blur-sm shadow-sm',
+  bare:
+    'bg-transparent ring-0',
 };
 
 const interactiveClasses =

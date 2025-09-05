@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bot, ChevronDown, Menu, X, Gift } from 'lucide-react';
+import { ChevronDown, Menu, X, Gift } from 'lucide-react';
+import BrandIcon from '../common/BrandIcon';
 import { useMenuClose } from '../../hooks/useMenuClose';
 import { useMotionProps } from '../../hooks/useMotionProps';
 import ThemeToggle from '../common/ThemeToggle';
@@ -188,58 +189,28 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
     };
   }, []);
 
+  // Body scroll-lock when mobile menu is open
+  useEffect(() => {
+    const root = document.documentElement;
+    if (mobileOpen) {
+      root.style.overflow = 'hidden';
+    } else {
+      root.style.overflow = '';
+    }
+    return () => {
+      root.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   // Motion Presets für Mobile-Drawer
   const drawerMotion = useMotionProps('fadeSlideDown');
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/40 supports-[backdrop-filter]:bg-black/30 backdrop-blur-xl text-white shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/40 supports-[backdrop-filter]:bg-black/30 backdrop-blur-xl text-white shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+      <div className="mx-auto flex max-w-[1050px] items-center justify-between px-4 sm:px-6 py-3">
         <Link to="/" className="flex items-center gap-2 whitespace-nowrap" aria-label="Zur Startseite">
-          {/* Animated brand icon sequence: head -> eyes -> smile (brief) */}
-          <span className="relative inline-flex h-6 w-6 items-center justify-center">
-            {/* Head */}
-            <motion.span
-              initial={prefersReduced ? { opacity: 1 } : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0 }}
-              className="contents"
-            >
-              <Bot
-                className={`${prefersReduced ? '' : 'icon-wave-shine is-animated'}`}
-                stroke="url(#brandIconGrad)"
-                fill="none"
-                width={24}
-                height={24}
-              >
-                <defs>
-                  <linearGradient id="brandIconGrad" x1="100%" y1="0%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="50%" stopColor="#7dd3fc" />
-                    <stop offset="100%" stopColor="#cffafe" />
-                  </linearGradient>
-                </defs>
-              </Bot>
-            </motion.span>
-            {/* Eyes */}
-            <motion.svg
-              className="absolute inset-0 h-6 w-6"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              initial={prefersReduced ? { opacity: 1, y: 0 } : { opacity: 0, y: -2 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: prefersReduced ? 0 : 0.6 }}
-            >
-              <defs>
-                <linearGradient id="brandIconEyesGrad" x1="100%" y1="0%" x2="0%" y2="0%">
-                  <stop offset="0%" stopColor="#06b6d4" />
-                  <stop offset="50%" stopColor="#7dd3fc" />
-                  <stop offset="100%" stopColor="#cffafe" />
-                </linearGradient>
-              </defs>
-              <circle cx="9" cy="13" r="1.25" fill="url(#brandIconEyesGrad)" />
-              <circle cx="15" cy="13" r="1.25" fill="url(#brandIconEyesGrad)" />
-            </motion.svg>
-          </span>
+          {/* Marken-Icon als wiederverwendbare Komponente (auch in AgentsSection) */}
+          <BrandIcon className="h-6 w-6" animated ariaHidden />
           <motion.span
             initial={prefersReduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -446,14 +417,15 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
         </nav>
 
         {/* Mobile Toggle */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="relative z-[60] flex items-center gap-2 md:hidden">
           {/* Theme Toggle Mobile */}
           <LanguageToggle />
           <ThemeToggle />
           <button
-            className="group inline-flex items-center justify-center rounded-md p-2 text-text-secondary hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-border/60"
+            className="group inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-border/60"
             aria-label="Menü öffnen"
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
             onClick={() => setMobileOpen((v) => !v)}
           >
             {mobileOpen ? (
@@ -539,31 +511,43 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Overlay + Drawer */}
       {mobileOpen && (
-        <div className="md:hidden">
-          <motion.div
-            className="border-t border-border px-4 py-3 rounded-xl bg-surface-primary/60 supports-[backdrop-filter]:backdrop-blur-sm"
-            {...drawerMotion}
-          >
-            <details className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1.5 text-sm text-text-secondary hover:bg-surface-hover">
-                {t('marketing.header.products')}
-                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
-              </summary>
-              <div className="mt-1 space-y-1 pl-2">
-                {productEntries.map((entry) => (
-                  <MenuItem
-                    key={entry.id}
-                    entry={entry}
-                    active={!!entry.to && isPath(entry.to)}
-                    variant="mobile"
-                    analyticsPrefix="header-mobile-products"
-                    onClick={() => { setMobileOpen(false); }}
-                  />
-                ))}
-              </div>
-            </details>
+        <>
+          {/* Overlay to dim background and enable click-to-close */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 supports-[backdrop-filter]:backdrop-blur-[2px] md:hidden"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="relative z-50 md:hidden">
+            <motion.div
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              className="border-t border-border px-4 py-3 rounded-xl bg-surface-primary/70 supports-[backdrop-filter]:backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+              {...drawerMotion}
+            >
+              <details className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1.5 text-sm text-text-secondary hover:bg-surface-hover">
+                  {t('marketing.header.products')}
+                  <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+                </summary>
+                <div className="mt-1 space-y-1 pl-2">
+                  {productEntries.map((entry) => (
+                    <MenuItem
+                      key={entry.id}
+                      entry={entry}
+                      active={!!entry.to && isPath(entry.to)}
+                      variant="mobile"
+                      analyticsPrefix="header-mobile-products"
+                      onClick={() => {
+                        setMobileOpen(false);
+                      }}
+                    />
+                  ))}
+                </div>
+              </details>
             <details className="group mt-2">
               <summary className="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1.5 text-sm text-text-secondary hover:bg-surface-hover">
                 {t('marketing.header.howto')}
@@ -650,16 +634,17 @@ export default function MarketingHeader({ sectionIds = [], stickyOffsetPx = 96 }
                 ))}
               </div>
             )}
-            <Link
-              to="/c/new"
-              className="mt-3 inline-flex w-full items-center justify-center rounded-md bg-gradient-to-r from-teal-500 via-sky-400 to-cyan-300 px-4 py-2 text-sm font-medium text-black hover:opacity-90"
-              onClick={() => setMobileOpen(false)}
-              data-analytics-id="header-mobile-cta-chat"
-            >
-              {t('marketing.header.cta_chat')}
-            </Link>
-          </motion.div>
-        </div>
+              <Link
+                to="/c/new"
+                className="mt-3 inline-flex w-full items-center justify-center rounded-md bg-gradient-to-r from-teal-500 via-sky-400 to-cyan-300 px-4 py-2 text-sm font-medium text-black hover:opacity-90"
+                onClick={() => setMobileOpen(false)}
+                data-analytics-id="header-mobile-cta-chat"
+              >
+                {t('marketing.header.cta_chat')}
+              </Link>
+            </motion.div>
+          </div>
+        </>
       )}
     </header>
   );

@@ -37,7 +37,7 @@ export interface LandingSectionProps extends React.HTMLAttributes<HTMLElement> {
 export default function LandingSection({
   id,
   children,
-  noBorder,
+  noBorder = true,
   compact,
   spacious,
   className = '',
@@ -46,7 +46,7 @@ export default function LandingSection({
   ...rest
 }: LandingSectionProps) {
   const base = 'relative overflow-x-visible overflow-y-visible';
-  const border = noBorder ? '' : 'border-t border-gray-100 dark:border-gray-900';
+  const border = noBorder ? '' : 'border-t border-app';
   const pad = compact
     ? 'py-12 md:py-20'
     : spacious
@@ -65,7 +65,7 @@ export default function LandingSection({
       data-analytics-id={computedAnalyticsId}
       {...rest}
     >
-      <div className="mx-auto w-full px-3 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1050px] px-4 sm:px-6">
         {children}
       </div>
     </section>

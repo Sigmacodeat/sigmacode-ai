@@ -88,6 +88,26 @@ export function SeoJsonLd() {
       mainEntity: localizedFaqMainEntity,
     });
 
+    // Breadcrumbs
+    pushLD({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: origin + '/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Pricing',
+          item: origin + '/pricing',
+        },
+      ],
+    });
+
     // Service/Produkt
     pushLD({
       '@context': 'https://schema.org',

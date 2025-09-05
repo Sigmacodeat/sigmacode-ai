@@ -50,7 +50,7 @@
     "@langchain/openai": "^0.5.18",
     "@langchain/textsplitters": "^0.1.0",
     "@librechat/agents": "^2.4.76",
-    "@librechat/api": "*",
+    "@librechat/api": "file:../packages/api",
     "@librechat/data-schemas": "*",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@modelcontextprotocol/sdk": "^1.17.1",

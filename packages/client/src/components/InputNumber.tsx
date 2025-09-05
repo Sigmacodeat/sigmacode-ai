@@ -3,17 +3,18 @@ import * as React from 'react';
 // import { NumericFormat } from 'react-number-format';
 
 import RCInputNumber from 'rc-input-number';
-import * as InputNumberPrimitive from 'rc-input-number';
 import { cn } from '~/utils';
 
 // TODO help needed
 // React.ElementRef<typeof LabelPrimitive.Root>,
 // React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 
-const InputNumber = React.forwardRef<
-  React.ElementRef<typeof RCInputNumber>,
-  InputNumberPrimitive.InputNumberProps
->(({ className, ...props }, ref) => {
+type InputNumberRef = React.ElementRef<typeof RCInputNumber>;
+type InputNumberProps = React.ComponentPropsWithoutRef<typeof RCInputNumber>;
+
+const InputNumber: React.ForwardRefExoticComponent<
+  InputNumberProps & React.RefAttributes<InputNumberRef>
+> = React.forwardRef<InputNumberRef, InputNumberProps>(({ className, ...props }, ref) => {
   return (
     <RCInputNumber
       className={cn(

@@ -105,6 +105,9 @@ export function AnimatedTabs({
 
       tabList.style.setProperty('--tab-left', `${activeTab.offsetLeft}px`);
       tabList.style.setProperty('--tab-width', `${activeTab.offsetWidth}px`);
+      // Sync underline color with the active tab's computed color
+      const color = getComputedStyle(activeTab).color;
+      tabList.style.setProperty('--tab-color', color);
     };
 
     updateUnderline();

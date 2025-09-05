@@ -75,7 +75,7 @@ export default function FeaturesSection() {
         {features.map((f, i) => (
           <motion.li key={f.title} variants={itemVar}>
             <div>
-              <Card data-analytics-id="feature-card" data-idx={i} data-title={f.title}>
+              <Card variant="glass" interactive data-analytics-id="feature-card" data-idx={i} data-title={f.title}>
                 {(() => {
                   const Icon = UNIFIED_ICON_SET[i % UNIFIED_ICON_SET.length];
                   return (
@@ -87,14 +87,14 @@ export default function FeaturesSection() {
                       <IconGlow
                         Icon={Icon}
                         size={24}
-                        colorClass="text-gray-600 dark:text-gray-300"
+                        colorClass="text-gray-600/90 dark:text-gray-300"
                         glowColor="rgba(120,120,120,0.25)"
                       />
                     </motion.span>
                   );
                 })()}
-                <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{f.desc}</p>
+                <h3 className="mt-3 typo-card-title">{f.title}</h3>
+                <p className="mt-2 typo-card-body text-gray-700/90 dark:text-gray-300">{f.desc}</p>
               </Card>
             </div>
           </motion.li>

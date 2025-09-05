@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Loading from '~/components/Common/Loading';
+import Loading from '~/components/common/Loading';
 
 describe('Loading component', () => {
   it('renders with default label', () => {

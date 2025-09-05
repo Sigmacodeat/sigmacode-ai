@@ -1,4 +1,8 @@
-import { heicTo, isHeic } from 'heic-to';
+// Dynamischer Import von 'heic-to' nur bei Bedarf, um das Initial-Bundle zu verkleinern
+async function loadHeic() {
+  const mod = await import('heic-to');
+  return mod;
+}
 
 /**
  * Check if a file is in HEIC format
@@ -7,6 +11,7 @@ import { heicTo, isHeic } from 'heic-to';
  */
 export const isHEICFile = async (file: File): Promise<boolean> => {
   try {
+    const { isHeic } = await loadHeic();
     return await isHeic(file);
   } catch (error) {
     console.warn('Error checking if file is HEIC:', error);
@@ -31,6 +36,7 @@ export const convertHEICToJPEG = async (
     // Report conversion start
     onProgress?.(0.3);
 
+    const { heicTo } = await loadHeic();
     const convertedBlob = await heicTo({
       blob: file,
       type: 'image/jpeg',

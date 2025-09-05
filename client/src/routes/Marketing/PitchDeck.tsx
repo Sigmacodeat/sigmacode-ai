@@ -1,33 +1,39 @@
+/**
+ * PitchDeck Route
+ *
+ * Wichtiger Hinweis:
+ * - Diese Route ist die einzige Stelle, an der die modularen PitchDeck-Sections
+ *   (aus `components/pitchdeck/Sections/`) gerendert werden.
+ * - Bitte KEINE PitchDeck-Sections in anderen Routen/Seiten importieren, um doppelte Renderings
+ *   und SEO-Konflikte zu vermeiden. Für Landing-Previews/Teaser separate Landing-Sections verwenden.
+ */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import {
-  Cover,
-  Problem,
-  Solution,
-  Product,
-  Market,
-  Business,
-  Pricing,
-  UnitEconomics,
-  KPIs,
-  Financials,
-  Costs,
-  Competition,
-  Technology,
-  GTM,
-  Traction,
-  Roadmap,
-  Risks,
-  Ask,
-  Exit,
-  Team,
-  Contact,
-  Impact,
-  CTA,
-} from '~/components/pitchdeck/Sections';
-import { costData, revenueData } from '~/components/pitchdeck/Sections/data';
- 
+import Cover from '@/components/pitchdeck/Sections/Cover.tsx';
+import Problem from '@/components/pitchdeck/Sections/Problem.tsx';
+import Solution from '@/components/pitchdeck/Sections/Solution.tsx';
+import Product from '@/components/pitchdeck/Sections/Product.tsx';
+import Market from '@/components/pitchdeck/Sections/Market.tsx';
+import Business from '@/components/pitchdeck/Sections/Business.tsx';
+import Pricing from '@/components/pitchdeck/Sections/Pricing.tsx';
+import UnitEconomics from '@/components/pitchdeck/Sections/UnitEconomics.tsx';
+import KPIs from '@/components/pitchdeck/Sections/KPIs.tsx';
+import Financials from '@/components/pitchdeck/Sections/Financials.tsx';
+import Costs from '@/components/pitchdeck/Sections/Costs.tsx';
+import Competition from '@/components/pitchdeck/Sections/Competition.tsx';
+import Technology from '@/components/pitchdeck/Sections/Technology.tsx';
+import GTM from '@/components/pitchdeck/Sections/GTM.tsx';
+import Traction from '@/components/pitchdeck/Sections/Traction.tsx';
+import Roadmap from '@/components/pitchdeck/Sections/Roadmap.tsx';
+import Risks from '@/components/pitchdeck/Sections/Risks.tsx';
+import Ask from '@/components/pitchdeck/Sections/Ask.tsx';
+import Exit from '@/components/pitchdeck/Sections/Exit.tsx';
+import Team from '@/components/pitchdeck/Sections/Team.tsx';
+import Contact from '@/components/pitchdeck/Sections/Contact.tsx';
+import Impact from '@/components/pitchdeck/Sections/Impact.tsx';
+import CTA from '@/components/pitchdeck/Sections/CTA.tsx';
+import { costData, revenueData } from '@/components/pitchdeck/Sections/data.ts';
 
 // Theme-Observer: erkennt Wechsel zwischen Light/Dark anhand der 'dark'-Klasse auf <html>
 const useIsDarkMode = () => {
@@ -54,6 +60,8 @@ export default function PitchDeck() {
   // Scroll-Progress über Framer Motion (Container-basiert)
   const { scrollYProgress } = useScroll({ container: rootRef });
   const progressSpring = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.3 });
+  // Feature-Flag: Progress-Navigation (kleine Punkte rechts) anzeigen
+  const SHOW_PROGRESS_NAV = false;
   const sectionOrder = useMemo(
     () => [
       'Cover',
@@ -252,7 +260,7 @@ export default function PitchDeck() {
       `}</style>
       {/* Top-Navigation */}
       <nav aria-label="Pitchdeck Navigation" className={[
-        'sticky top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 flex items-center justify-between px-4 md:px-8 py-3 border-b border-gray-200 dark:border-gray-800 relative',
+        'sticky top-0 left-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 flex items-center justify-between px-4 md:px-8 py-3 relative',
         navShadow ? 'shadow-sm' : '',
       ].join(' ')}>
         <div className="flex items-center gap-4 min-w-0">
@@ -260,7 +268,7 @@ export default function PitchDeck() {
           <label className="sm:hidden text-xs text-gray-600 dark:text-gray-300" htmlFor="toc-select">Sektion</label>
           <select
             id="toc-select"
-            className="sm:hidden block text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-md px-2 py-1 text-gray-800 dark:text-gray-100"
+            className="sm:hidden block text-sm bg-white dark:bg-gray-900 rounded-md px-2 py-1 text-gray-800 dark:text-gray-100"
             value={activeId}
             onChange={(e) => {
               const id = e.target.value;
@@ -307,7 +315,7 @@ export default function PitchDeck() {
                 setTimeout(() => setCopiedLink(null), 2000);
               }
             }}
-            className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-100 text-sm px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="inline-flex items-center gap-2 rounded-md text-gray-800 dark:text-gray-100 text-sm px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800"
             aria-label="Link zur aktiven Sektion kopieren"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -426,30 +434,32 @@ export default function PitchDeck() {
       <CTA />
 
       {/* Progress Dots (mobil unten zentriert, Desktop rechts vertikal) */}
-      <div
-        aria-label="Progress Navigation"
-        className="no-print fixed z-40 flex gap-2 p-2 rounded-full bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200 dark:border-gray-800 shadow-sm
-                   bottom-3 left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:right-3 md:top-1/2 md:-translate-y-1/2 md:translate-x-0
-                   md:flex-col"
-      >
-        {sectionOrder.map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => {
-              setActiveId(id);
-              const el = document.getElementById(id);
-              el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-            aria-label={`Gehe zu ${id}`}
-            aria-current={activeId === id ? 'page' : undefined}
-            className={[
-              'h-2.5 w-2.5 rounded-full transition-all',
-              activeId === id ? 'bg-blue-600 scale-110' : 'bg-gray-400/70 hover:bg-gray-500',
-            ].join(' ')}
-          />
-        ))}
-      </div>
+      {SHOW_PROGRESS_NAV && (
+        <div
+          aria-label="Progress Navigation"
+          className="no-print fixed z-40 flex gap-2 p-2 rounded-full bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm shadow-sm
+                     bottom-3 left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:right-3 md:top-1/2 md:-translate-y-1/2 md:translate-x-0
+                     md:flex-col"
+        >
+          {sectionOrder.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => {
+                setActiveId(id);
+                const el = document.getElementById(id);
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              aria-label={`Gehe zu ${id}`}
+              aria-current={activeId === id ? 'page' : undefined}
+              className={[
+                'h-2.5 w-2.5 rounded-full transition-all',
+                activeId === id ? 'bg-blue-600 scale-110' : 'bg-gray-400/70 hover:bg-gray-500',
+              ].join(' ')}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

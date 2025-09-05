@@ -9,12 +9,31 @@ import Loading from '~/components/common/Loading';
 import ErrorState from '~/components/common/ErrorState';
 import { getProvidersIndexJsonLd } from '~/utils/seo/providers';
 import { Search, ArrowUpDown, ExternalLink, Wallet } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useMotionProps } from '~/hooks/useMotionProps';
 
 export default function ProvidersIndex() {
   const { i18n, t } = useTranslation();
   const { data: providers = [], isLoading, error, refetch } = useProvidersList(i18n);
   const tt = makeTt(t);
+  const prefersReduced = useReducedMotion();
+  const fadeIn = useMotionProps('fadeIn');
+
+  const listVariants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: prefersReduced ? 0 : 0.06 },
+    },
+  } as const;
+
+  const itemVariants = {
+    hidden: prefersReduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: prefersReduced ? { duration: 0 } : { duration: 0.22 },
+    },
+  } as const;
 
   // UI State: Suche + Sortierung (client-seitig)
   const [query, setQuery] = useState('');
@@ -157,14 +176,18 @@ export default function ProvidersIndex() {
               : tt('marketing.providers.index.empty', 'Keine Anbieter gefunden.')}
           </div>
         ) : (
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.ul
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            variants={listVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
             {filtered.map((p: any) => (
               <motion.li
                 key={p.slug}
-                className="group rounded-xl border border-gray-200 bg-white/70 p-5 shadow-sm transition hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="ui-glass-card group rounded-xl p-5 border border-gray-200/60 dark:border-white/10 transition hover:shadow-md"
+                variants={itemVariants}
               >
                 <div className="flex items-start gap-3">
                   <div
@@ -236,7 +259,7 @@ export default function ProvidersIndex() {
                 </div>
               </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         )}
       </main>
     </div>

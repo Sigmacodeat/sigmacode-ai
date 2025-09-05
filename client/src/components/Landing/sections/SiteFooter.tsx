@@ -1,11 +1,15 @@
 import ThemeToggle from '../../common/ThemeToggle';
 import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { marketingConfig } from '../../../config/marketing';
 
 export default function SiteFooter() {
   const { t } = useTranslation();
   const tt = t as unknown as (key: string, options?: any) => string;
   const year = new Date().getFullYear();
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterStatus, setNewsletterStatus] = useState<null | 'success' | 'error'>(null);
 
   const nav = {
     product: [
@@ -35,9 +39,9 @@ export default function SiteFooter() {
   } as const;
 
   return (
-    <footer role="contentinfo" className="border-t border-gray-100 bg-transparent text-sm text-gray-600 dark:border-gray-900 dark:bg-transparent dark:text-gray-400">
+    <footer role="contentinfo" className="border-t border-app bg-transparent text-sm text-gray-600 dark:bg-transparent dark:text-gray-400">
       {/* Top: Newsletter & Brand */}
-      <div className="mx-auto max-w-7xl px-4 py-12">
+      <div className="mx-auto max-w-[1050px] px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {/* Brand */}
           <div className="space-y-4">
@@ -52,7 +56,7 @@ export default function SiteFooter() {
                 {tt('marketing.landing.footer.social.heading', { defaultValue: 'Soziale Kanäle' })}
               </h3>
               <a
-                href="https://github.com/"
+                href={marketingConfig.githubUrl}
                 aria-label={tt('marketing.landing.footer.social.github', { defaultValue: 'GitHub' })}
                 className="rounded-md p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 target="_blank"
@@ -62,7 +66,7 @@ export default function SiteFooter() {
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="https://twitter.com/"
+                href={marketingConfig.twitterUrl}
                 aria-label={tt('marketing.landing.footer.social.twitter', { defaultValue: 'Twitter / X' })}
                 className="rounded-md p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 target="_blank"
@@ -72,7 +76,7 @@ export default function SiteFooter() {
                 <Twitter className="h-5 w-5" />
               </a>
               <a
-                href="https://www.linkedin.com/"
+                href={marketingConfig.linkedinUrl}
                 aria-label={tt('marketing.landing.footer.social.linkedin', { defaultValue: 'LinkedIn' })}
                 className="rounded-md p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 target="_blank"
@@ -82,7 +86,7 @@ export default function SiteFooter() {
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="mailto:hello@sigmacode.ai"
+                href={`mailto:${marketingConfig.contactEmail}`}
                 aria-label={tt('marketing.landing.footer.social.email', { defaultValue: 'E-Mail' })}
                 className="rounded-md p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 data-analytics-id="footer-social-email"
@@ -94,18 +98,35 @@ export default function SiteFooter() {
 
           {/* Newsletter */}
           <div className="md:col-span-2">
-            <div className="rounded-lg border border-gray-200/70 bg-white/70 p-4 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.03]">
-              <h3 className="mb-1 text-base font-medium text-gray-900 dark:text-gray-100">
+            <div className="rounded-lg border border-app bg-surface p-4 backdrop-blur-sm shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
+              <h3 className="mb-1 typo-section-title text-gray-900 dark:text-gray-100">
                 {tt('marketing.landing.footer.newsletter.title', { defaultValue: 'Bleib auf dem Laufenden' })}
               </h3>
-              <p id="newsletter-desc" className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+              <p id="newsletter-desc" className="mb-3 typo-section-subtitle text-gray-500 dark:text-gray-400">
                 {tt('marketing.landing.footer.newsletter.subtitle', { defaultValue: 'Produkt-Updates, Best Practices und exklusive Einblicke. Kein Spam.' })}
               </p>
               <form
                 className="flex flex-col gap-2 sm:flex-row"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  // TODO: An Newsletter-Service anbinden (z.B. ConvertKit, Mailchimp)
+                  setNewsletterStatus(null);
+                  setNewsletterLoading(true);
+                  try {
+                    const form = e.currentTarget as HTMLFormElement & { email?: { value?: string }, consent?: { checked?: boolean } };
+                    const email = (form.email?.value || '').trim();
+                    const consent = !!form.consent?.checked;
+                    if (!email || !consent) {
+                      throw new Error('invalid');
+                    }
+                    // Mock-Request: Hier später echten Provider anbinden
+                    await new Promise((res) => setTimeout(res, 600));
+                    setNewsletterStatus('success');
+                    form.reset();
+                  } catch {
+                    setNewsletterStatus('error');
+                  } finally {
+                    setNewsletterLoading(false);
+                  }
                 }}
               >
                 <div className="flex-1">
@@ -122,12 +143,12 @@ export default function SiteFooter() {
                     enterKeyHint="send"
                     aria-describedby="newsletter-desc newsletter-status"
                     placeholder={tt('marketing.landing.footer.newsletter.placeholder', { defaultValue: 'Deine E-Mail-Adresse' })}
-                    className="w-full rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none ring-0 transition hover:border-gray-400 focus:border-gray-500 focus:ring-2 focus:ring-gray-200 dark:border-white/15 dark:bg-white/[0.06] dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-white/25 dark:focus:ring-white/10"
+                    className="w-full rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none ring-0 transition hover:border-gray-400 focus:border-gray-500 focus:ring-2 focus:ring-gray-200 dark:border-white/10 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-white/20 dark:focus:border-white/25 dark:focus:ring-white/10"
                   />
                 </div>
                 {/* Consent Checkbox */}
                 <div className="flex items-start gap-2">
-                  <input id="newsletter-consent" name="consent" type="checkbox" required className="mt-1 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-200 dark:border-white/15 dark:bg-white/[0.06] dark:focus:ring-white/10" />
+                  <input id="newsletter-consent" name="consent" type="checkbox" required className="mt-1 h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-2 focus:ring-gray-200 dark:border-white/15 dark:bg-gray-900/40 dark:text-white dark:focus:ring-white/10" />
                   <label htmlFor="newsletter-consent" className="text-xs text-gray-600 dark:text-gray-400">
                     {tt('marketing.landing.footer.newsletter.consent', { defaultValue: 'Ich stimme der Verarbeitung meiner Daten gemäß der ' })}
                     <a href="/privacy" className="underline hover:text-gray-900 dark:hover:text-gray-200">{tt('marketing.landing.footer.newsletter.privacy', { defaultValue: 'Datenschutzerklärung' })}</a>
@@ -140,12 +161,16 @@ export default function SiteFooter() {
                 </div>
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-60 dark:border-white/10 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+                  disabled={newsletterLoading}
                 >
-                  {tt('marketing.landing.footer.newsletter.cta', { defaultValue: 'Abonnieren' })}
+                  {newsletterLoading ? tt('marketing.landing.footer.newsletter.loading', { defaultValue: 'Wird gesendet…' }) : tt('marketing.landing.footer.newsletter.cta', { defaultValue: 'Abonnieren' })}
                 </button>
                 {/* Live region for async status */}
-                <span id="newsletter-status" aria-live="polite" className="sr-only" />
+                <span id="newsletter-status" aria-live="polite" className="sr-only">
+                  {newsletterStatus === 'success' && tt('marketing.landing.footer.newsletter.success', { defaultValue: 'Erfolgreich abonniert.' })}
+                  {newsletterStatus === 'error' && tt('marketing.landing.footer.newsletter.error', { defaultValue: 'Leider fehlgeschlagen. Bitte erneut versuchen.' })}
+                </span>
               </form>
             </div>
           </div>
@@ -153,7 +178,7 @@ export default function SiteFooter() {
       </div>
 
       {/* Middle: Link-Gruppen */}
-      <div className="mx-auto max-w-7xl px-4 pb-10">
+      <div className="mx-auto max-w-[1050px] px-4 sm:px-6 pb-10">
         <nav aria-labelledby="footer-groups-heading">
           <h2 id="footer-groups-heading" className="sr-only">{tt('marketing.landing.footer.groups.title', { defaultValue: 'Footer-Navigation' })}</h2>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4">
@@ -239,8 +264,8 @@ export default function SiteFooter() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-100 dark:border-gray-900">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row">
+      <div className="border-t border-app">
+        <div className="mx-auto flex max-w-[1050px] flex-col items-center justify-between gap-4 px-4 sm:px-6 py-6 sm:flex-row">
           <div className="text-xs text-gray-500 dark:text-gray-400">
             {tt('marketing.landing.footer.copyright', { defaultValue: '© {{year}} SIGMACODE AI. Alle Rechte vorbehalten.', year })}
           </div>
